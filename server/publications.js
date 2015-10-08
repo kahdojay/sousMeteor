@@ -1,3 +1,3 @@
-Meteor.publish('messages', function(teamId) {
-  return Messages.find();
+Meteor.publish('messages', function(teamKey) {
+  return Messages.find({teamKey: teamKey});
 });
