@@ -70,3 +70,18 @@ if (Messages.find().count() === 0) {
     createdAt: new Date()
   });
 }
+
+if (Recipes.find().count() === 0) {
+  Recipes.insert({
+    name: 'Chilli Oil',
+    ingredients: []
+  });
+  Recipes.insert({
+    name: 'Red Curry Paste',
+    ingredients: []
+  });
+  Recipes.insert({
+    name: 'Roasted Eggplant',
+    ingredients: []
+  });
+}
