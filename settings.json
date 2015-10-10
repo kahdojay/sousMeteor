@@ -1,0 +1,8 @@
+{
+  "TWILIO": {
+    "FROM": "(806) 500-2740",
+    "SID_TEST": "AC31386732307987b4dd9ccdcf43179643",
+    "SID_PROD": "AC8d38cf38e92ea9ee9b3ddebd222727a5",
+    "TOKEN": "91f32cff7119665085fb781775e81421"
+  }
+}
