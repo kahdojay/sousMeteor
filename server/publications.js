@@ -4,3 +4,6 @@ Meteor.publish('messages', function(teamKey) {
 Meteor.publish('stations', function(teamKey) {
   return Stations.find({teamKey: teamKey});
 });
+Meteor.publish('purveyors', function(teamKey) {
+  return Purveyors.find({teamKey: teamKey});
+});
