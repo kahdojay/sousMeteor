@@ -1,5 +1,5 @@
 Meteor.publish('messages', function(teamKey) {
-  return Messages.find({teamKey: teamKey}, {sort: {createdAt: 1}, limit:20});
+  return Messages.find({teamKey: teamKey}, {sort: {createdAt: -1}, limit:20});
 });
 Meteor.publish('stations', function(teamKey) {
   return Stations.find({teamKey: teamKey});
