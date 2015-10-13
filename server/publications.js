@@ -7,3 +7,6 @@ Meteor.publish('stations', function(teamKey) {
 Meteor.publish('purveyors', function(teamKey) {
   return Purveyors.find({teamKey: teamKey});
 });
+Meteor.publish('errors', function(userId) {
+  return Errors.find({userId: userId});
+});
