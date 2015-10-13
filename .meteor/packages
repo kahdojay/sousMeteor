@@ -21,5 +21,4 @@ iron:router
 maxharris9:object-assign
 underscore
 accounts-password
-dispatch:accounts-sms
 mrt:twilio-meteor
