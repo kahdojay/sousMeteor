@@ -20,3 +20,5 @@ insecure                # Allow all DB writes from clients (for prototyping)
 iron:router
 maxharris9:object-assign
 underscore
+accounts-password
+mrt:twilio-meteor
