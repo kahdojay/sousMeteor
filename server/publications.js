@@ -1,8 +1,8 @@
 Meteor.publish('messages', function(teamId) {
   return Messages.find({teamId: teamId}, {sort: {createdAt: 1}, limit:20});
 });
-Meteor.publish('stations', function(teamId) {
-  return Stations.find({teamId: teamId});
+Meteor.publish('teams', function(userId) {
+  return Teams.find({users: {$in: [userId]}});
 });
 Meteor.publish('purveyors', function(teamId) {
   return Purveyors.find({teamId: teamId});
