@@ -5,7 +5,19 @@ Meteor.publish('teams', function(userId) {
   return Teams.find({users: {$in: [userId]}});
 });
 Meteor.publish('purveyors', function(teamId) {
-  return Purveyors.find({teamId: teamId});
+  return Purveyors.find();
+  // TODO: limit by teamId
+  // return Purveyors.find({teamId: teamId});
+});
+Meteor.publish('categories', function(teamId) {
+  return Categories.find();
+  // TODO: limit by teamId
+  // return Categories.find({teamId: teamId});
+});
+Meteor.publish('products', function(purveyorList) {
+  return Products.find();
+  // TODO: limit by teamId
+  // return Products.find({purveyors: {$in: purveyorList}});
 });
 Meteor.publish('errors', function(userId) {
   return Errors.find({userId: userId});
