@@ -1,87 +1,81 @@
-if (Messages.find().count() === 0) {
-  Messages.insert({
-    message: "Hello world",
-    author: "Tom",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "Hey Tom, what's up?",
-    author: "Harry",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "Hey guys from Cleveland",
-    author: "Ilya",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "Hey it's me, Don",
-    author: "Don",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "Hey Don",
-    author: "Brian",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "Hi Brian",
-    author: "Tom",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "Hey guys, Netflix and chill?",
-    author: "Harry",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "What?",
-    author: "Ilya",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "I don't know",
-    author: "Don",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
-  Messages.insert({
-    message: "Bye-bye",
-    author: "Brian",
-    teamId: "sous",
-    imageUrl: "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/photo.jpg",
-    createdAt: new Date()
-  });
+if (Products.find().count() === 0) {
+  var units = ['ea', 'cs', 'bu', 'lb']
+  var productNames = [
+    'Blue, Pt. Reyes bay', 'Blue, Pt. Reyes farmstead', 'Butter, unsalted', 'Buttermilk', 'Cream, heavy, clover', 'Crème fraiche, kendall farms', 'Eggs, xlrg', 'Fage total', 'Marscapone, zanetti', 'Mascarpone, bel gioso', 'Milk, whole, stauss barista', 'Mozzerella, pt reyes', 'Parmesan reggiano', 'Pecorino romano', 'Pecorino sardo, matica', 'Pecorino toscano fresco, il forteto', 'Pecorino, sardo fiore', 'Provolone, aged', 'Ricotta, whey, bellwether', 'Ricotta solatta',
+    'Sotocenere tartufo, small', 'Taleggio', 'Coppa piquante', 'Guanciale', 'Mortadella', 'Pancetta, la quercia', 'Prosciutto americano, LQ boneless', 'Proscuitto, acorn, LQ boneless', 'Proscuitto, san daniele 16 mo', 'Speck americano, LQ boneless', 'Speck, alto adige', 'Bottarga, mullet', 'Lardo, LQ', 'Blue, Pt. Reyes bay, cow', 'Dry jack reserve, cow', 'Funky bleats, goat', 'Gorganzola piquante', 'Nerina, agri langa, goat', 'Pecorino ginepro, sheep', 'Pecorino, brillo chianti, sheep',
+    'Red  hawk, cow', 'Sophia, goat', 'Strachittund val tellegio, cow', 'Taleggio valsassina, cow', 'Taleggio, casarrigoni fresca', 'Taleggio, DOP', 'Anchovies, recca/ortiz', 'Baking powder', 'Calabrian chiles, whole', 'Capers, salt packed, lilliput', 'Chickpeas', 'Chocolate, dark, tcho', 'Chocolate, white', 'Cocoa, tcho', 'Colatura, iasa', 'Cornichons', 'Cornmeal, semi-fine yellow', 'Cornstarch', 'Farro', 'Flour, 14%, unbleached, giusto\'s',
+    'Flour, ap', 'Flour, semolina rimacinata, molino pasini', 'Geletatin sheets', 'Lady fingers, bonomi', 'Mustard, dijon', 'Nuts, almonds, natural', 'Nuts, hazelnuts, raw', 'Nuts, pinenuts, raw', 'Nuts, walnut pieces', 'Oil, capezzana', 'Oil, extra virgin, titone', 'Oil, fiordiolo', 'Oil, grapeseed', 'Oil, lemon agrumato', 'Oil, olio nuevo', 'Oil, olio verde', 'Oil, peanut', 'Oil, santa chiara', 'Oil, seka black 9L', 'Oil, seka green 9L',
+    'Olives, black cured', 'Olives, castleveltrano, pitted', 'Olives, catleveltrano', 'Olives, taggiasca', 'PG tips', 'Quinoa, black', 'Raisins, golden/mix', 'Salt, jacobsen/maldon', 'Salt, kosher', 'Salt, trapani sea', 'Seeds, pumpkin raw', 'Seeds, white sesame', 'Sugar, confectioners', 'Sugar, demerara', 'Sugar, granulated', 'Sugar, trimoline', 'Tomatoes, bianco', 'Tuna, chunk in oil', 'Tuna, flott/ortiz', 'Vanilla extract',
+ ];
+ productNames.map(function(productName) {
+   Products.insert({
+     name: productName,
+     description: '',
+     price: 0.0,
+     purveyors: [],
+     amount: 1,
+     unit: units[Math.floor(Math.random()*units.length)],
+     deleted: false,
+   });
+ });
 }
 
-if (Recipes.find().count() === 0) {
-  Recipes.insert({
-    name: 'Chilli Oil',
-    ingredients: []
+if (Purveyors.find().count() === 0) {
+  var allProducts = Products.find()
+  var purveyorNames = ['Cooks Co', 'Far West Fungi', 'Greenleaf', 'Fresca Italia', 'Ital Foods', 'Pac Gourmet', 'Casa', 'Chef\'s', 'Ecolab', 'Golden Gate', 'Marin Sun Farms']
+  purveyorNames.map(function(purveyorName) {
+    Purveyors.insert({
+      name: purveyorName,
+      description: '',
+      deleted:  false
+    })
+  })
+  var allPurveyors = Purveyors.find().fetch();
+
+  allProducts.map(function(product){
+    var randomPurveyorId = function() {
+      return allPurveyors[Math.floor(Math.random()*allPurveyors.length)]._id;
+    }
+    Products.update({_id: product._id}, {$push: {purveyors: randomPurveyorId()}});
+    // randomly seed some products to another purveyor
+    if (Math.floor(Math.random() * 100 + 1) % 3 === 0) {
+      Products.update({_id: product._id}, {$push: {purveyors: randomPurveyorId()}});
+    }
   });
-  Recipes.insert({
-    name: 'Red Curry Paste',
-    ingredients: []
-  });
-  Recipes.insert({
-    name: 'Roasted Eggplant',
-    ingredients: []
-  });
+
 }
+
+if (Categories.find().count() === 0) {
+ var allProducts = Products.find()
+ var categoryNames = [
+   'Dry Goods', 'Spices & Herbs', 'Paper', 'Chemicals', 'Bar',
+   'Cheese Board', 'Cured Meats', 'Bread', 'Herbs', 'Produce'
+ ];
+ categoryNames.map(function(categoryName) {
+   Categories.insert({
+     name: categoryName,
+     products: []
+   })
+ });
+ var allCategories = Categories.find().fetch();
+ allProducts.map(function(product){
+   var randomCategoryId = allCategories[Math.floor(Math.random()*allCategories.length)]._id;
+   Categories.update({_id: randomCategoryId}, {$push: {products: product._id}});
+ });
+}
+
+//
+// if (Recipes.find().count() === 0) {
+//   Recipes.insert({
+//     name: 'Chilli Oil',
+//     ingredients: []
+//   });
+//   Recipes.insert({
+//     name: 'Red Curry Paste',
+//     ingredients: []
+//   });
+//   Recipes.insert({
+//     name: 'Roasted Eggplant',
+//     ingredients: []
+//   });
+// }
