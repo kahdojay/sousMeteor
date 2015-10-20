@@ -55,6 +55,7 @@ mobile-experience@1.0.1
 mobile-status-bar@1.0.6
 mongo@1.1.2
 mongo-id@1.0.1
+mrt:moment@2.8.1
 mrt:twilio-meteor@1.1.0
 npm-bcrypt@0.7.8_2
 npm-mongo@1.4.39_1
@@ -83,3 +84,4 @@ underscore@1.0.4
 url@1.0.5
 webapp@1.2.2
 webapp-hashing@1.0.5
+wylio:mandrill@1.0.1
