@@ -13,6 +13,7 @@
     "PASSWORD": "UFYOmp-1pLo4pmHRfUcL9w",
     "TEMPLATES": {
       "SEND_ORDER": "sous-mobile-send-order"
-    }
+    },
+    "CONTACT_MAILER": "Sous Inc. <sous@sousapp.com>"
   }
 }

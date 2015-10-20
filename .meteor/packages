@@ -23,3 +23,4 @@ underscore
 accounts-password
 mrt:twilio-meteor
 wylio:mandrill
+mrt:moment
