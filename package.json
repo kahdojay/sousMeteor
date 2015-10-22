@@ -1,0 +1,11 @@
+{
+  "name": "sous-meteor",
+  "version": "0.0.1",
+  "description": "---",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "modulus-set-env-meteor-settings": "modulus env set METEOR_SETTINGS \"$(node -p 'settings=require(\"./settings.json\");JSON.stringify(settings)')\" -p 'sousMeteor'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
