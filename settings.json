@@ -14,6 +14,6 @@
     "TEMPLATES": {
       "SEND_ORDER": "sous-mobile-send-order"
     },
-    "CONTACT_MAILER": "Sous Inc. <sous@sousapp.com>"
+    "CONTACT_MAILER": "orders@sousapp.com"
   }
 }

@@ -2,7 +2,7 @@ Template Name: sous-mobile-send-order
 
 Subject:
 
-*|PURVEYOR_NAME|* • Order Received from *|BUYER_NAME|* on *|ORDER_DATE|*
+{{PURVEYOR_NAME}} • Order Received from {{BUYER_NAME}} on {{ORDER_DATE}}
 
 Template:
 
