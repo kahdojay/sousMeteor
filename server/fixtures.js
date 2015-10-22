@@ -27,7 +27,8 @@ if (Purveyors.find().count() === 0) {
     Purveyors.insert({
       name: purveyorName,
       description: '',
-      deleted:  false
+      deleted:  false,
+      email: purveyorName.split(' ').join('').toLowerCase() + '@example.com'
     })
   })
   var allPurveyors = Purveyors.find().fetch();
