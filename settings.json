@@ -10,7 +10,9 @@
     "HOST": "smtp.mandrillapp.com",
     "PORT": 587,
     "USERNAME": "don@sousapp.com",
-    "PASSWORD": "UFYOmp-1pLo4pmHRfUcL9w",
+
+    "PASSWORD": "wKUERBQstBN69HeSdfZYGQ",
+    "_COMMENTED_OUT_PASSWORD": "UFYOmp-1pLo4pmHRfUcL9w",
     "TEMPLATES": {
       "SEND_ORDER": "sous-mobile-send-order"
     },
