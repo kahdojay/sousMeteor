@@ -28,7 +28,21 @@ if (Purveyors.find().count() === 0) {
       name: purveyorName,
       description: '',
       deleted:  false,
-      email: purveyorName.split(' ').join('').toLowerCase() + '@example.com'
+      email: purveyorName.split(' ').join('').toLowerCase() + '@example.com',
+      code: '',
+      company: '',
+      address: '',
+      city: 'New York City',
+      state: 'NY',
+      zipCode: '',
+      orderContacts: [],
+      timeZone: 'EST',
+      phone: '',
+      allContacts: [],
+      orderCutoffTime: '',
+      orderMinimum: null,
+      deliveryDays: '',
+      notes: '',
     })
   })
   var allPurveyors = Purveyors.find().fetch();
