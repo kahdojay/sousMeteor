@@ -11,7 +11,7 @@
     "PORT": 587,
     "USERNAME": "don@sousapp.com",
     "API_KEY": "wKUERBQstBN69HeSdfZYGQ",
-    "TEST_PASSWORD": "UFYOmp-1pLo4pmHRfUcL9w",
+    "PROD_API_KEY": "UFYOmp-1pLo4pmHRfUcL9w",
     "TEMPLATES": {
       "SEND_ORDER": "sous-mobile-send-order"
     },
