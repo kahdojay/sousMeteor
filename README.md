@@ -34,3 +34,24 @@
     Make data available via json url (Google Sheets + sheetsu)
     ddpClient.call('importProducts', [productJsonUrl])
     ddpClient.call('importPurveyors', [purveyorJsonUrl])
+
+### Alternative Import flow
+
+    # if remotely
+    #   MONGO_URL="mongodb://root:platformforchefs@apollo.modulusmongo.net:27017/hipyH5ip" meteor run --settings settings.json
+
+    # if locally
+    meteor run --settings settings.json
+
+    # in a separate window/tab
+    meteor shell
+
+    # according to docs (meteor help shell) should have access to everything
+    # [...] The shell supports tab completion for global variables like `Meteor`,
+    # `Mongo`, and `Package`. Try typing `Meteor.is` and then pressing tab. [...]
+
+    # note, unlike ddp calls, the parameters SHOULD NOT be in an array
+    Meteor.call('importProducts',productJsonUrl);
+    Meteor.call('importPurveyors', purveyorJsonUrl);
+
+    # to verify the import
