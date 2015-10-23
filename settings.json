@@ -10,7 +10,8 @@
     "HOST": "smtp.mandrillapp.com",
     "PORT": 587,
     "USERNAME": "don@sousapp.com",
-    "API_KEY": "UFYOmp-1pLo4pmHRfUcL9w",
+    "API_KEY": "wKUERBQstBN69HeSdfZYGQ",
+    "TEST_PASSWORD": "UFYOmp-1pLo4pmHRfUcL9w",
     "TEMPLATES": {
       "SEND_ORDER": "sous-mobile-send-order"
     },

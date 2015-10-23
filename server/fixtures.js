@@ -27,7 +27,22 @@ if (Purveyors.find().count() === 0) {
     Purveyors.insert({
       name: purveyorName,
       description: '',
-      deleted:  false
+      deleted:  false,
+      email: purveyorName.split(' ').join('').toLowerCase() + '@example.com',
+      code: '',
+      company: '',
+      address: '',
+      city: 'New York City',
+      state: 'NY',
+      zipCode: '',
+      orderContacts: [],
+      timeZone: 'EST',
+      phone: '',
+      allContacts: [],
+      orderCutoffTime: '',
+      orderMinimum: null,
+      deliveryDays: '',
+      notes: '',
     })
   })
   var allPurveyors = Purveyors.find().fetch();

@@ -27,3 +27,10 @@
     ddpClient.connect(function(){ console.log(arguments); })
     ddpClient.call('sendOrders',[])
     ddpClient.close()
+
+### Import Purveyors (then) Products
+
+    Execute DDP commandline (see above)
+    Make data available via json url (Google Sheets + sheetsu)
+    ddpClient.call('importProducts', [productJsonUrl])
+    ddpClient.call('importPurveyors', [purveyorJsonUrl])
