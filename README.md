@@ -54,4 +54,11 @@
     Meteor.call('importProducts',productJsonUrl);
     Meteor.call('importPurveyors', purveyorJsonUrl);
 
-    # to verify the import
+### Quick load for debugging:
+
+    meteor run --settings settings.json
+
+    # in a separate window/tab
+    meteor shell
+
+    Meteor.call('resetAndImport', <your phone number>);
