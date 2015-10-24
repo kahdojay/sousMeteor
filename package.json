@@ -6,6 +6,8 @@
   "main": "index.js",
   "scripts": {
     "modulus-set-env-meteor-settings": "modulus env set METEOR_SETTINGS \"$(node -p 'settings=require(\"./settings.json\");JSON.stringify(settings)')\" -p 'sousMeteor'",
+    "local-against-staging": "MONGO_URL=\"mongodb://root:platformforchefs@apollo.modulusmongo.net:27017/hipyH5ip\" meteor run --settings settings.json",
+    "local": "meteor run --settings settings.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
