@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start-development": "meteor run --settings settings-development.json",
-    "start-staging": "meteor run --settings settings-staging.json",
-    "start-production": "meteor run --settings settings-production.json",
+    "start-staging": "MONGO_URL=\"$(node -p 'settings=require(\"./settings-staging.json\");settings.MONGO_URL')\" meteor run --settings settings-staging.json",
+    "start-production": "MONGO_URL=\"$(node -p 'settings=require(\"./settings-production.json\");settings.MONGO_URL')\" meteor run --settings settings-production.json",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy-staging": "modulus env set METEOR_SETTINGS \"$(cat settings-staging.json)\" -p 'SousStaging' && modulus deploy -p 'SousStaging'",
     "deploy-production": "modulus env set METEOR_SETTINGS \"$(cat settings-production.json)\" -p 'SousProduction' && modulus deploy -p 'SousProduction'"
