@@ -5,9 +5,11 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "modulus-set-env-meteor-settings": "modulus env set METEOR_SETTINGS \"$(node -p 'settings=require(\"./settings.json\");JSON.stringify(settings)')\" -p 'sousMeteor'",
-    "local-against-staging": "MONGO_URL=\"mongodb://root:platformforchefs@apollo.modulusmongo.net:27017/hipyH5ip\" meteor run --settings settings.json",
-    "local": "meteor run --settings settings.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start-development": "meteor run --settings settings-development.json",
+    "start-staging": "meteor run --settings settings-staging.json",
+    "start-production": "meteor run --settings settings-production.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy-staging": "modulus env set METEOR_SETTINGS \"$(cat settings-staging.json)\" -p 'SousStaging' && modulus deploy -p 'SousStaging'",
+    "deploy-production": "modulus env set METEOR_SETTINGS \"$(cat settings-production.json)\" -p 'SousProduction' && modulus deploy -p 'SousProduction'"
   }
 }
