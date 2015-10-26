@@ -26,12 +26,7 @@
 
 ### Import Purveyors (then) Products
 
-    # Execute DDP commandline (see above)
     # Make data available via json url (Google Sheets + sheetsu)
-    ddpClient.call('importProducts', [productJsonUrl])
-    ddpClient.call('importPurveyors', [purveyorJsonUrl])
-
-### Alternative Import flow
 
     # if remotely
     #   npm run start-staging
@@ -47,7 +42,7 @@
     # `Mongo`, and `Package`. Try typing `Meteor.is` and then pressing tab. [...]
 
     # note, unlike ddp calls, the parameters SHOULD NOT be in an array
-    Meteor.call('importProducts',productJsonUrl);
+    Meteor.call('importProducts', productJsonUrl);
     Meteor.call('importPurveyors', purveyorJsonUrl);
 
 ### Quick load for debugging:
