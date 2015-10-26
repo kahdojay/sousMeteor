@@ -74,12 +74,7 @@
 
 #### inside `meteor shell`:
 
-    Errors.insert({
-      userId: "<id>",
-      machineId: 'technical-error:email',
-      message: 'Order Send Error - we\'ve been notified, but please send order from your purveyors directly',
-      createdAt: new Date(),
-    });
+    # Meteor.call('triggerError', 'technical-error:email', 'Order Send Error - Sous has been notified, in the meantime please send order to your purveyors directly.', "<id>")
     # the error should show up in the `interactive node (ddp)`
 
 ## Templates:
