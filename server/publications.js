@@ -1,5 +1,6 @@
 Meteor.publish('messages', function(teamIds) {
   // console.log('TEAM IDS', teamIds)
+  //TODO limit 20 for each teamId in teamIds
   return Messages.find({teamId: {$in: teamIds}}, {sort: {createdAt: -1}, limit:20});
 });
 Meteor.publish('teams', function(userId) {
