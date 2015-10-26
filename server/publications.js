@@ -1,6 +1,6 @@
 Meteor.publish('messages', function(teamIds) {
   // console.log('TEAM IDS', teamIds)
-  return Messages.find({teamId: {$in: teamIds}}, {sort: {createdAt: 1}, limit:20});
+  return Messages.find({teamId: {$in: teamIds}}, {sort: {createdAt: -1}, limit:20});
 });
 Meteor.publish('teams', function(userId) {
   return Teams.find({users: {$in: [userId]}});
