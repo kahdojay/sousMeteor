@@ -5,43 +5,39 @@
 
 ## run locally
 
-    meteor run --settings settings.json
+    npm run start-development
 
 # Misc
-
-## Templates:
-
-    SEND_ORDER template: SEND_ORDER.txt
 
 ## Notes:
 
 ### Execute DDP commandline
 
-    npm install ws
+    npm install
     node
-    WebSocket = require('ws')
-    DDPClient = require('ddp-client')
-    ddpClient = new DDPClient({url: 'ws://localhost:3000/websocket'})
+    var WebSocket = require('ws')
+    var DDPClient = require('ddp-client')
+    var ddpClient = new DDPClient({url: 'ws://localhost:3000/websocket'})
     # ddpClient.on("message", function(){ console.log(arguments); })
     # ddpClient.on("connected", function(){ console.log(arguments); })
     ddpClient.connect(function(){ console.log(arguments); })
-    ddpClient.call('sendOrders',[])
+    # ddpClient.call('sendOrders',[])
     ddpClient.close()
 
 ### Import Purveyors (then) Products
 
-    Execute DDP commandline (see above)
-    Make data available via json url (Google Sheets + sheetsu)
+    # Execute DDP commandline (see above)
+    # Make data available via json url (Google Sheets + sheetsu)
     ddpClient.call('importProducts', [productJsonUrl])
     ddpClient.call('importPurveyors', [purveyorJsonUrl])
 
 ### Alternative Import flow
 
     # if remotely
-    #   MONGO_URL="mongodb://root:platformforchefs@apollo.modulusmongo.net:27017/hipyH5ip" meteor run --settings settings.json
+    #   npm run start-staging
 
     # if locally
-    meteor run --settings settings.json
+    npm run start-development
 
     # in a separate window/tab
     meteor shell
@@ -56,9 +52,36 @@
 
 ### Quick load for debugging:
 
-    meteor run --settings settings.json
+    npm run start-development
 
     # in a separate window/tab
     meteor shell
 
-    Meteor.call('resetAndImport', <your phone number>);
+    Meteor.call('resetImportInvite', ['<your phone number>']);
+
+## Testing errors
+
+    # Execute DDP commandline (see above)
+
+#### inside `meteor shell`:
+
+    Meteor.users.findOne()
+    # copy the \_id
+
+#### inside `interactive node (ddp)`:
+
+    ddpClient.subscribe('errors', ["<id>"])
+
+#### inside `meteor shell`:
+
+    Errors.insert({
+      userId: "<id>",
+      machineId: 'technical-error:email',
+      message: 'Order Send Error - we\'ve been notified, but please send order from your purveyors directly',
+      createdAt: new Date(),
+    });
+    # the error should show up in the `interactive node (ddp)`
+
+## Templates:
+
+    SEND_ORDER template: SEND_ORDER.txt
