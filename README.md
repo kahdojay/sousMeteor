@@ -18,9 +18,8 @@
     var WebSocket = require('ws')
     var DDPClient = require('ddp-client')
     var ddpClient = new DDPClient({url: 'ws://localhost:3000/websocket'})
-    # ddpClient.on("message", function(){ console.log(arguments); })
-    # ddpClient.on("connected", function(){ console.log(arguments); })
-    ddpClient.connect(function(){ console.log(arguments); })
+    ddpClient.on("message", function(){ console.log("MSG FUNC: ", arguments); })
+    ddpClient.connect(function(error, wasReconnect){ console.log("CONN FUNC: ERROR: ", error, " WAS RECONNECT: ", wasReconnect); })
     # ddpClient.call('sendOrders',[])
     ddpClient.close()
 
