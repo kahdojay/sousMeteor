@@ -108,7 +108,7 @@ Template:
                                   <tr class="order-row {{#if `idx % 2 == 1`}}even{{else}}odd{{/if}}">
                                     <td class="order-item-name">
                                       <p>{{name}}</p>
-                                      <p class="guidance">{{#if sku}}({{sku}}){{/if}}</p>
+                                      <p class="guidance">{{#if sku}}{{sku}}{{/if}}</p>
                                     </td>
                                     <td class="amount center">
                                       {{quantity}} {{unit}}
