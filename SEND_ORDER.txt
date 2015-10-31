@@ -70,7 +70,9 @@ Template:
                           <td class="center">
                             <h1 class="purveyor-name center">{{PURVEYOR_NAME}}</h1>
                             <span class="purveyor-detail-header">Contacts</span>
-                            <p class="center">{{BUYER_CONTACTS}}</p>
+                            {{#each BUYER_CONTACTS}}
+                                <p class="center">{{contactInfo}}</p>
+                            {{/each}}
                             <br>
                             <span class="purveyor-detail-header">Address</span>
                             <p class="center">{{BUYER_ADDRESS}}</p>
