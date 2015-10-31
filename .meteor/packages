@@ -26,3 +26,5 @@ wylio:mandrill
 erasaur:meteor-lodash
 momentjs:moment
 mrt:moment-timezone
+hiukim:slack-client
+georgediab:slack-notify
