@@ -25,10 +25,12 @@ Meteor.publish('errors', function(userId) {
   return Errors.find({userId: userId});
 });
 Meteor.publish('restricted', function(phoneNumber) {
-  var users = Meteor.users.find({username: phoneNumber},{fields: {
-    smsToken: 0,
-    password: 0,
-    services: 0
-  }});
+  var users = Meteor.users.find({username: phoneNumber},
+    {fields: {
+      smsToken: 0,
+      password: 0,
+      services: 0
+    }
+  });
   return users;
 });
