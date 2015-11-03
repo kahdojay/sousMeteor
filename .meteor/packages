@@ -28,3 +28,4 @@ momentjs:moment
 mrt:moment-timezone
 hiukim:slack-client
 georgediab:slack-notify
+ongoworks:bunyan-logger
