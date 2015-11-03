@@ -22,10 +22,7 @@ Meteor.publish('teams-users', function(teamIds){
     fields: {
       firstName: 1,
       lastName: 1,
-      username: 1,
-      smsToken: 0,
-      password: 0,
-      services: 0
+      username: 1
     }
   });
 });
