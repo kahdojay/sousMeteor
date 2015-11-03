@@ -5,7 +5,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start-development": "meteor run --settings settings-development.json | ./node_modules/.bin/bunyan",
+    "start-development": "meteor run --settings settings-development.json",
     "start-staging": "MONGO_URL=\"$(node -p 'settings=require(\"./settings-staging.json\");settings.MONGO_URL')\" meteor run --settings settings-staging.json",
     "start-production": "MONGO_URL=\"$(node -p 'settings=require(\"./settings-production.json\");settings.MONGO_URL')\" meteor run --settings settings-production.json",
     "test": "echo \"Error: no test specified\" && exit 1",
