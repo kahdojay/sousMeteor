@@ -17,5 +17,8 @@
   "devDependencies": {
     "ddp-client": "^0.1.2",
     "ws": "^0.8.0"
+  },
+  "dependencies": {
+    "bunyan": "^1.5.1"
   }
 }
