@@ -66,6 +66,7 @@ Meteor.publish('teams', function(userId) {
   return Teams.find({users: {$in: [userId]}});
 });
 
+<<<<<<< 079de3d374bd337ad4cad4c6fd7e3ed4d1a5a62d
 Meteor.publish('purveyors', function(teamIds) {
   return Purveyors.find({teamId: teamIds});
 });
@@ -75,6 +76,15 @@ Meteor.publish('categories', function(teamIds) {
 });
 
 Meteor.publish('products', function(teamIds) {
+Meteor.publish('purveyors', function(userId, teamIds) {
+  return Purveyors.find({teamId: teamIds});
+});
+Meteor.publish('categories', function(userId, teamIds) {
+  return Categories.find({teamId: {$in: teamIds}});
+});
+
+Meteor.publish('products', function(userId, teamIds) {
+>>>>>>> Add userId to the categories, products and purveyors subscriptions
   return Products.find({teamId: {$in: teamIds}});
 });
 
