@@ -41,8 +41,8 @@
     # `Mongo`, and `Package`. Try typing `Meteor.is` and then pressing tab. [...]
 
     # note, unlike ddp calls, the parameters SHOULD NOT be in an array
-    Meteor.call('importProducts', productJsonUrl);
-    Meteor.call('importPurveyors', purveyorJsonUrl);
+    Meteor.call('importProducts', productJsonUrl, teamId);
+    Meteor.call('importPurveyors', purveyorJsonUrl, teamId);
 
 ### Quick load for debugging:
 
