@@ -66,15 +66,15 @@ Meteor.publish('teams', function(userId) {
   return Teams.find({users: {$in: [userId]}});
 });
 
-Meteor.publish('purveyors', function(teamIds) {
+Meteor.publish('purveyors', function(userId, teamIds) {
   return Purveyors.find({teamId: teamIds});
 });
 
-Meteor.publish('categories', function(teamIds) {
+Meteor.publish('categories', function(userId, teamIds) {
   return Categories.find({teamId: {$in: teamIds}});
 });
 
-Meteor.publish('products', function(teamIds) {
+Meteor.publish('products', function(userId, teamIds) {
   return Products.find({teamId: {$in: teamIds}});
 });
 
