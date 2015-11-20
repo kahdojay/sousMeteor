@@ -67,7 +67,7 @@ Meteor.publish('teams', function(userId) {
 });
 
 Meteor.publish('purveyors', function(userId, teamIds) {
-  return Purveyors.find({teamId: teamIds});
+  return Purveyors.find({teamId: {$in: teamIds}});
 });
 
 Meteor.publish('categories', function(userId, teamIds) {
