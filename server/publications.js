@@ -66,22 +66,16 @@ Meteor.publish('teams', function(userId) {
   return Teams.find({users: {$in: [userId]}});
 });
 
-Meteor.publish('purveyors', function(teamId) {
-  return Purveyors.find();
-  // TODO: limit by teamId
-  // return Purveyors.find({teamId: teamId});
+Meteor.publish('purveyors', function(userId, teamIds) {
+  return Purveyors.find({teamId: {$in: teamIds}});
 });
 
-Meteor.publish('categories', function(teamId) {
-  return Categories.find();
-  // TODO: limit by teamId
-  // return Categories.find({teamId: teamId});
+Meteor.publish('categories', function(userId, teamIds) {
+  return Categories.find({teamId: {$in: teamIds}});
 });
 
-Meteor.publish('products', function(purveyorList) {
-  return Products.find();
-  // TODO: limit by teamId
-  // return Products.find({purveyors: {$in: purveyorList}});
+Meteor.publish('products', function(userId, teamIds) {
+  return Products.find({teamId: {$in: teamIds}});
 });
 
 Meteor.publish('errors', function(userId) {
