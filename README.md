@@ -11,6 +11,10 @@
 
 ## Notes:
 
+### For deployment, you will need modulus
+
+    npm install -g https://github.com/license2e/modulus-cli
+
 ### Execute DDP commandline
 
     npm install
