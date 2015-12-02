@@ -6,14 +6,18 @@
   "main": "index.js",
   "scripts": {
     "start-development": "meteor run --settings settings-development.json --raw-logs | ./node_modules/.bin/bunyan --color",
+    "start-remote-development": "MONGO_URL=\"$(node -p 'settings=require(\"./settings-development.json\");settings.MONGO_URL')\" meteor run --settings settings-development.json --raw-logs | ./node_modules/.bin/bunyan --color",
     "start-staging": "MONGO_URL=\"$(node -p 'settings=require(\"./settings-staging.json\");settings.MONGO_URL')\" meteor run --settings settings-staging.json --raw-logs | ./node_modules/.bin/bunyan --color",
     "start-production": "MONGO_URL=\"$(node -p 'settings=require(\"./settings-production.json\");settings.MONGO_URL')\" meteor run --settings settings-production.json --raw-logs | ./node_modules/.bin/bunyan --color",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "env-development": "modulus env set METEOR_SETTINGS \"$(cat settings-development.json)\" -p 'SousDevelopment'",
+    "deploy-development": "npm run env-development && modulus deploy -j include.json -p 'SousDevelopment'",
+    "logger-development": "modulus project logs tail -p 'SousDevelopment' | ./node_modules/.bin/bunyan",
     "env-staging": "modulus env set METEOR_SETTINGS \"$(cat settings-staging.json)\" -p 'SousStaging'",
     "deploy-staging": "npm run env-staging && modulus deploy -j include.json -p 'SousStaging'",
+    "logger-staging": "modulus project logs tail -p 'SousStaging' | ./node_modules/.bin/bunyan",
     "env-production": "modulus env set METEOR_SETTINGS \"$(cat settings-production.json)\" -p 'SousProduction'",
     "deploy-production": "npm run env-production && modulus deploy -j include.json -p 'SousProduction'",
-    "logger-staging": "modulus project logs tail -p 'SousStaging' | ./node_modules/.bin/bunyan",
     "logger-production": "modulus project logs tail -p 'SousProduction' | ./node_modules/.bin/bunyan"
   },
   "devDependencies": {
