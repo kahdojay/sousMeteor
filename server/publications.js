@@ -43,10 +43,17 @@ function filterUserIds(userId, teamsUsersIds){
   return userIds;
 }
 
-Meteor.publish('messages', function(userId, teamIds) {
-  var teamsUsersIds = getTeamsUsersIds(teamIds);
-  var userIds = filterUserIds(userId, teamsUsersIds);
-  return Messages.find({userId: {$in: userIds}}, {sort: {createdAt: -1}, limit:20});
+Meteor.publish('messages', function(userId, teamId) {
+  // TODO: Should we just subscribe to all teams instead of the current one?
+  return Messages.find(
+    {
+      teamId: teamId,
+      createdAt: { $gt: (new Date()).toISOString() }
+    },
+    {
+      sort: {createdAt: -1}
+    }
+  );
 }.bind(this));
 
 Meteor.publish('teams-users', function(userId, teamIds){
