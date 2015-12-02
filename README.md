@@ -13,7 +13,7 @@
 
 ### For deployment, you will need modulus
 
-    npm install -g https://github.com/license2e/modulus-cli
+    npm install -g https://github.com/sousapp/modulus-cli
 
 ### Execute DDP commandline
 
