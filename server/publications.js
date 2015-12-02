@@ -44,6 +44,7 @@ function filterUserIds(userId, teamsUsersIds){
 }
 
 Meteor.publish('messages', function(userId, teamId) {
+  // TODO: Should we just subscribe to all teams instead of the current one?
   return Messages.find(
     {
       teamId: teamId,
