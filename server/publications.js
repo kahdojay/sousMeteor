@@ -90,6 +90,11 @@ Meteor.publish('errors', function(userId) {
 });
 
 Meteor.publish('restricted', function(phoneNumber) {
+  Meteor.users.update({username: phoneNumber}, {$set: {
+    smsToken: null,
+    smsSent: false,
+    smsVerified: false,
+  }});
   var users = Meteor.users.find({username: phoneNumber},{
     fields: {
       smsToken: 0,
