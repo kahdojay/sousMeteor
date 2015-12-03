@@ -89,6 +89,10 @@ Meteor.publish('errors', function(userId) {
   return Errors.find({userId: userId});
 });
 
+Meteor.publish('orders', function(userId, teamIds) {
+  return Orders.find({teamId: {$in: teamIds}});
+})
+
 Meteor.publish('restricted', function(phoneNumber) {
   Meteor.users.update({username: phoneNumber}, {$set: {
     smsToken: null,
