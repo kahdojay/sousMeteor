@@ -77,7 +77,7 @@ Meteor.publish('teams', function(userId) {
     //   screen will get stuck at the setting up your workspace
     // NOTE: perhaps we can make them select their default team instead of
     //   automatically selecting a team for them..
-    // notepad: {$exists: false},
+    notepad: {$exists: false},
   });
 });
 
