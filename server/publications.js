@@ -70,7 +70,15 @@ Meteor.publish('teams-users', function(userId, teamIds){
 }.bind(this));
 
 Meteor.publish('teams', function(userId) {
-  return Teams.find({users: {$in: [userId]}});
+  return Teams.find({
+    users: {$in: [userId]},
+    // NOTE: Before adding this, make sure all the teamId's for the user are set
+    //   to the ones that will actually come down the pipeline, otherwise, the
+    //   screen will get stuck at the setting up your workspace
+    // NOTE: perhaps we can make them select their default team instead of
+    //   automatically selecting a team for them..
+    // notepad: {$exists: false},
+  });
 });
 
 Meteor.publish('purveyors', function(userId, teamIds) {
