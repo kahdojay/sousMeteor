@@ -70,7 +70,10 @@ Meteor.publish('teams-users', function(userId, teamIds){
 }.bind(this));
 
 Meteor.publish('teams', function(userId) {
-  return Teams.find({users: {$in: [userId]}});
+  return Teams.find({
+    users: {$in: [userId]},
+    notepad: {$exists: false},
+  });
 });
 
 Meteor.publish('purveyors', function(userId, teamIds) {
