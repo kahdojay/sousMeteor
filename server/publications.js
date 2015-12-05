@@ -45,10 +45,15 @@ function filterUserIds(userId, teamsUsersIds){
 
 Meteor.publish('messages', function(userId, teamId) {
   // TODO: Should we just subscribe to all teams instead of the current one?
+  var messages = Messages.find({teamId: teamId}, {sort: {createdAt: -1}, limit: 20});
+  var sinceCreatedAt = (new Date()).toISOString();
+  if(messages.length > 0){
+    sinceCreatedAt = messages[messages.length-1].createdAt
+  }
   return Messages.find(
     {
       teamId: teamId,
-      createdAt: { $gt: (new Date()).toISOString() }
+      createdAt: { $gt: sinceCreatedAt }
     },
     {
       sort: {createdAt: -1}
