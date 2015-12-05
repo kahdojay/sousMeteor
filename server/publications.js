@@ -43,10 +43,17 @@ function filterUserIds(userId, teamsUsersIds){
   return userIds;
 }
 
-Meteor.publish('messages', function(userId, teamIds) {
-  var teamsUsersIds = getTeamsUsersIds(teamIds);
-  var userIds = filterUserIds(userId, teamsUsersIds);
-  return Messages.find({userId: {$in: userIds}}, {sort: {createdAt: -1}, limit:20});
+Meteor.publish('messages', function(userId, teamId) {
+  // TODO: Should we just subscribe to all teams instead of the current one?
+  return Messages.find(
+    {
+      teamId: teamId,
+      createdAt: { $gt: (new Date()).toISOString() }
+    },
+    {
+      sort: {createdAt: -1}
+    }
+  );
 }.bind(this));
 
 Meteor.publish('teams-users', function(userId, teamIds){
@@ -63,7 +70,10 @@ Meteor.publish('teams-users', function(userId, teamIds){
 }.bind(this));
 
 Meteor.publish('teams', function(userId) {
-  return Teams.find({users: {$in: [userId]}});
+  return Teams.find({
+    users: {$in: [userId]},
+    notepad: {$exists: false},
+  });
 });
 
 Meteor.publish('purveyors', function(userId, teamIds) {
@@ -82,7 +92,16 @@ Meteor.publish('errors', function(userId) {
   return Errors.find({userId: userId});
 });
 
+Meteor.publish('orders', function(userId, teamIds) {
+  return Orders.find({teamId: {$in: teamIds}});
+})
+
 Meteor.publish('restricted', function(phoneNumber) {
+  Meteor.users.update({username: phoneNumber}, {$set: {
+    smsToken: null,
+    smsSent: false,
+    smsVerified: false,
+  }});
   var users = Meteor.users.find({username: phoneNumber},{
     fields: {
       smsToken: 0,
