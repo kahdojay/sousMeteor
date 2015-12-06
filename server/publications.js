@@ -43,17 +43,15 @@ function filterUserIds(userId, teamsUsersIds){
   return userIds;
 }
 
-Meteor.publish('messages', function(userId, teamId) {
+Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
   // TODO: Should we just subscribe to all teams instead of the current one?
-  var messages = Messages.find({teamId: teamId}, {sort: {createdAt: -1}, limit: 20});
-  var sinceCreatedAt = (new Date()).toISOString();
-  if(messages.length > 0){
-    sinceCreatedAt = messages[messages.length-1].createdAt
+  if(sinceCreatedAt === undefined){
+    sinceCreatedAt = (new Date()).toISOString();
   }
   return Messages.find(
     {
       teamId: teamId,
-      createdAt: { $gt: sinceCreatedAt }
+      createdAt: { $gte: sinceCreatedAt }
     },
     {
       sort: {createdAt: -1}
