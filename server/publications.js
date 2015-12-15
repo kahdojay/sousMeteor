@@ -48,15 +48,15 @@ Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
   if(sinceCreatedAt === undefined){
     sinceCreatedAt = (new Date()).toISOString();
   }
-  return Messages.find(
-    {
-      teamId: teamId,
-      createdAt: { $gte: sinceCreatedAt }
-    },
-    {
-      sort: {createdAt: -1}
-    }
-  );
+  var messageQuery = {
+    teamId: teamId,
+    createdAt: { $gte: sinceCreatedAt }
+  };
+  var messageOptions = {
+    sort: {teamId: 1, createdAt: -1}
+  };
+  // console.log('SUBSCRIBE TO MESSAGES FOR: ', userId, ' USING: ', messageQuery, messageOptions);
+  return Messages.find(messageQuery, messageOptions);
 }.bind(this));
 
 Meteor.publish('teams-users', function(userId, teamIds){
