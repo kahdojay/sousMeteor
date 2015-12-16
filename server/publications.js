@@ -88,7 +88,9 @@ Meteor.publish('categories', function(userId, teamIds) {
 });
 
 Meteor.publish('products', function(userId, teamIds) {
-  return Products.find({teamId: {$in: teamIds}});
+  return Products.find({
+    teamId: {$in: teamIds}
+  });
 });
 
 Meteor.publish('errors', function(userId) {
