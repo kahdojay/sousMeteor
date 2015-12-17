@@ -68,6 +68,7 @@ Meteor.publish('teams-users', function(userId, teamIds){
       lastName: 1,
       username: 1,
       superUser: 1,
+      imageUrl: 1,
     }
   });
 }.bind(this));
