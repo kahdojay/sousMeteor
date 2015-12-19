@@ -117,3 +117,15 @@ Meteor.publish('restricted', function(phoneNumber) {
   });
   return users;
 });
+
+Meteor.publish('settings', function(userId) {
+  var userSettings = Settings.findOne({userId: userId})
+  if(!userSettings){
+    Settings.insert({userId: userId});
+  } else {
+    Settings.update({userId: userId}, {$set:{
+      lastSubscribedAt: (new Date()).toISOString(),
+    }})
+  }
+  return Settings.find({userId: userId});
+});
