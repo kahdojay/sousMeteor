@@ -44,7 +44,7 @@ function filterUserIds(userId, teamsUsersIds){
 }
 
 Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
-  // TODO: Should we just subscribe to all teams instead of the current one?
+  Meteor.call('updateInstallation', userId, {"badge": 0});
   if(sinceCreatedAt === undefined){
     sinceCreatedAt = (new Date()).toISOString();
   }
@@ -116,4 +116,16 @@ Meteor.publish('restricted', function(phoneNumber) {
     }
   });
   return users;
+});
+
+Meteor.publish('settings', function(userId) {
+  var userSettings = Settings.findOne({userId: userId})
+  if(!userSettings){
+    Settings.insert({userId: userId});
+  } else {
+    Settings.update({userId: userId}, {$set:{
+      lastSubscribedAt: (new Date()).toISOString(),
+    }})
+  }
+  return Settings.find({userId: userId});
 });
