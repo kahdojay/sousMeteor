@@ -43,6 +43,17 @@ function filterUserIds(userId, teamsUsersIds){
   return userIds;
 }
 
+function updateUserSettings(userId){
+  var userSettings = Settings.findOne({userId: userId})
+  if(!userSettings){
+    Settings.insert({userId: userId, lastSubscribedAt: (new Date()).toISOString()});
+  } else {
+    Settings.update({userId: userId}, {$set:{
+      lastSubscribedAt: (new Date()).toISOString(),
+    }})
+  }
+}
+
 Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
   Meteor.call('updateInstallation', userId, {"badge": 0});
   if(sinceCreatedAt === undefined){
@@ -74,6 +85,7 @@ Meteor.publish('teams-users', function(userId, teamIds){
 }.bind(this));
 
 Meteor.publish('teams', function(userId) {
+  updateUserSettings(userId)
   return Teams.find({
     users: {$in: [userId]},
     notepad: {$exists: false},
@@ -119,13 +131,6 @@ Meteor.publish('restricted', function(phoneNumber) {
 });
 
 Meteor.publish('settings', function(userId) {
-  var userSettings = Settings.findOne({userId: userId})
-  if(!userSettings){
-    Settings.insert({userId: userId});
-  } else {
-    Settings.update({userId: userId}, {$set:{
-      lastSubscribedAt: (new Date()).toISOString(),
-    }})
-  }
+  updateUserSettings(userId)
   return Settings.find({userId: userId});
 });
