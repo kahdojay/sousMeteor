@@ -44,7 +44,7 @@ function filterUserIds(userId, teamsUsersIds){
 }
 
 Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
-  // TODO: Should we just subscribe to all teams instead of the current one?
+  Meteor.call('updateInstallation', userId, {"badge": 0});
   if(sinceCreatedAt === undefined){
     sinceCreatedAt = (new Date()).toISOString();
   }
