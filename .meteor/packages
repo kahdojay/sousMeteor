@@ -32,3 +32,4 @@ ongoworks:bunyan-logger
 meteorhacks:npm
 
 npm-container
+meteorhacks:aggregate
