@@ -48,6 +48,11 @@
     Meteor.call('importProducts', productJsonUrl, teamId);
     Meteor.call('importPurveyors', purveyorJsonUrl, teamId);
 
+    # examples
+    # Meteor.call('importTeams', "https://sheetsu.com/apis/816ed77a");
+    # Meteor.call('importUsers', "https://sheetsu.com/apis/452f3fd5");
+    # Meteor.call('importPurveyors', "https://sheetsu.com/apis/06d066f5");
+
 ### Quick load for debugging:
 
     npm run start-development

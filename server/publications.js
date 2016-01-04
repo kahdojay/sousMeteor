@@ -55,19 +55,19 @@ function updateUserSettings(userId){
 }
 
 Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
-  Meteor.call('updateInstallation', userId, {"badge": 0});
+  // Meteor.call('updateInstallation', userId, {"badge": 0});
   if(sinceCreatedAt === undefined){
     sinceCreatedAt = (new Date()).toISOString();
   }
-  var messageQuery = {
+  var messagesQuery = {
     teamId: teamId,
     createdAt: { $gte: sinceCreatedAt }
   };
-  var messageOptions = {
+  var messagesOptions = {
     sort: {teamId: 1, createdAt: -1}
   };
-  // console.log('SUBSCRIBE TO MESSAGES FOR: ', userId, ' USING: ', messageQuery, messageOptions);
-  return Messages.find(messageQuery, messageOptions);
+  // console.log('SUBSCRIBE TO MESSAGES FOR: ', userId, ' USING: ', messagesQuery, messagesOptions);
+  return Messages.find(messagesQuery, messagesOptions);
 }.bind(this));
 
 Meteor.publish('teams-users', function(userId, teamIds){
@@ -112,7 +112,18 @@ Meteor.publish('errors', function(userId) {
 
 Meteor.publish('orders', function(userId, teamIds) {
   return Orders.find({teamId: {$in: teamIds}});
-})
+});
+
+Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
+  if(sinceCreatedAt === undefined){
+    sinceCreatedAt = (new Date()).toISOString();
+  }
+  var cartItemQuery = {
+    teamId: {$in: teamIds},
+    createdAt: { $gte: sinceCreatedAt }
+  };
+  return CartItems.find(cartItemQuery);
+});
 
 Meteor.publish('restricted', function(phoneNumber) {
   Meteor.users.update({username: phoneNumber}, {$set: {
