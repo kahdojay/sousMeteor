@@ -102,7 +102,7 @@ Template:
                               <td class="order-details-table">
                                 <table class="twelve columns">
                                   <tr class="order-header last">
-                                    <th class="center">Name (ID)</th>
+                                    <th class="center">Name</th>
                                     <th class="center">Amount</th>
                                     <th class="center">Notes</th>
                                   </tr>
