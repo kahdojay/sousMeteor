@@ -3,11 +3,11 @@
     "slides": [{
       "key": "slide1",
       "text": "Use Sous to place an order to your suppliers...",
-      "uri": ""
+      "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1.png"
     }, {
       "key": "slide2",
       "text": "...Sous sends the order and notifies your team in the app!",
-      "uri": ""
+      "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2.png"
     }],
     "slidesConfig": {
       "lastSlideButtonText": "Let's Get Started!"
