@@ -1,16 +1,24 @@
 {
   "onboardingSettings" : {
     "slides": [{
-      "key": "slide1",
-      "text": "Use Sous to place an order to your suppliers...",
-      "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1.png"
+      "key": "onboarding1",
+      "text": "",
+      "org_text": "Use Sous to place an order to your suppliers...",
+      "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1-large.png"
     }, {
-      "key": "slide2",
-      "text": "...Sous sends the order and notifies your team in the app!",
-      "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2.png"
+      "key": "onboarding2",
+      "text": "",
+      "org_text": "...Sous sends the order and notifies your team in the app!",
+      "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2-large.png"
     }],
     "slidesConfig": {
-      "lastSlideButtonText": "Let's Get Started!"
+      "showSkip": false,
+      "autoplay": false,
+      "lastSlideButton": {
+        "label": "Let's Get Started!",
+        "bkgColor": "",
+        "loadDelay": 1000
+      }
     }
   }
 }
