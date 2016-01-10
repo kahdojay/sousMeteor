@@ -13,6 +13,7 @@
     }],
     "slidesConfig": {
       "showSkip": false,
+      "loop": false,
       "autoplay": false,
       "lastSlideButton": {
         "label": "Let's Get Started!",
