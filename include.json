@@ -1,7 +1,33 @@
 {
-  "version": "1.4.0",
-  "build": 2,
+  "version": "1.5.0",
+  "build": "4",
   "engines": {
     "node": "0.10.40"
+  },
+  "config": {
+    "onboardingSettings" : {
+      "slides": [{
+        "key": "onboarding1",
+        "text": "",
+        "org_text": "Use Sous to place an order to your suppliers...",
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1-large.png"
+      }, {
+        "key": "onboarding2",
+        "text": "",
+        "org_text": "...Sous sends the order and notifies your team in the app!",
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2-large.png"
+      }],
+      "slidesConfig": {
+        "showSkip": false,
+        "loop": false,
+        "autoplay": false,
+        "lastSlideButton": {
+          "label": "Let's Get Started!",
+          "bkgColor": "",
+          "loadDelay": 1000
+        }
+      }
+    }
   }
+
 }
