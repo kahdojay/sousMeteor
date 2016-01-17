@@ -122,7 +122,8 @@ Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
   }
   var cartItemQuery = {
     teamId: {$in: teamIds},
-    createdAt: { $gte: sinceCreatedAt }
+    createdAt: { $gte: sinceCreatedAt },
+    updatedAt: (new Date()).toISOString(),
   };
   return CartItems.find(cartItemQuery);
 });
