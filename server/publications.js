@@ -80,6 +80,8 @@ Meteor.publish('teams-users', function(userId, teamIds){
       username: 1,
       superUser: 1,
       imageUrl: 1,
+      username: 1,
+      email: 1,
     }
   });
 }.bind(this));

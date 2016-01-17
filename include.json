@@ -5,6 +5,10 @@
     "node": "0.10.40"
   },
   "config": {
+    "supportSettings": {
+      "phoneNumber": "",
+      "emailAddress": "sous@sousapp.com"
+    },
     "onboardingSettings" : {
       "slides": [{
         "key": "onboarding1",
