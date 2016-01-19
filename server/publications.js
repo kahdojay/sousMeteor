@@ -82,6 +82,7 @@ Meteor.publish('teams-users', function(userId, teamIds){
       imageUrl: 1,
       username: 1,
       email: 1,
+      updatedAt: 1,
     }
   });
 }.bind(this));
