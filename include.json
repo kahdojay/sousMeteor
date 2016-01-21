@@ -1,6 +1,6 @@
 {
   "version": "1.5.0",
-  "build": "11",
+  "build": "12",
   "engines": {
     "node": "0.10.40"
   },
@@ -13,15 +13,18 @@
       "slides": [{
         "key": "onboarding1",
         "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1-large.png?cb=160119"
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1-large.png?cb=160119",
+        "backgroundColor": "#208DE1"
       }, {
         "key": "onboarding2",
         "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2-large.png?cb=160119"
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2-large.png?cb=160119",
+        "backgroundColor": "#208DE1"
       }, {
         "key": "onboarding3",
         "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding3-large.png?cb=160119"
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding3-large.png?cb=160119",
+        "backgroundColor": "#208DE1"
       }],
       "slidesConfig": {
         "showSkip": false,
@@ -29,7 +32,8 @@
         "autoplay": false,
         "lastSlideButton": {
           "label": "Let's Get Started!",
-          "bkgColor": "",
+          "backgroundColor": "",
+          "textColor": "",
           "loadDelay": 1000
         }
       }
