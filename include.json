@@ -1,21 +1,30 @@
 {
   "version": "1.5.0",
-  "build": "4",
+  "build": "12",
   "engines": {
     "node": "0.10.40"
   },
   "config": {
+    "supportSettings": {
+      "phoneNumber": "",
+      "emailAddress": "sous@sousapp.com"
+    },
     "onboardingSettings" : {
       "slides": [{
         "key": "onboarding1",
         "text": "",
-        "org_text": "Use Sous to place an order to your suppliers...",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1-large.png"
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1-large.png?cb=160119",
+        "backgroundColor": "#208DE1"
       }, {
         "key": "onboarding2",
         "text": "",
-        "org_text": "...Sous sends the order and notifies your team in the app!",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2-large.png"
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2-large.png?cb=160119",
+        "backgroundColor": "#208DE1"
+      }, {
+        "key": "onboarding3",
+        "text": "",
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding3-large.png?cb=160119",
+        "backgroundColor": "#208DE1"
       }],
       "slidesConfig": {
         "showSkip": false,
@@ -23,11 +32,15 @@
         "autoplay": false,
         "lastSlideButton": {
           "label": "Let's Get Started!",
-          "bkgColor": "",
+          "backgroundColor": "",
+          "textColor": "",
           "loadDelay": 1000
         }
       }
     }
+  },
+  "dependencies": {
+    "aguid": "^1.0.4",
+    "slug": "^0.9.1"
   }
-
 }

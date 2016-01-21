@@ -80,6 +80,9 @@ Meteor.publish('teams-users', function(userId, teamIds){
       username: 1,
       superUser: 1,
       imageUrl: 1,
+      username: 1,
+      email: 1,
+      updatedAt: 1,
     }
   });
 }.bind(this));
@@ -120,7 +123,10 @@ Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
   }
   var cartItemQuery = {
     teamId: {$in: teamIds},
-    createdAt: { $gte: sinceCreatedAt }
+    $or: [
+      {createdAt: { $gte: sinceCreatedAt }},
+      {updatedAt: { $gte: (new Date()).toISOString() }},
+    ]
   };
   return CartItems.find(cartItemQuery);
 });
