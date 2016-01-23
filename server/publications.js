@@ -132,11 +132,11 @@ Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
 });
 
 Meteor.publish('restricted', function(phoneNumber) {
-  Meteor.users.update({username: phoneNumber}, {$set: {
-    smsToken: null,
-    smsSent: false,
-    smsVerified: false,
-  }});
+  // Meteor.users.update({username: phoneNumber}, {$set: {
+  //   smsToken: null,
+  //   smsSent: false,
+  //   smsVerified: false,
+  // }});
   var users = Meteor.users.find({username: phoneNumber},{
     fields: {
       smsToken: 0,
