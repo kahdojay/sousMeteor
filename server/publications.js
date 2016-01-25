@@ -16,7 +16,7 @@ function getTeamsUsersIds(teamIds) {
 function filterUserIds(userId, teamsUsersIds){
   var currentUser = Meteor.users.findOne({_id: userId},{fields:{superUser:1}});
   var teamsUsers = Meteor.users.find({
-    _id: {$in: Object.keys(teamsUsersIds)}
+    _id: {$in: teamsUsersIds}
   }, {
     fields: {
       _id: 1,
@@ -70,8 +70,7 @@ Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
   return Messages.find(messagesQuery, messagesOptions);
 }.bind(this));
 
-Meteor.publish('teams-users', function(userId, teamIds){
-  var teamsUsersIds = getTeamsUsersIds(teamIds);
+Meteor.publish('teams-users', function(userId, teamsUsersIds){
   var userIds = filterUserIds(userId, teamsUsersIds);
   return Meteor.users.find({
     _id: {$in: userIds},
