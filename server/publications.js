@@ -73,7 +73,9 @@ Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
 Meteor.publish('teams-users', function(userId, teamIds){
   var teamsUsersIds = getTeamsUsersIds(teamIds);
   var userIds = filterUserIds(userId, teamsUsersIds);
-  return Meteor.users.find({_id: {$in: userIds}}, {
+  return Meteor.users.find({
+    _id: {$in: userIds},
+  }, {
     fields: {
       firstName: 1,
       lastName: 1,
@@ -83,6 +85,7 @@ Meteor.publish('teams-users', function(userId, teamIds){
       username: 1,
       email: 1,
       updatedAt: 1,
+      imagedChangedAt: 1,
     }
   });
 }.bind(this));
