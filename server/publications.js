@@ -116,7 +116,7 @@ Meteor.publish('errors', function(userId) {
 });
 
 Meteor.publish('orders', function(userId, teamIds) {
-  return Orders.find({teamId: {$in: teamIds}});
+  return Orders.find({teamId: {$in: teamIds}},{sort:{orderedAt: -1}});
 });
 
 Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
@@ -130,7 +130,7 @@ Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
       {updatedAt: { $gte: (new Date()).toISOString() }},
     ]
   };
-  return CartItems.find(cartItemQuery);
+  return CartItems.find(cartItemQuery, {sort:{createdAt: -1}});
 });
 
 Meteor.publish('restricted', function(phoneNumber) {
