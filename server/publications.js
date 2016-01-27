@@ -70,7 +70,10 @@ Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
   return Messages.find(messagesQuery, messagesOptions);
 }.bind(this));
 
-Meteor.publish('teams-users', function(userId, teamsUsersIds){
+Meteor.publish('teams-users', function(userId, teamIds, teamsUsersIds){
+  if(teamsUsersIds === undefined){
+    teamsUsersIds = getTeamsUsersIds(teamIds);
+  }
   var userIds = filterUserIds(userId, teamsUsersIds);
   return Meteor.users.find({
     _id: {$in: userIds},
