@@ -71,8 +71,9 @@ Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
 }.bind(this));
 
 Meteor.publish('teams-users', function(userId, teamIds, teamsUsersIds){
-  if(teamsUsersIds === undefined){
-    teamsUsersIds = getTeamsUsersIds(teamIds);
+  if(!teamsUsersIds){
+    teamsUsersIdsMap = getTeamsUsersIds(teamIds);
+    teamsUsersIds = Object.keys(teamsUsersIdsMap);
   }
   var userIds = filterUserIds(userId, teamsUsersIds);
   return Meteor.users.find({
