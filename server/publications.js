@@ -70,28 +70,29 @@ Meteor.publish('messages', function(userId, teamId, sinceCreatedAt) {
   return Messages.find(messagesQuery, messagesOptions);
 }.bind(this));
 
-Meteor.publish('teams-users', function(userId, teamIds, teamsUsersIds){
-  if(!teamsUsersIds){
-    teamsUsersIdsMap = getTeamsUsersIds(teamIds);
-    teamsUsersIds = Object.keys(teamsUsersIdsMap);
-  }
-  var userIds = filterUserIds(userId, teamsUsersIds);
-  return Meteor.users.find({
-    _id: {$in: userIds},
-  }, {
-    fields: {
-      firstName: 1,
-      lastName: 1,
-      username: 1,
-      superUser: 1,
-      imageUrl: 1,
-      username: 1,
-      email: 1,
-      updatedAt: 1,
-      imagedChangedAt: 1,
-    }
-  });
-}.bind(this));
+// Meteor.publish('teams-users', function(userId, teamIds, teamsUsersIds){
+//   if(!teamsUsersIds){
+//     teamsUsersIdsMap = getTeamsUsersIds(teamIds);
+//     teamsUsersIds = Object.keys(teamsUsersIdsMap);
+//   }
+//   // var userIds = filterUserIds(userId, teamsUsersIds);
+//   var userIds = teamsUsersIds
+//   return Meteor.users.find({
+//     _id: {$in: teamsUsersIds},
+//   }, {
+//     fields: {
+//       firstName: 1,
+//       lastName: 1,
+//       username: 1,
+//       superUser: 1,
+//       imageUrl: 1,
+//       username: 1,
+//       email: 1,
+//       updatedAt: 1,
+//       imagedChangedAt: 1,
+//     }
+//   });
+// }.bind(this));
 
 Meteor.publish('teams', function(userId) {
   updateUserSettings(userId)
