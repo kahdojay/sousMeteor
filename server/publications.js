@@ -120,7 +120,12 @@ Meteor.publish('errors', function(userId) {
 });
 
 Meteor.publish('orders', function(userId, teamIds) {
-  return Orders.find({teamId: {$in: teamIds}},{sort:{orderedAt: -1}});
+  return Orders.find({
+    teamId: {$in: teamIds},
+    orderedAt: {$gte: (new Date()).toISOString()},
+  },{
+    sort:{orderedAt: -1}
+  });
 });
 
 Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
@@ -128,11 +133,8 @@ Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
     sinceCreatedAt = (new Date()).toISOString();
   }
   var cartItemQuery = {
-    teamId: {$in: teamIds},
-    $or: [
-      {createdAt: { $gte: sinceCreatedAt }},
-      {updatedAt: { $gte: (new Date()).toISOString() }},
-    ]
+    teamId: { $in: teamIds},
+    updatedAt: { $gte: (new Date()).toISOString() },
   };
   return CartItems.find(cartItemQuery, {sort:{createdAt: -1}});
 });
