@@ -1,12 +1,12 @@
 {
-  "version": "1.5.5",
+  "version": "1.6.0",
   "build": "1",
   "engines": {
     "node": "0.10.40"
   },
   "config": {
     "supportSettings": {
-      "phoneNumber": "",
+      "phoneNumber": "6465986424",
       "emailAddress": "sous@sousapp.com"
     },
     "onboardingSettings" : {
