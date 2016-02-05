@@ -111,7 +111,8 @@ Meteor.publish('categories', function(userId, teamIds) {
 
 Meteor.publish('products', function(userId, teamIds) {
   return Products.find({
-    teamId: {$in: teamIds}
+    teamId: {$in: teamIds},
+    updatedAt: {$gte: (new Date()).toISOString()},
   });
 });
 
