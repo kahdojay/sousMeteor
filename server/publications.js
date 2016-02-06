@@ -109,34 +109,44 @@ Meteor.publish('categories', function(userId, teamIds) {
   return Categories.find({teamId: {$in: teamIds}});
 });
 
-Meteor.publish('products', function(userId, teamIds) {
-  return Products.find({
+Meteor.publish('products', function(userId, teamIds, onlyNew) {
+  var query = {
     teamId: {$in: teamIds},
-    // updatedAt: {$gte: (new Date()).toISOString()},
-  });
+  }
+  if(onlyNew) {
+    query.updatedAt = {$gte: (new Date()).toISOString()}
+  }
+  return Products.find(query);
 });
 
 Meteor.publish('errors', function(userId) {
   return Errors.find({userId: userId});
 });
 
-Meteor.publish('orders', function(userId, teamIds) {
-  return Orders.find({
+Meteor.publish('orders', function(userId, teamIds, onlyNew) {
+  var query = {
     teamId: {$in: teamIds},
-    // orderedAt: {$gte: (new Date()).toISOString()},
-  },{
+  }
+  var queryOptions = {
     sort:{orderedAt: -1}
-  });
+  }
+
+  if(onlyNew){
+    query.orderedAt = {$gte: (new Date()).toISOString()}
+  }
+
+  return Orders.find(query,queryOptions);
 });
 
-Meteor.publish('cart-items', function(userId, teamIds, sinceCreatedAt) {
-  if(sinceCreatedAt === undefined){
-    sinceCreatedAt = (new Date()).toISOString();
-  }
+Meteor.publish('cart-items', function(userId, teamIds, deprecate, onlyNew) {
   var cartItemQuery = {
     teamId: { $in: teamIds},
-    // updatedAt: { $gte: (new Date()).toISOString() },
   };
+
+  if(onlyNew){
+    cartItemQuery.updatedAt = { $gte: (new Date()).toISOString() }
+  }
+
   return CartItems.find(cartItemQuery, {sort:{createdAt: -1}});
 });
 
