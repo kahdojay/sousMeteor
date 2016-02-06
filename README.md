@@ -53,6 +53,7 @@
     # Meteor.call('importTeams', "https://sheetsu.com/apis/816ed77a");
     # Meteor.call('importUsers', "https://sheetsu.com/apis/452f3fd5");
     # Meteor.call('importPurveyors', "https://sheetsu.com/apis/06d066f5");
+    # Meteor.call('importProducts', "https://sheetsu.com/apis/d1d0cbb3");
 
 ### Quick load for debugging:
 
