@@ -13,17 +13,17 @@
       "slides": [{
         "key": "onboarding1",
         "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding1-large.png?cb=160119",
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding1-large.png?cb=16020722",
         "backgroundColor": "#208DE1"
       }, {
         "key": "onboarding2",
         "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding2-large.png?cb=160119",
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding2-large.png?cb=16020722",
         "backgroundColor": "#208DE1"
       }, {
         "key": "onboarding3",
         "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/onboarding3-large.png?cb=160119",
+        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding3-large.png?cb=16020722",
         "backgroundColor": "#208DE1"
       }],
       "slidesConfig": {
