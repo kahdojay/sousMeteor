@@ -154,7 +154,7 @@ Meteor.publish('restricted', function(userId) {
   var query = {_id: userId}
   var user = Meteor.users.findOne(query);
   if(!user){
-    var userPkg = Meteor.call('getUserByPhoneNumber', phoneNumber);
+    var userPkg = Meteor.call('getUserByPhoneNumber', userId);
     query = {_id: userPkg.userId}
   }
 
