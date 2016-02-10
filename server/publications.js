@@ -150,11 +150,14 @@ Meteor.publish('cart-items', function(userId, teamIds, deprecate, onlyNew) {
   return CartItems.find(cartItemQuery, {sort:{createdAt: -1}});
 });
 
-Meteor.publish('restricted', function(phoneNumber, userId) {
-  var query = {username: phoneNumber}
-  if(userId){
-    query = {_id: userId}
+Meteor.publish('restricted', function(userId) {
+  var query = {_id: userId}
+  var user = Meteor.users.findOne(query);
+  if(!user){
+    var userPkg = Meteor.call('getUserByPhoneNumber', phoneNumber);
+    query = {_id: userPkg.userId}
   }
+
   var queryOptions = {
     fields: {
       smsToken: 0,
@@ -162,7 +165,7 @@ Meteor.publish('restricted', function(phoneNumber, userId) {
       services: 0
     }
   };
-  
+
   var users = Meteor.users.find(query,queryOptions);
   return users;
 });
