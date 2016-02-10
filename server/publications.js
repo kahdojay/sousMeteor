@@ -150,19 +150,20 @@ Meteor.publish('cart-items', function(userId, teamIds, deprecate, onlyNew) {
   return CartItems.find(cartItemQuery, {sort:{createdAt: -1}});
 });
 
-Meteor.publish('restricted', function(phoneNumber) {
-  // Meteor.users.update({username: phoneNumber}, {$set: {
-  //   smsToken: null,
-  //   smsSent: false,
-  //   smsVerified: false,
-  // }});
-  var users = Meteor.users.find({username: phoneNumber},{
+Meteor.publish('restricted', function(phoneNumber, userId) {
+  var query = {username: phoneNumber}
+  if(userId){
+    query = {_id: userId}
+  }
+  var queryOptions = {
     fields: {
       smsToken: 0,
       password: 0,
       services: 0
     }
-  });
+  };
+  
+  var users = Meteor.users.find(query,queryOptions);
   return users;
 });
 
