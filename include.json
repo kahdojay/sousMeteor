@@ -1,6 +1,6 @@
 {
   "version": "1.6.3",
-  "build": "6",
+  "build": "7",
   "engines": {
     "node": "0.10.40"
   },
@@ -11,11 +11,6 @@
     },
     "onboardingSettings" : {
       "slides": [{
-        "key": "onboarding1",
-        "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding1-large.png?cb=16020722",
-        "backgroundColor": "#208DE1"
-      }, {
         "key": "onboarding2",
         "text": "",
         "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding2-large.png?cb=16020722",
@@ -36,6 +31,14 @@
           "textColor": "",
           "loadDelay": 1000
         }
+      },
+      "bkp":{
+        "slides": [{
+          "key": "onboarding1",
+          "text": "",
+          "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding1-large.png?cb=16020722",
+          "backgroundColor": "#208DE1"
+        }]
       }
     }
   },
