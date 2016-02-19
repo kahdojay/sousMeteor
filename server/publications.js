@@ -95,14 +95,21 @@ Meteor.publish('teams-users', function(userId, teamIds, teamsUsersIds){
 
 Meteor.publish('teams', function(userId) {
   updateUserSettings(userId)
-  return Teams.find({
+  var allTeams = Teams.find({
     users: {$in: [userId]},
     notepad: {$exists: false},
-  });
+  })
+  return allTeams;
+  // var allTeamIds = allTeams.map(function(team){
+  //   return team._id;
+  // })
+  // return Teams.find({_id: {$in: allTeamIds}});
 });
 
 Meteor.publish('purveyors', function(userId, teamIds) {
-  return Purveyors.find({teamId: {$in: teamIds}});
+  var allPurveyors = Purveyors.find({teamId: {$in: teamIds}});
+  // console.log('userId: ', userId, ' teamIds: ', teamIds, ' count:', allPurveyors.count())
+  return allPurveyors;
 });
 
 Meteor.publish('categories', function(userId, teamIds) {
