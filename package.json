@@ -27,6 +27,7 @@
   "dependencies": {
     "aguid": "^1.0.4",
     "bunyan": "^1.5.1",
-    "slug": "^0.9.1"
+    "slug": "^0.9.1",
+    "phaxio": "0.0.6"
   }
 }
