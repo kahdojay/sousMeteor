@@ -58,6 +58,8 @@ Template:
                           <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts</p>
                           <p class="center">to ensure all incoming orders are received.</p>
                           <br>
+                          <p class="center purveyor-detail-header">Please reply all to confirm order receipt.</p>
+                          <br>
                         </tr>
                         <tr>
                           <td class="center">
@@ -127,6 +129,8 @@ Template:
                     </td>
                   </tr>
                 </table>
+                <br>
+                <p class="center purveyor-detail-header">Please reply all to confirm order receipt.</p>
                 <hr>
 
                 <div class="footer">
