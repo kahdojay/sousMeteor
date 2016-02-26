@@ -1,6 +1,6 @@
 {
   "name": "sous-meteor",
-  "version": "1.6.3",
+  "version": "1.7.0",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -27,6 +27,7 @@
   "dependencies": {
     "aguid": "^1.0.4",
     "bunyan": "^1.5.1",
-    "slug": "^0.9.1"
+    "slug": "^0.9.1",
+    "phaxio": "0.0.6"
   }
 }
