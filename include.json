@@ -1,6 +1,6 @@
 {
-  "version": "1.6.3",
-  "build": "7",
+  "version": "1.7.0",
+  "build": "4",
   "engines": {
     "node": "0.10.40"
   },
