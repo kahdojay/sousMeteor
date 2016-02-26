@@ -1,7 +1,7 @@
 Meteor.methods({
   faxOrder: function(options) {
     log.debug('sending Phaxio to: ', options.number)
-    var Phaxio = Meteor.npmRequire('phaxio')
+    var Phaxio = Npm.require('phaxio');
     var phaxio = new Phaxio(Meteor.settings.PHAXIO.KEY, Meteor.settings.PHAXIO.SECRET)
     var cb = function(err, data) {
       if (err) {

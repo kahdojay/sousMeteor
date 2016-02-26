@@ -29,7 +29,7 @@ mrt:moment-timezone
 hiukim:slack-client
 georgediab:slack-notify
 ongoworks:bunyan-logger
-meteorhacks:npm
 
-npm-container
 meteorhacks:aggregate
+
+
