@@ -1,6 +1,6 @@
 {
   "version": "1.7.0",
-  "build": "5",
+  "build": "7",
   "engines": {
     "node": "0.10.40"
   },
@@ -44,6 +44,9 @@
   },
   "dependencies": {
     "aguid": "^1.0.4",
+    "base64-string-s3": "https://github.com/sousapp/base64-string-s3/archive/37d080591c732d564347e6bb72bf9d97baedddd3.tar.gz",
+    "bunyan": "^1.5.1",
+    "phaxio": "0.0.6",
     "slug": "^0.9.1"
   }
 }
