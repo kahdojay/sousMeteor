@@ -1,15 +1,15 @@
-Template Name: sous-mobile-send-order
+Template Name: sous-mobile-send-demo-order
 
 Subject:
 
-{{PURVEYOR_NAME}} • Order Received from {{BUYER_NAME}} on {{ORDER_DATE}}
+[DEMO] {{PURVEYOR_NAME}} • Order Received from {{BUYER_NAME}} on {{ORDER_DATE}}
 
 Template:
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <meta name="viewport" content="width=device-width"/>
 </head>
 <body>
@@ -54,12 +54,24 @@ Template:
                     <td class="wrapper last">
                       <table class="twelve columns">
                         <tr>
-                          <p class="center">{{PURVEYOR_NAME}}, {{BUYER_NAME}} placed an order at {{ORDER_TIME}} on {{ORDER_DATE}}.</p>
-                          <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts</p>
-                          <p class="center">to ensure all incoming orders are received.</p>
-                          <br>
-                          <p class="center purveyor-detail-header">Please reply all to confirm order receipt.</p>
-                          <br>
+                          <td class="center">
+                          	<div class="demo">
+                           		THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
+                                <br>
+                                <br>
+                                Thanks for checking out Sous.  Reply to this e-mail if you’d like to set up your order guide and get started using Sous today.
+                                <br>
+                                Hope to see you soon!
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="center">
+                          	<p class="center">{{PURVEYOR_NAME}}, {{BUYER_NAME}} placed an order at {{ORDER_TIME}} on {{ORDER_DATE}}.</p>
+                          	<p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts</p>
+                          	<p class="center">to ensure all incoming orders are received.</p>
+                          	<br>
+                          </td>
                         </tr>
                         <tr>
                           <td class="center">
@@ -70,11 +82,11 @@ Template:
                         </tr>
                         <tr>
                           <td class="center">
-                            <h1 class="purveyor-name center">{{PURVEYOR_NAME}}</h1>
+                            <h1 class="purveyor-name center">{{BUYER_NAME}}</h1>
                             <span class="purveyor-detail-header">Contacts</span>
-                            {{#each BUYER_CONTACTS}}
-                                <p class="center">{{contactInfo}}</p>
-                            {{/each}}
+                              {{#each BUYER_CONTACTS}}
+                                  <p class="center">{{contactInfo}}</p>
+                              {{/each}}
                             <br>
                             <span class="purveyor-detail-header">Address</span>
                             <p class="center">{{BUYER_ADDRESS}}</p>
@@ -106,6 +118,9 @@ Template:
                                   <tr class="order-header last">
                                     <th class="center">Name</th>
                                     <th class="center">Amount</th>
+                                    {{#if SHOW_PRODUCT_PRICES}}
+                                    <th class="center">Price</th>
+                                    {{/if}}
                                     <th class="center">Notes</th>
                                   </tr>
                                   {{#each ORDER_PRODUCTS}}
@@ -117,6 +132,11 @@ Template:
                                     <td class="amount center">
                                       {{quantity}} {{unit}}
                                     </td>
+                                    {{#if showProductPrices}}
+                                    <td class="price center">
+                                      {{price}}
+                                    </td>
+                                    {{/if}}
                                     <td class="notes center">
                                       {{#if notes}}{{notes}}{{/if}}
                                     </td>
@@ -129,9 +149,30 @@ Template:
                     </td>
                   </tr>
                 </table>
-                <br>
-                <p class="center purveyor-detail-header">Please reply all to confirm order receipt.</p>
                 <hr>
+
+          <table class="container">
+            <tr>
+              <td>
+                <table class="row">
+                  <tr>
+                    <td class="wrapper last">
+                      <table class="twelve columns">
+                          <tr>
+                            <td class="center">
+                              <div class="demo">
+                                THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
+                              </div>
+                            </td>
+                          </tr>
+                      </table>
+
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
 
                 <div class="footer">
                   <p>Order submitted by <a href="http://www.sousapp.com" target="_blank">Sous: A Platform for Chefs</a></p>
@@ -189,6 +230,8 @@ Template:
   }
 
   .amount { width: 20% !important }
+
+  .price { width: 15% !important }
 
   .notes { width: 27.5% !important }
 
@@ -926,6 +969,14 @@ Template:
       .callout .panel {
         background: #ECF8FF;
         border-color: #b9e5ff;
+      }
+
+      .demo {
+        background: #F7FDA0;
+        border: 1px solid #D6944F;
+        font-size: 16px;
+        padding: 5px;
+        margin: 10px;
       }
 
       .header {
