@@ -191,18 +191,25 @@ Template:
 
   .product-id { width: 15% !important }
 
+
+  {{#if SHOW_PRODUCT_PRICES}}
   .order-item-name {
-    width: 37.5% !important;
+    width: 32.5% !important;
     font-weight: bold;
   }
-
-  .amount {
-    width: 20% !important;
-    white-space: nowrap;
-  }
-
   .price {
     width: 15% !important;
+    white-space: nowrap;
+  }
+  {{else}}
+  .order-item-name {
+    width: 47.5% !important;
+    font-weight: bold;
+  }
+  {{/if}}
+
+  .amount {
+    width: 25% !important;
     white-space: nowrap;
   }
 
@@ -797,20 +804,29 @@ Template:
 
   @media only screen and (max-width: 600px) {
 
+    {{#if SHOW_PRODUCT_PRICES}}
     .order-item-name {
-      width: 25% !important;
+      width: 35% !important;
       font-weight: bold;
     }
-
+    .price {
+      width: 20% !important;
+      white-space: nowrap;
+    }
+    .amount {
+      width: 20% !important;
+      white-space: nowrap;
+    }
+    {{else}}
+    .order-item-name {
+      width: 50% !important;
+      font-weight: bold;
+    }
     .amount {
       width: 25% !important;
       white-space: nowrap;
     }
-
-    .price {
-      width: 25% !important;
-      white-space: nowrap;
-    }
+    {{/if}}
 
     .notes { width: 25% !important }
 

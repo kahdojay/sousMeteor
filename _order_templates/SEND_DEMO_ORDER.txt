@@ -117,7 +117,7 @@ Template:
                                 <table class="twelve columns">
                                   <tr class="order-header last">
                                     <th class="center">Name</th>
-                                    <th class="center">Amount</th>
+                                    <th class="center">Amt</th>
                                     {{#if SHOW_PRODUCT_PRICES}}
                                     <th class="center">Price</th>
                                     {{/if}}
@@ -151,28 +151,28 @@ Template:
                 </table>
                 <hr>
 
-          <table class="container">
-            <tr>
-              <td>
-                <table class="row">
+                <table class="container">
                   <tr>
-                    <td class="wrapper last">
-                      <table class="twelve columns">
-                          <tr>
-                            <td class="center">
-                              <div class="demo">
-                                THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
-                              </div>
-                            </td>
-                          </tr>
-                      </table>
+                    <td>
+                      <table class="row">
+                        <tr>
+                          <td class="wrapper last">
+                            <table class="twelve columns">
+                                <tr>
+                                  <td class="center">
+                                    <div class="demo">
+                                      THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
+                                    </div>
+                                  </td>
+                                </tr>
+                            </table>
 
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
                 </table>
-              </td>
-            </tr>
-          </table>
 
                 <div class="footer">
                   <p>Order submitted by <a href="http://www.sousapp.com" target="_blank">Sous: A Platform for Chefs</a></p>
@@ -224,18 +224,25 @@ Template:
 
   .product-id { width: 15% !important }
 
+
+  {{#if SHOW_PRODUCT_PRICES}}
   .order-item-name {
-    width: 37.5% !important;
+    width: 32.5% !important;
     font-weight: bold;
   }
-
-  .amount {
-    width: 20% !important;
-    white-space: nowrap;
-  }
-
   .price {
     width: 15% !important;
+    white-space: nowrap;
+  }
+  {{else}}
+  .order-item-name {
+    width: 47.5% !important;
+    font-weight: bold;
+  }
+  {{/if}}
+
+  .amount {
+    width: 25% !important;
     white-space: nowrap;
   }
 
@@ -830,20 +837,29 @@ Template:
 
   @media only screen and (max-width: 600px) {
 
+    {{#if SHOW_PRODUCT_PRICES}}
     .order-item-name {
-      width: 25% !important;
+      width: 35% !important;
       font-weight: bold;
     }
-
+    .price {
+      width: 20% !important;
+      white-space: nowrap;
+    }
+    .amount {
+      width: 20% !important;
+      white-space: nowrap;
+    }
+    {{else}}
+    .order-item-name {
+      width: 50% !important;
+      font-weight: bold;
+    }
     .amount {
       width: 25% !important;
       white-space: nowrap;
     }
-
-    .price {
-      width: 25% !important;
-      white-space: nowrap;
-    }
+    {{/if}}
 
     .notes { width: 25% !important }
 
