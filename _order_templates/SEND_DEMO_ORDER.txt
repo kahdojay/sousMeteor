@@ -229,9 +229,15 @@ Template:
     font-weight: bold;
   }
 
-  .amount { width: 20% !important }
+  .amount {
+    width: 20% !important;
+    white-space: nowrap;
+  }
 
-  .price { width: 15% !important }
+  .price {
+    width: 15% !important;
+    white-space: nowrap;
+  }
 
   .notes { width: 27.5% !important }
 
@@ -305,7 +311,7 @@ Template:
   }
 
   td {
-    word-break: break-word;
+    word-break: normal;
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     hyphens: auto;
@@ -316,6 +322,10 @@ Template:
     padding: 0;
     vertical-align: top;
     text-align: left;
+  }
+
+  th {
+    white-space: nowrap;
   }
 
   hr {
@@ -819,6 +829,23 @@ Template:
   /*  Media Queries */
 
   @media only screen and (max-width: 600px) {
+
+    .order-item-name {
+      width: 25% !important;
+      font-weight: bold;
+    }
+
+    .amount {
+      width: 25% !important;
+      white-space: nowrap;
+    }
+
+    .price {
+      width: 25% !important;
+      white-space: nowrap;
+    }
+
+    .notes { width: 25% !important }
 
     table[class="body"] img {
       width: auto !important;
