@@ -97,6 +97,7 @@ if(Meteor.isServer){
     orderId: true,
     quantity: true,
     note: true,
+    quantityReceived: true,
   }
 
   APPROVED_PARSE_UPDATE_ATTRS = {
