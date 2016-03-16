@@ -53,6 +53,14 @@ Template:
                   <tr>
                     <td class="wrapper last">
                       <table class="twelve columns">
+                        {{#if DELIVERY_DATE}}
+                        <tr>
+                          <td class="center">
+                            <p class="center">Requested Delivery Date: {{DELIVERY_DATE}}</p>
+                            <hr>
+                          </td>
+                        </tr>
+                        {{/if}}
                         <tr>
                           <p class="center">{{PURVEYOR_NAME}}, {{BUYER_NAME}} placed an order at {{ORDER_TIME}} on {{ORDER_DATE}}.</p>
                           <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts</p>

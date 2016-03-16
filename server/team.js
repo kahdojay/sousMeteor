@@ -176,6 +176,7 @@ if(Meteor.isServer){
     },
 
     getTeamOrderGuide: function(teamId) {
+      log.debug("GET TEAM ORDER GUIDE - teamId: ", teamId);
       var ret = {
         purveyors: Purveyors.find({teamId: {$in: [teamId]}}).fetch(),
         categories: Categories.find({teamId: {$in: [teamId]}}).fetch(),
@@ -184,7 +185,28 @@ if(Meteor.isServer){
       return ret;
     },
 
+    getTeamBetaAccess(userId, teamId) {
+      log.debug("GET TEAM BETA ACCESS - userId: ", userId, " teamId: ", teamId);
+      var ret = {
+        meta: {
+          start: (new Date()).getTime(),
+          end: null,
+          processing: null,
+        },
+        betaAccess: {}
+      }
+
+      var betaAccess = Teams.findOne({_id: teamId},{fields:{betaAccess:1}})
+      ret.betaAccess = betaAccess.betaAccess || {}
+
+      ret.meta.end = (new Date()).getTime()
+      ret.meta.processing = ret.meta.end - ret.meta.start;
+
+      return ret;
+    },
+
     getTeamResourceInfo(userId, teamId) {
+      log.debug("GET TEAM RESOURCES - userId: ", userId, " teamId: ", teamId);
       var ret = {
         meta: {
           start: (new Date()).getTime(),

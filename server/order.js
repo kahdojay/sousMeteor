@@ -251,7 +251,24 @@ if(Meteor.isServer){
           });
 
           // Upsert order for send
-          var orderId = orderPkg.hasOwnProperty(purveyorId) === true ? orderPkg[purveyorId] : Orders._makeNewID();
+          var orderId = null
+          var purveyorOrderPkg = {}
+          var orderDeliveryDate = null;
+          if(orderPkg.hasOwnProperty(purveyorId) === true){
+            purveyorOrderPkg = orderPkg[purveyorId]
+            if(purveyorOrderPkg.hasOwnProperty('orderId') === true){
+              orderId = purveyorOrderPkg.orderId;
+            } else {
+              // backward compatibility
+              orderId = purveyorOrderPkg;
+            }
+            if(purveyorOrderPkg.hasOwnProperty('deliveryDate') === true){
+              orderDeliveryDate = purveyorOrderPkg.deliveryDate;
+            }
+          }
+          if(orderId === null){
+            orderId = Orders._makeNewID();
+          }
           var orderedAt = (new Date()).toISOString();
 
           var orderDetails = Object.assign({}, order)
@@ -268,6 +285,7 @@ if(Meteor.isServer){
                 purveyorCode: purveyor.purveyorCode,
                 orderDetails: orderDetails,
                 orderedAt: orderedAt,
+                orderDeliveryDate: orderDeliveryDate,
                 total: 0.0,
                 sent: null,
                 confirm: {
@@ -382,6 +400,10 @@ if(Meteor.isServer){
           timeZone = purveyor.timeZone;
         }
         var orderDate = moment(order.orderedAt).tz(timeZone);
+        var orderDeliveryDate = '';
+        if(order.orderDeliveryDate){
+          orderDeliveryDate = moment(order.orderDeliveryDate).tz(timeZone).format('dddd, MMMM D');
+        }
 
         // setup the order product list
         var orderProductList = []
@@ -437,6 +459,7 @@ if(Meteor.isServer){
         globalMergeVars.push({ name: 'BUYER_CITY_STATE_ZIP', content: teamCityStateZip.join('') });
         globalMergeVars.push({ name: 'ORDER_DATE', content: orderDate.format('dddd, MMMM D') });
         globalMergeVars.push({ name: 'ORDER_TIME', content: orderDate.format('h:mm A') });
+        globalMergeVars.push({ name: 'DELIVERY_DATE', content: orderDeliveryDate });
         globalMergeVars.push({ name: 'CONTACT_MAILER', content: Meteor.settings.MANDRILL.CONTACT_MAILER });
         globalMergeVars.push({ name: 'ORDER_DELIVERY_INSTRUCTIONS', content: (order.deliveryInstruction ? order.deliveryInstruction : false) });
         globalMergeVars.push({ name: 'ORDER_PRODUCTS', content: orderProductList });
@@ -650,11 +673,12 @@ if(Meteor.isServer){
               distinct_id: user._id,
               sender: `${user.firstName} ${user.lastName}`,
               orderId: orderId,
+              orderDeliveryDate: orderDeliveryDate,
               orderProductCount: Object.keys(order.orderDetails.products).length,
               showProductPrices: showProductPrices,
               orderSubTotal: order.subtotal || '',
               orderedAt: order.orderedAt,
-              orderDateTimeZoned: orderDate.format('dddd, MMMM D h:mm A'),
+              orderDateTimeZone: orderDate.format('dddd, MMMM D h:mm A'),
               teamId: order.teamId,
               teamCode: order.teamCode,
               purveyorId: order.purveyorId,

@@ -65,6 +65,14 @@ Template:
                             </div>
                           </td>
                         </tr>
+                        {{#if DELIVERY_DATE}}
+                        <tr>
+                          <td class="center">
+                            <p class="center">Requested Delivery Date: {{DELIVERY_DATE}}</p>
+                            <hr>
+                          </td>
+                        </tr>
+                        {{/if}}
                         <tr>
                           <td class="center">
                           	<p class="center">{{PURVEYOR_NAME}}, {{BUYER_NAME}} placed an order at {{ORDER_TIME}} on {{ORDER_DATE}}.</p>
@@ -85,7 +93,7 @@ Template:
                             <h1 class="purveyor-name center">{{BUYER_NAME}}</h1>
                             <span class="purveyor-detail-header">Contacts</span>
                               {{#each BUYER_CONTACTS}}
-                                  <p class="center">{{contactInfo}}</p>
+                              <p class="center">{{contactInfo}}</p>
                               {{/each}}
                             <br>
                             <span class="purveyor-detail-header">Address</span>
