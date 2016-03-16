@@ -465,11 +465,6 @@ if(Meteor.isServer){
           idx++;
         })
 
-        var showProductPrices = false;
-        if(team.hasOwnProperty('showProductPrices') === true && team.showProductPrices === true){
-          showProductPrices = true;
-        }
-
         // setup the global merge vars
         var globalMergeVars = [];
         globalMergeVars.push({ name: 'PURVEYOR_NAME', content: purveyor.name });
