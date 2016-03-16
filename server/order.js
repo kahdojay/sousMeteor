@@ -212,6 +212,21 @@ if(Meteor.isServer){
       return teamCartItems;
     },
 
+    updateCartItemProductDetails: function(cartItemsIds) {
+      log.debug("UPDATING PRODUCT DETAILS FOR: ", cartItemsIds, " cart items");
+      var cartItemsToUpdate = CartItems.find({_id: {$in: cartItemsIds}}).fetch()
+      cartItemsToUpdate.forEach(function(cartItem) {
+        var product = Products.findOne({_id: cartItem.productId})
+        CartItems.update({_id: cartItem._id}, {
+          $set: {
+            productPrice: product.price,
+            productName: product.name,
+            updatedAt: (new Date()).toISOString(),
+          }
+        })
+      })
+    },
+
     sendCartItems: function(userId, teamId, orderPkg) {
       var ret = {
         success: false,
@@ -313,6 +328,7 @@ if(Meteor.isServer){
               updatedAt: (new Date()).toISOString(),
             }
           },{ multi:true })
+          Meteor.call('updateCartItemProductDetails', cartItemsIds)
 
           // send the orders
           log.debug('INSERT: ', orderId);
@@ -376,7 +392,11 @@ if(Meteor.isServer){
         }
 
         var showProductPrices = false
-        if(team.hasOwnProperty('showProductPrices') === true && team.showProductPrices === true){
+        if(
+          team.hasOwnProperty('betaAccess') === true
+          && team.betaAccess.hasOwnProperty('showProductPrices') === true
+          && team.betaAccess.showProductPrices === true
+        ){
           showProductPrices = true
         }
 

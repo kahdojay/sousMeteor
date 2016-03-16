@@ -98,6 +98,7 @@ if(Meteor.isServer){
 
       return ret;
     },
+
     importTeams: function(url) {
       if(undefined === url){
         url = Meteor.settings.SHEETSU.TEAMS
@@ -134,10 +135,11 @@ if(Meteor.isServer){
           demoTeam = true;
         }
 
-        if(team.hasOwnProperty('showProductPrices') === true && team.showProductPrices === 'TRUE'){
-          team.showProductPrices = true;
+        if(team.hasOwnProperty('betaAccess') === true){
+          var teamBetaAccess = _.map(team.betaAccess.split(','), _.trim);
+          team.betaAccess = _.zipObject(teamBetaAccess, Array(team.betaAccess.length).fill(true));
         } else {
-          team.showProductPrices = false;
+          team.betaAccess = {};
         }
 
         Teams.update(
