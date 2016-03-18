@@ -303,6 +303,7 @@ if(Meteor.isServer){
                 orderDeliveryDate: orderDeliveryDate,
                 total: 0.0,
                 sent: null,
+                tracked: null,
                 confirm: {
                   confirmedAt: null,
                   userId: null,
@@ -652,6 +653,7 @@ if(Meteor.isServer){
             // Update order error
             Orders.update(realOrderId, { $set: {
               sent: false,
+              tracked: false,
               error: true,
               mandrillResponse: responseData,
               updatedAt: (new Date()).toISOString(),
@@ -694,6 +696,7 @@ if(Meteor.isServer){
               orderSubTotal: order.subtotal || '',
               orderedAt: order.orderedAt,
               orderDateTimeZone: orderDate.format('dddd, MMMM D h:mm A'),
+              orderType: 'mobile',
               teamId: order.teamId,
               teamCode: order.teamCode,
               purveyorId: order.purveyorId,
@@ -747,6 +750,7 @@ if(Meteor.isServer){
             // Update order sent
             Orders.update(realOrderId, { $set: {
               sent: true,
+              tracked: true,
               error: false,
               mandrillResponse: responseData,
               updatedAt: (new Date()).toISOString(),
