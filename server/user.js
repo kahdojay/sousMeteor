@@ -80,19 +80,19 @@ if(Meteor.isServer){
         notepadExists: false,
         status: null, // STATUS.USER
       }
-      //phoneNumber = sanitizeString(phoneNumber);
-      var addPlus = false
-      if(phoneNumber.substr(0,1) === '+'){
-        addPlus = true
-      }
+
+      // var addPlus = false
+      // if(phoneNumber.substr(0,1) === '+'){
+      //   addPlus = true
+      // }
       phoneNumber = phoneNumber.toString().replace(/\D/g, '');
 
       if(phoneNumber.length === 11 && phoneNumber[0] === '1'){
-        if(addPlus === true){
-          phoneNumber = `+${phoneNumber}`
-        } else {
+        // if(addPlus === true){
+        //   phoneNumber = `+${phoneNumber}`
+        // } else {
           phoneNumber = phoneNumber.slice(1)
-        }
+        // }
       }
 
       var user = Meteor.users.findOne({username: phoneNumber});
