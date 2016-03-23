@@ -1,6 +1,17 @@
 if(Meteor.isServer){
   Meteor.methods({
 
+    getCategories: function(teamId) {
+      var queryOptions = {
+        sort: { name: 1 },
+      };
+      var query = {
+        teamId: teamId
+      };
+      log.trace("Retrieving categories, with query: ", query, " queryOptions: ", queryOptions);
+      return Categories.find(query,queryOptions).fetch();
+    },
+
     getProducts: function(teamId) {
       var queryOptions = {
         sort: { name: 1 },
@@ -182,14 +193,17 @@ if(Meteor.isServer){
         addProductCategory: null,
       };
 
+      // remove the product from other categories...
       var existingCategory = Categories.findOne({products: {$in: [productId]}});
-      var categoryProducts = existingCategory.products;
-      var productIdx = categoryProducts.indexOf(productId);
-      if(productIdx !== -1){
-        categoryProducts = existingCategory.products.slice(0, productIdx);
-        categoryProducts = categoryProducts.concat(existingCategory.products.slice(productIdx+1));
+      if(existingCategory){
+        var categoryProducts = existingCategory.products;
+        var productIdx = categoryProducts.indexOf(productId);
+        if(productIdx !== -1){
+          categoryProducts = existingCategory.products.slice(0, productIdx);
+          categoryProducts = categoryProducts.concat(existingCategory.products.slice(productIdx+1));
+        }
+        Categories.update({_id: existingCategory._id}, {$set:{products: categoryProducts}});
       }
-      Categories.update({_id: existingCategory._id}, {$set:{products: categoryProducts}});
 
       ret.addProductCategory = Meteor.call('addProductCategory', categoryLookup, productId);
 

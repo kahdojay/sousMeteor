@@ -113,7 +113,11 @@ Meteor.publish('purveyors', function(userId, teamIds) {
 });
 
 Meteor.publish('categories', function(userId, teamIds) {
-  return Categories.find({teamId: {$in: teamIds}});
+  var query = {
+    teamId: {$in: teamIds},
+    updatedAt: {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()}
+  }
+  return Categories.find(query);
 });
 
 Meteor.publish('products', function(userId, teamIds, onlyNew) {
@@ -121,7 +125,7 @@ Meteor.publish('products', function(userId, teamIds, onlyNew) {
     teamId: {$in: teamIds},
   }
   if(onlyNew) {
-    query.updatedAt = {$gte: (new Date()).toISOString()}
+    query.updatedAt = {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()}
   }
   return Products.find(query);
 });
