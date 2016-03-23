@@ -65,6 +65,14 @@ Template:
                             </div>
                           </td>
                         </tr>
+                        {{#if DELIVERY_DATE}}
+                        <tr>
+                          <td class="center">
+                            <p class="center">Requested Delivery Date: {{DELIVERY_DATE}}</p>
+                            <hr>
+                          </td>
+                        </tr>
+                        {{/if}}
                         <tr>
                           <td class="center">
                           	<p class="center">{{PURVEYOR_NAME}}, {{BUYER_NAME}} placed an order at {{ORDER_TIME}} on {{ORDER_DATE}}.</p>
@@ -85,7 +93,7 @@ Template:
                             <h1 class="purveyor-name center">{{BUYER_NAME}}</h1>
                             <span class="purveyor-detail-header">Contacts</span>
                               {{#each BUYER_CONTACTS}}
-                                  <p class="center">{{contactInfo}}</p>
+                              <p class="center">{{contactInfo}}</p>
                               {{/each}}
                             <br>
                             <span class="purveyor-detail-header">Address</span>
@@ -117,7 +125,7 @@ Template:
                                 <table class="twelve columns">
                                   <tr class="order-header last">
                                     <th class="center">Name</th>
-                                    <th class="center">Amount</th>
+                                    <th class="center">Amt</th>
                                     {{#if SHOW_PRODUCT_PRICES}}
                                     <th class="center">Price</th>
                                     {{/if}}
@@ -151,28 +159,28 @@ Template:
                 </table>
                 <hr>
 
-          <table class="container">
-            <tr>
-              <td>
-                <table class="row">
+                <table class="container">
                   <tr>
-                    <td class="wrapper last">
-                      <table class="twelve columns">
-                          <tr>
-                            <td class="center">
-                              <div class="demo">
-                                THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
-                              </div>
-                            </td>
-                          </tr>
-                      </table>
+                    <td>
+                      <table class="row">
+                        <tr>
+                          <td class="wrapper last">
+                            <table class="twelve columns">
+                                <tr>
+                                  <td class="center">
+                                    <div class="demo">
+                                      THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
+                                    </div>
+                                  </td>
+                                </tr>
+                            </table>
 
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
                 </table>
-              </td>
-            </tr>
-          </table>
 
                 <div class="footer">
                   <p>Order submitted by <a href="http://www.sousapp.com" target="_blank">Sous: A Platform for Chefs</a></p>
@@ -224,14 +232,27 @@ Template:
 
   .product-id { width: 15% !important }
 
+
+  {{#if SHOW_PRODUCT_PRICES}}
   .order-item-name {
-    width: 37.5% !important;
+    width: 32.5% !important;
     font-weight: bold;
   }
+  .price {
+    width: 15% !important;
+    white-space: nowrap;
+  }
+  {{else}}
+  .order-item-name {
+    width: 47.5% !important;
+    font-weight: bold;
+  }
+  {{/if}}
 
-  .amount { width: 20% !important }
-
-  .price { width: 15% !important }
+  .amount {
+    width: 25% !important;
+    white-space: nowrap;
+  }
 
   .notes { width: 27.5% !important }
 
@@ -305,7 +326,7 @@ Template:
   }
 
   td {
-    word-break: break-word;
+    word-break: normal;
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     hyphens: auto;
@@ -316,6 +337,10 @@ Template:
     padding: 0;
     vertical-align: top;
     text-align: left;
+  }
+
+  th {
+    white-space: nowrap;
   }
 
   hr {
@@ -819,6 +844,32 @@ Template:
   /*  Media Queries */
 
   @media only screen and (max-width: 600px) {
+
+    {{#if SHOW_PRODUCT_PRICES}}
+    .order-item-name {
+      width: 35% !important;
+      font-weight: bold;
+    }
+    .price {
+      width: 20% !important;
+      white-space: nowrap;
+    }
+    .amount {
+      width: 20% !important;
+      white-space: nowrap;
+    }
+    {{else}}
+    .order-item-name {
+      width: 50% !important;
+      font-weight: bold;
+    }
+    .amount {
+      width: 25% !important;
+      white-space: nowrap;
+    }
+    {{/if}}
+
+    .notes { width: 25% !important }
 
     table[class="body"] img {
       width: auto !important;
