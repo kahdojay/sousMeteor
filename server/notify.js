@@ -47,6 +47,7 @@ if(Meteor.isServer){
             "deviceType": "ios",
             "deviceToken": deviceAttributes.token,
             "deviceModel": deviceAttributes.model,
+            "deviceId": deviceAttributes.deviceId,
             "deviceName": deviceAttributes.deviceName,
             "deviceSystemName": deviceAttributes.systemName,
             "deviceSystemVersion": deviceAttributes.systemVersion,

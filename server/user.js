@@ -193,6 +193,7 @@ if(Meteor.isServer){
     getUsersTeams: function(userId) {
       return Teams.find({users: {$in: [userId]}}).fetch();
     },
+    
     removeUserFromTeamsByTeamCodes: function(phoneNumber, teamCodes) {
       if(undefined === teamCodes){
         teamCodes = 'all';
