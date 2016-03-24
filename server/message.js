@@ -2,11 +2,11 @@ if(Meteor.isServer){
   Meteor.methods({
 
     // createMessage method
-    createMessage: function(messageAttributes, dontTriggerPushNotification) {
-      if(undefined === dontTriggerPushNotification){
-        dontTriggerPushNotification = true
+    createMessage: function(messageAttributes, triggerPushNotification) {
+      if(undefined === triggerPushNotification){
+        triggerPushNotification = true
       }
-      log.debug("MESSAGE ATTRS: ", messageAttributes, " triggering push notification: ", dontTriggerPushNotification);
+      log.debug("MESSAGE ATTRS: ", messageAttributes, " triggering push notification: ", triggerPushNotification);
       if(messageAttributes.imageUrl === ""){
         messageAttributes.imageUrl = "https://lh3.googleusercontent.com/-8e1m8YBYSe0/AAAAAAAAAAI/AAAAAAAAAAA/jRTl40sO4fM/s40/photo.jpg"
       }
@@ -19,7 +19,7 @@ if(Meteor.isServer){
             message = `${messageAttributes.purveyor} order received by ${messageAttributes.author}.`
       }
 
-      if(dontTriggerPushNotification === true){
+      if(triggerPushNotification === true){
         Meteor.call('triggerPushNotification', message, messageAttributes.teamId, messageAttributes.userId)
       }
 

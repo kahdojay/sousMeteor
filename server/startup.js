@@ -88,6 +88,7 @@ if(Meteor.isServer){
     sku: true,
     price: true,
     par: true,
+    packSize: true,
     deleted: true,
     updatedAt: true,
   };

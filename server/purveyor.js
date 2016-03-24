@@ -1,7 +1,7 @@
 if(Meteor.isServer){
   Meteor.methods({
 
-    createPurveyor: function(purveyorAttributes) {
+    createPurveyor: function(purveyorAttributes, userId) {
       log.debug("PURVEYOR ATTRS", purveyorAttributes);
       var purveyor = Purveyors.findOne({teamId: purveyorAttributes.teamId, name:purveyorAttributes.name});
       if(purveyor === undefined){
