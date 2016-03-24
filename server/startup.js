@@ -106,6 +106,7 @@ if(Meteor.isServer){
     "deviceType": 1,
     "deviceToken": 1,
     "deviceModel": 1,
+    "deviceId": 1,
     "deviceName": 1,
     "deviceSystemName": 1,
     "deviceSystemVersion": 1,
