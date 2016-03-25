@@ -88,6 +88,7 @@ if(Meteor.isServer){
     sku: true,
     price: true,
     par: true,
+    packSize: true,
     deleted: true,
     updatedAt: true,
   };
@@ -106,6 +107,7 @@ if(Meteor.isServer){
     "deviceType": 1,
     "deviceToken": 1,
     "deviceModel": 1,
+    "deviceId": 1,
     "deviceName": 1,
     "deviceSystemName": 1,
     "deviceSystemVersion": 1,

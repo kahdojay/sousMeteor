@@ -166,8 +166,9 @@ if(Meteor.isServer){
 
       //get userId, remove from teams
       var teams = Teams.find({users: {$in: [userId]}},{fields:{_id:1}}).fetch();
+      var admin = true;
       teams.forEach(function(team){
-        Meteor.call('removeUserFromTeam', userId, team._id)
+        Meteor.call('removeUserFromTeam', userId, team._id, admin)
       })
 
       setTimeout(Meteor.bindEnvironment(function(){
@@ -192,6 +193,7 @@ if(Meteor.isServer){
     getUsersTeams: function(userId) {
       return Teams.find({users: {$in: [userId]}}).fetch();
     },
+    
     removeUserFromTeamsByTeamCodes: function(phoneNumber, teamCodes) {
       if(undefined === teamCodes){
         teamCodes = 'all';
@@ -209,35 +211,60 @@ if(Meteor.isServer){
         log.debug('TEAM CODES TO REMOVE FROM: ', teamCodes)
       }
 
+      var admin = true;
       teamCodes.forEach(function(teamCode){
         var team = Teams.findOne({teamCode:teamCode},{fields:{users:1}});
-        var remove = Meteor.call('removeUserFromTeam', userPkg.userId, team._id)
+        var remove = Meteor.call('removeUserFromTeam', userPkg.userId, team._id, admin)
         log.debug(remove)
       })
     },
 
-    removeUserFromTeam: function(userId, teamId){
+    removeUserFromTeam: function(userId, teamId, admin){
       log.debug("Removing user: " + userId + " from team: " + teamId);
       var ret = {
         remove: null,
         missing: null,
       };
       var team = Teams.findOne({_id: teamId},{fields:{users:1}});
-      var idx = team.users.indexOf(userId);
-      if(idx !== -1){
-        var teamUsers = team.users.slice(0, idx);
-        teamUsers = teamUsers.concat(team.users.slice(idx+1));
-        ret.remove = Teams.update({_id: teamId}, {$set:{
-          users: teamUsers,
-          updatedAt: (new Date()).toISOString(),
-        }});
-        ret.missing = false;
-        log.debug('REMOVE FROM team: ', teamId, ret.remove, ' update with: ', teamUsers);
+      if(team){
+        var idx = team.users.indexOf(userId);
+        if(idx !== -1){
+          var teamUsers = team.users.slice(0, idx);
+          teamUsers = teamUsers.concat(team.users.slice(idx+1));
+          ret.remove = Teams.update({_id: teamId}, {$set:{
+            users: teamUsers,
+            updatedAt: (new Date()).toISOString(),
+          }});
+          ret.missing = false;
+          log.debug('REMOVE FROM team: ', teamId, ret.remove, ' update with: ', teamUsers);
+        } else {
+          ret.remove = false;
+          ret.missing = true;
+          log.debug("Team does not contains user: ", userId);
+        }
       } else {
-        ret.remove = false;
-        ret.missing = true;
-        log.debug("Team does not contains user: ", userId);
+        if(admin){
+          var data = {
+            userId: userId,
+            teamId: teamId,
+          }
+          var dataString = "\n" + '```' + JSON.stringify(data, null, 2) + '```'
+          slack.alert({
+            username: 'errorBot',
+            channel: '#dev-errors',
+            icon_emoji: ':warning:',
+            text: `Error removing user from team: ${dataString}`,
+            attachments: null
+          });
+        } else {
+          Meteor.call('triggerError',
+            'technical-error:missing-team',
+            'Error removing user from team.',
+            userId
+          )
+        }
       }
+
       return ret;
     },
 

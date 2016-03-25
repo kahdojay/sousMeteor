@@ -212,8 +212,16 @@ if(Meteor.isServer){
           start: (new Date()).getTime(),
           end: null,
           processing: null,
+          retrievedAt: null,
         },
         counts: {
+          purveyors: null,
+          categories: null,
+          products: null,
+          orders: null,
+          cartItems: null,
+        },
+        lastUpdated: {
           purveyors: null,
           categories: null,
           products: null,
@@ -228,8 +236,15 @@ if(Meteor.isServer){
       ret.counts.orders = Orders.find({teamId: teamId}).count();
       ret.counts.cartItems = CartItems.find({teamId: teamId}).count();
 
+      ret.lastUpdated.products = (ret.counts.products > 0) ? Products.findOne({teamId: teamId},{fields: {updatedAt: 1}, sort:{updatedAt: -1}}).updatedAt : null;
+      ret.lastUpdated.purveyors = (ret.counts.purveyors > 0) ? Purveyors.findOne({teamId: teamId},{fields: {updatedAt: 1}, sort:{updatedAt: -1}}).updatedAt : null;
+      ret.lastUpdated.categories = (ret.counts.categories > 0) ? Categories.findOne({teamId: teamId},{fields: {updatedAt: 1}, sort:{updatedAt: -1}}).updatedAt : null;
+      ret.lastUpdated.orders = (ret.counts.orders > 0) ? Orders.findOne({teamId: teamId},{fields: {updatedAt: 1}, sort:{updatedAt: -1}}).updatedAt : null;
+      ret.lastUpdated.cartItems = (ret.counts.cartItems > 0) ? CartItems.findOne({teamId: teamId},{fields: {updatedAt: 1}, sort:{updatedAt: -1}}).updatedAt : null;
+
       ret.meta.end = (new Date()).getTime()
       ret.meta.processing = ret.meta.end - ret.meta.start;
+      ret.meta.retrievedAt = (new Date()).toISOString();
 
       return ret;
     },
