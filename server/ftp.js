@@ -1,63 +1,90 @@
 if(Meteor.isServer){
   Meteor.methods({
     uploadOrderToFtp: function(orderPkg) {
-      log.debug('UPLOAD ORDER TO FTP: ', orderPkg)
-      if(orderPkg.orderId){
+      log.trace('UPLOAD ORDER TO FTP: ', orderPkg);
+
+      if(
+        orderPkg.orderId
+        && orderPkg.orderRef
+        && orderPkg.orderDate
+        && orderPkg.teamPurveyorSettings
+        && orderPkg.orderProductList
+      ){
         var Client = Npm.require('ftp');
         var ftpClient = new Client();
 
+        if(orderPkg.teamPurveyorSettings.hasOwnProperty('ftp') === false){
+          log.error('UPLOAD ORDER TO FTP ERROR: Missing team purveyor settings for ftp.')
+          return;
+        }
+
+        var ftpSettings = orderPkg.teamPurveyorSettings.ftp;
+        var clientSettings = orderPkg.teamPurveyorSettings.client;
+
+        var templateHelpers = {
+          lpad: function(text, num, padder) {
+            return s.lpad(text, num, padder);
+          },
+          rpad: function(text, num, padder) {
+            return s.rpad(text, num, padder);
+          },
+        }
+
+        SSR.compileTemplate('templateHeader', Assets.getText(`templates/${ftpSettings.templateHeader}.html`));
+        Template.templateHeader.helpers(templateHelpers);
+
+        SSR.compileTemplate('templateBody', Assets.getText(`templates/${ftpSettings.templateBody}.html`));
+        Template.templateBody.helpers(templateHelpers);
+
+        SSR.compileTemplate('templateFilename', Assets.getText(`templates/${ftpSettings.templateFilename}.html`));
+        Template.templateFilename.helpers(templateHelpers);
+
+
+        var orderFileName = SSR.render('templateFilename',  {filename: Math.floor(Math.random()*100000)});
+        orderFileName = orderFileName.replace('\n','');
+
         var orderData = [];
-        var record = [];
-        var recordType = 'H';
-        var orderNumber = 'ABC123';
-        var customerNumber = '300306';
-        var shipDate = moment().format('MMDDYYYY');
-        var customerPO = 'NBS1042247';
+
+        var orderNumber = orderPkg.orderRef;
+        var customerNumber = clientSettings.customerNumber;
+        var shipDate = orderPkg.orderDate.format('MMDDYYYY');
+        var customerPO = clientSettings.customerPO;
         var memoCode = '';
         var shippingInstructions = '';
         var deliveryInstructions = '';
 
 
-        record.push(recordType);
-        record.push(s.lpad(orderNumber, 6, '0'));
-        record.push(s.lpad(customerNumber, 8, ' '));
-        record.push(shipDate);
-        record.push(s.rpad(customerPO, 10, ' '));
-        record.push(s.rpad(memoCode, 3, ' '));
-        record.push(s.rpad(shippingInstructions, 30, ' '));
-        record.push(s.rpad(deliveryInstructions, 30, ' '));
-        record.push(s.rpad('', 7, ' '));
-        orderData.push(record.join(''));
+        var recordHeader = SSR.render('templateHeader', {
+          orderNumber: orderNumber,
+          customerNumber: customerNumber,
+          customerPO: customerPO,
+          shipDate: shipDate,
+          memoCode: memoCode,
+          shippingInstructions: shippingInstructions,
+          deliveryInstructions: deliveryInstructions,
+        });
+        recordHeader = recordHeader.replace('\n', '');
+        orderData.push(recordHeader);
 
-        recordType = 'D';
+        orderPkg.orderProductList.forEach(function(product) {
+          product.orderNumber = orderNumber;
+          product.price = product.price.replace(/[^0-9]/g,'');
+          var recordRow = SSR.render("templateBody", product);
+          recordRow = recordRow.replace('\n', '');
+          orderData.push(recordRow);
+        })
 
-        for(var i = 0; i < 10; i++){
-          var record = [];
-          var itemNumber = Math.floor(Math.random()*100000);
-          var qtyOrdered = Math.floor(Math.random()*10);
-          var price = Math.floor(Math.random()*10000);
-          var splitIndicator = '';
-          if(i % 4 === 3){
-            splitIndicator = 'E';
-          }
-
-          record.push(recordType);
-          record.push(s.lpad(orderNumber, 6, '0'));
-          record.push(s.lpad(itemNumber, 8, ' '));
-          record.push(s.lpad(qtyOrdered, 4, '0'));
-          record.push(s.lpad(price, 7, '0'));
-          record.push(s.rpad(splitIndicator, 1, ' '));
-          record.push(s.rpad('', 76, ' '));
-
-          orderData.push(record.join(''));
-        }
         orderData = orderData.join('\n');
+        console.log('---------------------');
+        console.log(orderData);
+        console.log('---------------------');
+        console.log(`File name: '${orderFileName}'`)
+        return;
 
         var stringStream = new stream.Readable();
         stringStream._read = function noop() {};
         stringStream.push(orderData);
         stringStream.push(null);
-        var orderFileName = `W${s.lpad(Math.floor(Math.random()*10000), 5, '0')}`;
 
         ftpClient.on('ready', function() {
           ftpClient.put(stringStream, `${orderFileName}`, function(err) {
@@ -69,9 +96,10 @@ if(Meteor.isServer){
           })
         })
         ftpClient.connect({
-          "host": '10.10.0.100',
-          "user": 'sous',
-          "password": 'sous'
+          "host": ftpSettings.host,
+          "port": ftpSettings.port,
+          "user": ftpSettings.user,
+          "password": ftpSettings.pass,
         })
 
       } else {
