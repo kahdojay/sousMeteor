@@ -75,11 +75,11 @@ if(Meteor.isServer){
         })
 
         orderData = orderData.join('\n');
-        console.log('---------------------');
-        console.log(orderData);
-        console.log('---------------------');
-        console.log(`File name: '${orderFileName}'`)
-        return;
+        // console.log('---------------------');
+        // console.log(orderData);
+        // console.log('---------------------');
+        // console.log(`File name: '${orderFileName}'`)
+        // return;
 
         var stringStream = new stream.Readable();
         stringStream._read = function noop() {};
