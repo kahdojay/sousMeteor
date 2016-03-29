@@ -492,7 +492,7 @@ if(Meteor.isServer){
           faxText.push(`Order Date: ${orderDate.format('dddd, MMMM D')}`)
           faxText.push(`Order Time: ${orderDate.format('h:mm A')}`)
           faxText.push('')
-          faxText.push(`PLEASE EMAIL orders@sousapp.com OR CALL DON AT 530.435.5246 TO CONFIRM RECEIPT`)
+          faxText.push(`PLEASE EMAIL ORDERS@SOUSAPP.COM OR TEXT DON AT 530.435.5246 TO CONFIRM RECEIPT`)
           faxText.push('')
           faxText.push('------Buyer Contacts------')
           buyerContacts.forEach(function(contact) {
@@ -508,7 +508,7 @@ if(Meteor.isServer){
             faxText.push(`${product.name}${product.sku ? ' (' + product.sku + ') ': ''} - ${product.quantity} ${product.unit}`)
             faxText.push('')
           })
-          faxText.push(`PLEASE EMAIL orders@sousapp.com CALL DON AT 530.435.5246 TO CONFIRM RECEIPT`)
+          faxText.push(`PLEASE EMAIL ORDERS@SOUSAPP.COM TEXT DON AT 530.435.5246 TO CONFIRM RECEIPT`)
 
           var faxOptions = {
             number: purveyor.fax,
