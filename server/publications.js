@@ -115,7 +115,8 @@ Meteor.publish('purveyors', function(userId, teamIds) {
 Meteor.publish('categories', function(userId, teamIds) {
   var query = {
     teamId: {$in: teamIds},
-    updatedAt: {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()}
+    // updatedAt: {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()},
+    updatedAt: {$gte: '2016-03-29T00:00:00.000Z'},
   }
   return Categories.find(query);
 });
