@@ -625,7 +625,7 @@ if(Meteor.isServer){
               slack.alert({
                 username: 'Orderbot (mobile)',
                   channel: '#dev-errors',
-                text: '<!channel> Mandrill Order Error!',
+                text: 'Mandrill Order Error!',
                 attachments: slackAttachments
               });
             }
@@ -742,7 +742,7 @@ if(Meteor.isServer){
               slack.alert({
                 username: 'Orderbot (mobile)',
                 channel: '#orders',
-                text: `<!channel> ${team.name} ordered $${order.subtotal || ''} from ${purveyor.name}`,
+                text: `${team.name} ordered $${order.subtotal || ''} from ${purveyor.name}`,
                 icon_emoji: ':moneybag:',
                 attachments: slackAttachments
               });
@@ -792,7 +792,7 @@ if(Meteor.isServer){
         ]
 
         var alertMsg = []
-        alertMsg.push('<!channel> Meteor Order Error!');
+        alertMsg.push('Meteor Order Error!');
         alertMsg.push('');
         alertMsg.push('*Error*');
         alertMsg.push(`${err}`);
@@ -1167,7 +1167,7 @@ if(Meteor.isServer){
     //       slack.alert({
     //         username: 'Orderbot (mobile)',
     //         channel: '#dev-errors',
-    //         text: '<!channel> Mandrill Order Error!',
+    //         text: 'Mandrill Order Error!',
     //         attachments: slackAttachments
     //       });
     //       Meteor.call('triggerError',
@@ -1260,7 +1260,7 @@ if(Meteor.isServer){
     //         slack.alert({
     //           username: 'Orderbot (mobile)',
     //           channel: '#orders',
-    //           text: `<!channel> ${team.name} ordered $${order.subtotal || ''} from ${purveyor.name}`,
+    //           text: `${team.name} ordered $${order.subtotal || ''} from ${purveyor.name}`,
     //           icon_emoji: ':moneybag:',
     //           attachments: slackAttachments
     //         });
