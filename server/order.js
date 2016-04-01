@@ -635,14 +635,14 @@ if(Meteor.isServer){
             }
             Meteor.call('triggerError',
               'technical-error:email',
-              'Order Send Error - Sous has been notified, please send this order to your purveyors directly. Access your order from "Receiving Guide" and click the email icon to resend.',
+              'Order Error - please check that the order was emailed to the proper email address.',
               order.userId
             )
 
             var purveyorName = Purveyors.findOne({_id: order.purveyorId}).name
             var messageAttributes = {
                 type: 'error',
-                message: `Order Error: ${purveyorName} - please resend order from "Receiving Guide" and click the email icon to resend.`,
+                message: `Order Error: ${purveyorName} - please check that the order was emailed to the proper email address.`,
                 author: 'Sous',
                 teamId: order.teamId,
                 createdAt: (new Date()).toISOString(),
