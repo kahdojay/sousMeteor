@@ -583,9 +583,20 @@ if(Meteor.isServer){
             global_merge_vars: globalMergeVars
           }
         }, function(err, responseData){
+          // Mandrill errors + email rejections
           log.debug("MANDRILL RESPONSE: ", err, responseData);
-          // notify Slack of order send success/failure
-          if(err){
+          let emailRejected = false
+          let recipientStatuses = {}
+          responseData.data.forEach(function(emailData) {
+            recipientStatuses[emailData.email] = emailData.status
+          })
+          purveyor.orderEmails.split(',').forEach(function(orderEmail) {
+            if (recipientStatuses[orderEmail] && recipientStatuses[orderEmail] === 'rejected') {
+              emailRejected = true
+            }
+          })
+          if(err || emailRejected){
+            log.debug('EMAIL ERROR: ', err, emailRejected)
             if(Meteor.call('sendSlackNotification', order.teamId)){
               const slackAttachments = [
                 {
