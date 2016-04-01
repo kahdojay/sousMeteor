@@ -387,7 +387,7 @@ if(Meteor.isServer){
           log.error('Purveyor sendEmail is disabled or missing, triggering error for user: ', order.userId);
           return Meteor.call('triggerError',
             'send-order-error:send-disabled',
-            `Error - ${purveyor.name} email invalid`,
+            `Error - please check email settings for ${purveyor.name}`,
             order.userId
           )
         }
@@ -437,13 +437,6 @@ if(Meteor.isServer){
 
           // add product to the order products list
           var productUnit = product.unit;
-          if(cartItem.quantity > 1){
-            if(product.unit == 'bunch'){
-              productUnit += 'es';
-            } else if(product.unit !== 'ea' && product.unit !== 'dozen' && product.unit !== 'cs'){
-              productUnit += 's';
-            }
-          }
           orderProductListItem = {
             idx: idx,
             name: product.name || 'Product Name Error',
