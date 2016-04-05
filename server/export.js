@@ -24,6 +24,7 @@ if(Meteor.isServer){
           teamCode: purveyor.teamCode,
           purveyorCode: purveyor.purveyorCode,
           name: purveyor.name,
+          orderEmails: purveyor.orderEmails,
           timeZone: purveyor.timeZone,
           orderCutoffTime: purveyor.orderCutoffTime,
           orderMinimum: purveyor.orderMinimum,
@@ -31,10 +32,12 @@ if(Meteor.isServer){
           notes: purveyor.notes,
           email: purveyor.email,
           phone: purveyor.phone,
-          orderEmails: purveyor.orderEmails,
           orderContact: purveyor.orderContact,
           description: purveyor.description,
           sendEmail: (purveyor.sendEmail === true ? 'TRUE' : 'FALSE'),
+          sendFax: (purveyor.sendFax === true ? 'TRUE' : 'FALSE'),
+          fax: purveyor.fax,
+          uploadToFTP: (purveyor.uploadToFTP === true ? 'TRUE' : 'FALSE'),
         };
         log.debug("PURVEYOR EXPORT: ", exportPurveyorAttributes)
         Export.insert(exportPurveyorAttributes);

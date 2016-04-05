@@ -340,6 +340,7 @@ if(Meteor.isServer){
           sendEmail: (purveyor.sendEmail === "TRUE" ? true : false),
           sendFax: (purveyor.sendFax === "TRUE" ? true : false),
           fax: purveyor.fax,
+          uploadToFTP: (purveyor.uploadToFTP === "TRUE" ? true : false),
           deleted: (purveyor.action === "REMOVE" ? true : false),
           updatedAt: (new Date()).toISOString()
         },
@@ -594,6 +595,82 @@ if(Meteor.isServer){
 
       return ret;
 
+    },
+
+    importTeamPurveyorSettings: function(teamCode, url) {
+      if(undefined === url){
+        url = Meteor.settings.SHEETSU.TEAM_PURVEYOR_SETTINGS
+      }
+      if(undefined === teamCode){
+        teamCode = 'all';
+      }
+      var ret = {
+        'before': null,
+        'settings': {},
+        'after': null
+      }
+      ret.before = TeamPurveyorSettings.find().count();
+      var teams = {};
+      var purveyors = {};
+
+      // insert purveyors with purveyorCode
+      var response = Meteor.http.get(url, {timeout: 10000})
+      log.debug('importTeamPurveyorSettings response:', response.data.result)
+      response.data.result.forEach(function(teamPurveyorSetting) {
+        if(teamPurveyorSetting.hasOwnProperty('teamCode') === false){
+          ret.settings[teamPurveyorSetting.teamCode] = 'Missing teamCode';
+          return false;
+        }
+
+        if(teamCode !== undefined && teamCode !== 'all'){
+          if(teamPurveyorSetting.teamCode !== teamCode){
+            log.debug('Skipping teamCode: ' + teamPurveyorSetting.teamCode);
+            return false;
+          }
+        }
+
+        if(teamPurveyorSetting.hasOwnProperty('purveyorCode') === false){
+          ret.settings[teamPurveyorSetting.teamCode] = 'Missing purveyorCode';
+          return false;
+        }
+
+        if(teams.hasOwnProperty(teamPurveyorSetting.teamCode) === false){
+          var team = Teams.findOne({teamCode: teamPurveyorSetting.teamCode})
+          if(team){
+            teams[teamPurveyorSetting.teamCode] = team;
+          } else {
+            ret.settings[teamPurveyorSetting.teamCode] = 'Can not find teamCode: ' + teamPurveyorSetting.teamCode;
+            return false;
+          }
+        }
+
+        if(purveyors.hasOwnProperty(teamPurveyorSetting.purveyorCode) === false){
+          var purveyor = Purveyors.findOne({purveyorCode: teamPurveyorSetting.purveyorCode})
+          if(purveyor){
+            purveyors[teamPurveyorSetting.purveyorCode] = purveyor;
+          } else {
+            ret.settings[teamPurveyorSetting.teamCode] = 'Can not find purveyorCode: ' + teamPurveyorSetting.purveyorCode;
+            return false;
+          }
+        }
+
+        var teamPurveyorSettingLookup = {
+          teamCode: teamPurveyorSetting.teamCode,
+          purveyorCode: teamPurveyorSetting.purveyorCode,
+        }
+
+        var updateSettings = {
+          teamId: teams[teamPurveyorSetting.teamCode]._id,
+          teamCode: teamPurveyorSetting.teamCode,
+          purveyorId: purveyors[teamPurveyorSetting.purveyorCode]._id,
+          purveyorCode: teamPurveyorSetting.purveyorCode,
+        }
+        updateSettings[`${teamPurveyorSetting.groupKey}.${teamPurveyorSetting.key}`] = teamPurveyorSetting.value;
+        ret.settings[teamPurveyorSetting.teamCode] = TeamPurveyorSettings.update(teamPurveyorSettingLookup, {$set: updateSettings}, {upsert:true});
+      });
+
+      ret.after = TeamPurveyorSettings.find().count();
+      return ret;
     },
   })
 }

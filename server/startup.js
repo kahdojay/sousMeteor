@@ -9,6 +9,7 @@ Teams = new Mongo.Collection('teams');
 Settings = new Mongo.Collection('settings');
 Export = new Mongo.Collection('export');
 CartItems = new Mongo.Collection('cart_items');
+TeamPurveyorSettings = new Mongo.Collection('team_purveyor_settings');
 
 var allowPermissions = {
   insert: function() {return true;},
@@ -26,6 +27,7 @@ Teams.allow(allowPermissions);
 Settings.allow(allowPermissions);
 Export.allow(allowPermissions);
 CartItems.allow(allowPermissions);
+TeamPurveyorSettings.allow(allowPermissions);
 
 if(Meteor.isServer){
 
@@ -180,6 +182,13 @@ if(Meteor.isServer){
     CartItems._ensureIndex(
       { teamId: 1, purveyorId: 1, productId: 1, status: 1 }
     );
+    TeamPurveyorSettings._ensureIndex(
+      { teamId: 1, purveyorId: 1 }
+    );
+    TeamPurveyorSettings._ensureIndex(
+      { teamCode: 1, purveyorCode: 1 }
+    );
+
     // configure Mandrill
     Mandrill.config({
       username: Meteor.settings.MANDRILL.USERNAME,  // the email address you log into Mandrill with. Only used to set MAIL_URL.
