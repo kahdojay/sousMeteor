@@ -1,7 +1,7 @@
 if(Meteor.isServer){
   Meteor.methods({
     uploadOrderToFtp: function(orderPkg) {
-      log.trace('UPLOAD ORDER TO FTP: ', orderPkg);
+      log.debug('UPLOADING ORDER TO FTP - orderId: ', orderPkg.orderId, ', orderRef: ', orderPkg.orderRef, ' teamPurveyorSettings: ', orderPkg.teamPurveyorSettings)
 
       if(
         orderPkg.orderId
@@ -86,21 +86,26 @@ if(Meteor.isServer){
         stringStream.push(orderData);
         stringStream.push(null);
 
-        ftpClient.on('ready', function() {
-          ftpClient.put(stringStream, `${orderFileName}`, function(err) {
-            if (err) {
-              log.debug('UPLOAD ORDER TO FTP ERROR: ', err)
-            }
-            ftpClient.end();
-            log.debug(`UPLOAD ORDER TO FTP: Successfully uploaded file: ${orderFileName}`)
+        try {
+          ftpClient.on('ready', function() {
+            ftpClient.put(stringStream, `${orderFileName}`, function(err) {
+              if (err) {
+                log.error('UPLOAD ORDER TO FTP ERROR: ', err)
+              } else {
+                log.debug(`UPLOAD ORDER TO FTP: Successfully uploaded file: ${orderFileName}`)
+              }
+              ftpClient.end();
+            })
           })
-        })
-        ftpClient.connect({
-          "host": ftpSettings.host,
-          "port": ftpSettings.port,
-          "user": ftpSettings.user,
-          "password": ftpSettings.pass,
-        })
+          ftpClient.connect({
+            "host": ftpSettings.host,
+            "port": parseInt(ftpSettings.port),
+            "user": ftpSettings.user,
+            "password": ftpSettings.pass,
+          })
+        } catch(err){
+          log.error('FTP UPLOAD ERROR: ', err)
+        }
 
       } else {
         log.error('UPLOAD ORDER TO FTP ERROR: Missing data.')
