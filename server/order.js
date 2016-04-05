@@ -1,6 +1,100 @@
 if(Meteor.isServer){
   Meteor.methods({
 
+    trackOldOrders: function() {
+
+      var allUntrackedOrders = Orders.find({tracked: {$exists: false}, orderedAt: {$lt: moment().subtract(5, 'days').toISOString()}},{limit: 500}).fetch();
+
+      if(allUntrackedOrders.length > 0){
+        // var batch = []
+
+        var mixpanel_importer = Mixpanel.init(Meteor.settings.MIXPANEL.TOKEN, {
+          key: Meteor.settings.MIXPANEL.KEY
+        });
+
+        allUntrackedOrders.forEach(function(order) {
+          var orderId = order._id;
+
+          var user = Meteor.users.findOne({ _id: order.userId });
+
+          // lookup BUYER info
+          var team = Teams.findOne({ _id: order.teamId });
+          // lookup PURVEYOR info
+          var purveyor = Purveyors.findOne({ _id: order.purveyorId });
+
+          var showProductPrices = false
+          if(
+            team.hasOwnProperty('betaAccess') === true
+            && team.betaAccess.hasOwnProperty('showProductPrices') === true
+            && team.betaAccess.showProductPrices === true
+          ){
+            showProductPrices = true
+          }
+
+          // get order date
+          var timeZone = 'UTC';
+          if(purveyor.hasOwnProperty('timeZone') && purveyor.timeZone){
+            timeZone = purveyor.timeZone;
+          }
+          var orderDate = moment(order.orderedAt).tz(timeZone);
+          var orderDeliveryDate = '';
+          if(order.orderDeliveryDate){
+            orderDeliveryDate = moment(order.orderDeliveryDate).tz(timeZone).format('dddd, MMMM D');
+          }
+
+          var purveyorSendFax = false
+          if(purveyor.hasOwnProperty('sendFax') === true && purveyor.sendFax === true){
+            purveyorSendFax = true
+          }
+
+          var mixpanelEventName = `Place order [${Meteor.settings.APP.ENV}]`
+          if(
+            ['DEMO', 'DEV', 'MAGGIESDEMO', 'SEANSDEMO'].indexOf(order.teamCode) !== -1
+            // || order.teamCode.indexOf('DEMO') !== -1
+          ){
+            mixpanelEventName = `Place order [${Meteor.settings.APP.ENV}] (DEMO)`
+          }
+
+          var trackAttributes = {
+            distinct_id: user._id,
+            sender: `${user.firstName} ${user.lastName}`,
+            orderId: orderId,
+            orderRef: order.orderRef,
+            orderDeliveryDate: orderDeliveryDate,
+            orderProductCount: Object.keys(order.orderDetails.products).length,
+            showProductPrices: showProductPrices,
+            orderSubTotal: order.subtotal || '',
+            orderedAt: order.orderedAt,
+            orderDateTimeZone: orderDate.format('dddd, MMMM D h:mm A'),
+            orderType: 'mobile',
+            teamId: order.teamId,
+            teamCode: order.teamCode,
+            purveyorId: order.purveyorId,
+            purveyor: purveyor.name,
+            purveyorSendFax: purveyorSendFax,
+            serverEnvironment: Meteor.settings.APP.ENV,
+          }
+
+          // batch.push({
+          //   event: mixpanelEventName,
+          //   properties: trackAttributes
+          // })
+
+          log.debug('SEND MIXPANEL EVENT: ', mixpanelEventName, orderDate.toDate(), trackAttributes)
+          mixpanel_importer.import(mixpanelEventName, orderDate.toDate(), trackAttributes)
+          Orders.update({_id: order._id},{$set:{tracked: true}})
+        });
+
+
+        // mixpanel_importer.import_batch(batch);
+        // log.debug('TRACKED OLD ORDERS: ', batch)
+      } else {
+        log.debug('TRACKED OLD ORDERS: no order left to back track.')
+      }
+
+
+    },
+
     convertOldOrders: function() {
       // fetch all Orders
       var allOrders = Orders.find().fetch();
@@ -295,6 +389,7 @@ if(Meteor.isServer){
               $set: {
                 userId: userId,
                 teamId: teamId,
+                orderRef: Math.random().toString(36).replace(/[^a-z0-9]+/g, '').substr(1, 6).toUpperCase(),
                 teamCode: team.teamCode,
                 purveyorId: purveyorId,
                 purveyorCode: purveyor.purveyorCode,
@@ -351,7 +446,10 @@ if(Meteor.isServer){
       return ret;
     },
 
-    sendOrderCartItems: function(orderId) {
+    sendOrderCartItems: function(orderId, debugMode) {
+      if(undefined === debugMode){
+        debugMode = false
+      }
       var ret = {
         success: false
       }
@@ -382,12 +480,11 @@ if(Meteor.isServer){
         //   icon_emoji: ':moneybag:'
         // });
 
-
         if(purveyor.hasOwnProperty('sendEmail') === false || purveyor.sendEmail === false){
           log.error('Purveyor sendEmail is disabled or missing, triggering error for user: ', order.userId);
           return Meteor.call('triggerError',
             'send-order-error:send-disabled',
-            `Error - ${purveyor.name} email invalid`,
+            `Error - please check email settings for ${purveyor.name}`,
             order.userId
           )
         }
@@ -437,28 +534,20 @@ if(Meteor.isServer){
 
           // add product to the order products list
           var productUnit = product.unit;
-          if(cartItem.quantity > 1){
-            if(product.unit == 'bunch'){
-              productUnit += 'es';
-            } else if(product.unit !== 'ea' && product.unit !== 'dozen' && product.unit !== 'cs'){
-              productUnit += 's';
-            }
-          }
           orderProductListItem = {
             idx: idx,
             name: product.name || 'Product Name Error',
             sku: product.sku || '',
             quantity: cartItem.quantity * product.amount || 'Quantity Error',
             unit: productUnit,
-            notes: product.description,
-            // notes: cartItem.notes,
+            notes: product.description, // cartItem.notes,
+            price: (product.price) ? '$' + s.numberFormat(parseFloat(product.price), 2) : '',
           }
 
           if(showProductPrices === true){
-            orderProductListItem.showProductPrices = true
-            orderProductListItem.price = '$' + s.numberFormat(parseFloat(product.price), 2)
+            orderProductListItem.showProductPrice = true
           } else {
-            orderProductListItem.showProductPrices = false
+            orderProductListItem.showProductPrice = false
           }
 
           orderProductList.push(orderProductListItem);
@@ -515,6 +604,26 @@ if(Meteor.isServer){
             text: faxText.join('\n')
           }
           Meteor.call('faxOrder', faxOptions)
+        }
+
+        if(purveyor.hasOwnProperty('uploadToFTP') === true && purveyor.uploadToFTP === true){
+          var teamPurveyorSettingsLookup = {teamId: team._id, purveyorId: purveyor._id};
+          log.debug('TEAM PURVEYOR SETTINGS LOOKUP: ', teamPurveyorSettingsLookup);
+          var teamPurveyorSettings = TeamPurveyorSettings.findOne(teamPurveyorSettingsLookup);
+          Meteor.call('uploadOrderToFtp', {
+            teamPurveyorSettings: teamPurveyorSettings,
+            orderId: orderId,
+            orderRef: order.orderRef,
+            orderDate: orderDate,
+            orderProductList: orderProductList,
+          })
+        }
+
+        if(debugMode === true){
+          log.debug('\n\n')
+          log.debug('=======================================\nDEBUG MODE ONLY, NOTHING WAS SENT!!!\n=======================================')
+          log.debug('\n\n')
+          return;
         }
         /* */
         // send order email
@@ -590,9 +699,20 @@ if(Meteor.isServer){
             global_merge_vars: globalMergeVars
           }
         }, function(err, responseData){
+          // Mandrill errors + email rejections
           log.debug("MANDRILL RESPONSE: ", err, responseData);
-          // notify Slack of order send success/failure
-          if(err){
+          let emailRejected = false
+          let recipientStatuses = {}
+          responseData.data.forEach(function(emailData) {
+            recipientStatuses[emailData.email] = emailData.status
+          })
+          purveyor.orderEmails.split(',').forEach(function(orderEmail) {
+            if (recipientStatuses[orderEmail] && recipientStatuses[orderEmail] === 'rejected') {
+              emailRejected = true
+            }
+          })
+          if(err || emailRejected){
+            log.debug('EMAIL ERROR: ', err, emailRejected)
             if(Meteor.call('sendSlackNotification', order.teamId)){
               const slackAttachments = [
                 {
@@ -625,20 +745,20 @@ if(Meteor.isServer){
               slack.alert({
                 username: 'Orderbot (mobile)',
                   channel: '#dev-errors',
-                text: '<!channel> Mandrill Order Error!',
+                text: 'Mandrill Order Error!',
                 attachments: slackAttachments
               });
             }
             Meteor.call('triggerError',
               'technical-error:email',
-              'Order Send Error - Sous has been notified, please send this order to your purveyors directly. Access your order from "Receiving Guide" and click the email icon to resend.',
+              'Order Error - please check that the order was emailed to the proper email address.',
               order.userId
             )
 
             var purveyorName = Purveyors.findOne({_id: order.purveyorId}).name
             var messageAttributes = {
                 type: 'error',
-                message: `Order Error: ${purveyorName} - please resend order from "Receiving Guide" and click the email icon to resend.`,
+                message: `Order Error: ${purveyorName} - please check that the order was emailed to the proper email address.`,
                 author: 'Sous',
                 teamId: order.teamId,
                 createdAt: (new Date()).toISOString(),
@@ -690,6 +810,7 @@ if(Meteor.isServer){
               distinct_id: user._id,
               sender: `${user.firstName} ${user.lastName}`,
               orderId: orderId,
+              orderRef: order.orderRef,
               orderDeliveryDate: orderDeliveryDate,
               orderProductCount: Object.keys(order.orderDetails.products).length,
               showProductPrices: showProductPrices,
@@ -742,7 +863,7 @@ if(Meteor.isServer){
               slack.alert({
                 username: 'Orderbot (mobile)',
                 channel: '#orders',
-                text: `<!channel> ${team.name} ordered $${order.subtotal || ''} from ${purveyor.name}`,
+                text: `${team.name} ordered $${order.subtotal || ''} from ${purveyor.name}`,
                 icon_emoji: ':moneybag:',
                 attachments: slackAttachments
               });
@@ -792,7 +913,7 @@ if(Meteor.isServer){
         ]
 
         var alertMsg = []
-        alertMsg.push('<!channel> Meteor Order Error!');
+        alertMsg.push('Meteor Order Error!');
         alertMsg.push('');
         alertMsg.push('*Error*');
         alertMsg.push(`${err}`);
@@ -1167,7 +1288,7 @@ if(Meteor.isServer){
     //       slack.alert({
     //         username: 'Orderbot (mobile)',
     //         channel: '#dev-errors',
-    //         text: '<!channel> Mandrill Order Error!',
+    //         text: 'Mandrill Order Error!',
     //         attachments: slackAttachments
     //       });
     //       Meteor.call('triggerError',
@@ -1260,7 +1381,7 @@ if(Meteor.isServer){
     //         slack.alert({
     //           username: 'Orderbot (mobile)',
     //           channel: '#orders',
-    //           text: `<!channel> ${team.name} ordered $${order.subtotal || ''} from ${purveyor.name}`,
+    //           text: `${team.name} ordered $${order.subtotal || ''} from ${purveyor.name}`,
     //           icon_emoji: ':moneybag:',
     //           attachments: slackAttachments
     //         });

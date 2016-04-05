@@ -1,6 +1,22 @@
 if(Meteor.isServer){
   Meteor.methods({
 
+    trackUsers: function() {
+      var allUsers = Meteor.users.find().fetch();
+      log.debug('Processing all the users: ', allUsers.length);
+      allUsers.forEach(function(user) {
+        mixpanel.people.set(user._id, {
+          '$first_name': user.firstName,
+          '$last_name': user.lastName,
+          '$email': user.email,
+          '$created': user.createdAt,
+          'phoneNumber': user.username,
+        }, {
+          $ignore_time: true
+        });
+      })
+    },
+
     sendWelcomeMessage: function(userId, teamId) {
       var ret = {
         success: false,
@@ -193,7 +209,7 @@ if(Meteor.isServer){
     getUsersTeams: function(userId) {
       return Teams.find({users: {$in: [userId]}}).fetch();
     },
-    
+
     removeUserFromTeamsByTeamCodes: function(phoneNumber, teamCodes) {
       if(undefined === teamCodes){
         teamCodes = 'all';
