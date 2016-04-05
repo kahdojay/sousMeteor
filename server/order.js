@@ -1,6 +1,100 @@
 if(Meteor.isServer){
   Meteor.methods({
 
+    trackOldOrders: function() {
+
+      var allUntrackedOrders = Orders.find({tracked: {$exists: false}, orderedAt: {$lt: moment().subtract(5, 'days').toISOString()}},{limit: 500}).fetch();
+
+      if(allUntrackedOrders.length > 0){
+        // var batch = []
+
+        var mixpanel_importer = Mixpanel.init(Meteor.settings.MIXPANEL.TOKEN, {
+          key: Meteor.settings.MIXPANEL.KEY
+        });
+
+        allUntrackedOrders.forEach(function(order) {
+          var orderId = order._id;
+
+          var user = Meteor.users.findOne({ _id: order.userId });
+
+          // lookup BUYER info
+          var team = Teams.findOne({ _id: order.teamId });
+          // lookup PURVEYOR info
+          var purveyor = Purveyors.findOne({ _id: order.purveyorId });
+
+          var showProductPrices = false
+          if(
+            team.hasOwnProperty('betaAccess') === true
+            && team.betaAccess.hasOwnProperty('showProductPrices') === true
+            && team.betaAccess.showProductPrices === true
+          ){
+            showProductPrices = true
+          }
+
+          // get order date
+          var timeZone = 'UTC';
+          if(purveyor.hasOwnProperty('timeZone') && purveyor.timeZone){
+            timeZone = purveyor.timeZone;
+          }
+          var orderDate = moment(order.orderedAt).tz(timeZone);
+          var orderDeliveryDate = '';
+          if(order.orderDeliveryDate){
+            orderDeliveryDate = moment(order.orderDeliveryDate).tz(timeZone).format('dddd, MMMM D');
+          }
+
+          var purveyorSendFax = false
+          if(purveyor.hasOwnProperty('sendFax') === true && purveyor.sendFax === true){
+            purveyorSendFax = true
+          }
+
+          var mixpanelEventName = `Place order [${Meteor.settings.APP.ENV}]`
+          if(
+            ['DEMO', 'DEV', 'MAGGIESDEMO', 'SEANSDEMO'].indexOf(order.teamCode) !== -1
+            // || order.teamCode.indexOf('DEMO') !== -1
+          ){
+            mixpanelEventName = `Place order [${Meteor.settings.APP.ENV}] (DEMO)`
+          }
+
+          var trackAttributes = {
+            distinct_id: user._id,
+            sender: `${user.firstName} ${user.lastName}`,
+            orderId: orderId,
+            orderRef: order.orderRef,
+            orderDeliveryDate: orderDeliveryDate,
+            orderProductCount: Object.keys(order.orderDetails.products).length,
+            showProductPrices: showProductPrices,
+            orderSubTotal: order.subtotal || '',
+            orderedAt: order.orderedAt,
+            orderDateTimeZone: orderDate.format('dddd, MMMM D h:mm A'),
+            orderType: 'mobile',
+            teamId: order.teamId,
+            teamCode: order.teamCode,
+            purveyorId: order.purveyorId,
+            purveyor: purveyor.name,
+            purveyorSendFax: purveyorSendFax,
+            serverEnvironment: Meteor.settings.APP.ENV,
+          }
+
+          // batch.push({
+          //   event: mixpanelEventName,
+          //   properties: trackAttributes
+          // })
+
+          log.debug('SEND MIXPANEL EVENT: ', mixpanelEventName, orderDate.toDate(), trackAttributes)
+          mixpanel_importer.import(mixpanelEventName, orderDate.toDate(), trackAttributes)
+          Orders.update({_id: order._id},{$set:{tracked: true}})
+        });
+
+
+        // mixpanel_importer.import_batch(batch);
+        // log.debug('TRACKED OLD ORDERS: ', batch)
+      } else {
+        log.debug('TRACKED OLD ORDERS: no order left to back track.')
+      }
+
+
+    },
+
     convertOldOrders: function() {
       // fetch all Orders
       var allOrders = Orders.find().fetch();
@@ -295,6 +389,7 @@ if(Meteor.isServer){
               $set: {
                 userId: userId,
                 teamId: teamId,
+                orderRef: Math.random().toString(36).replace(/[^a-z0-9]+/g, '').substr(1, 6).toUpperCase(),
                 teamCode: team.teamCode,
                 purveyorId: purveyorId,
                 purveyorCode: purveyor.purveyorCode,
@@ -351,7 +446,10 @@ if(Meteor.isServer){
       return ret;
     },
 
-    sendOrderCartItems: function(orderId) {
+    sendOrderCartItems: function(orderId, debugMode) {
+      if(undefined === debugMode){
+        debugMode = false
+      }
       var ret = {
         success: false
       }
@@ -381,7 +479,6 @@ if(Meteor.isServer){
         //   text: `<@kahdojay> order ${orderId} submitted for ${team.teamCode} by ${user.firstName} ${user.lastName} in ${Meteor.settings.APP.ENV}`,
         //   icon_emoji: ':moneybag:'
         // });
-
 
         if(purveyor.hasOwnProperty('sendEmail') === false || purveyor.sendEmail === false){
           log.error('Purveyor sendEmail is disabled or missing, triggering error for user: ', order.userId);
@@ -443,15 +540,14 @@ if(Meteor.isServer){
             sku: product.sku || '',
             quantity: cartItem.quantity * product.amount || 'Quantity Error',
             unit: productUnit,
-            notes: product.description,
-            // notes: cartItem.notes,
+            notes: product.description, // cartItem.notes,
+            price: (product.price) ? '$' + s.numberFormat(parseFloat(product.price), 2) : '',
           }
 
           if(showProductPrices === true){
-            orderProductListItem.showProductPrices = true
-            orderProductListItem.price = '$' + s.numberFormat(parseFloat(product.price), 2)
+            orderProductListItem.showProductPrice = true
           } else {
-            orderProductListItem.showProductPrices = false
+            orderProductListItem.showProductPrice = false
           }
 
           orderProductList.push(orderProductListItem);
@@ -508,6 +604,26 @@ if(Meteor.isServer){
             text: faxText.join('\n')
           }
           Meteor.call('faxOrder', faxOptions)
+        }
+
+        if(purveyor.hasOwnProperty('uploadToFTP') === true && purveyor.uploadToFTP === true){
+          var teamPurveyorSettingsLookup = {teamId: team._id, purveyorId: purveyor._id};
+          log.debug('TEAM PURVEYOR SETTINGS LOOKUP: ', teamPurveyorSettingsLookup);
+          var teamPurveyorSettings = TeamPurveyorSettings.findOne(teamPurveyorSettingsLookup);
+          Meteor.call('uploadOrderToFtp', {
+            teamPurveyorSettings: teamPurveyorSettings,
+            orderId: orderId,
+            orderRef: order.orderRef,
+            orderDate: orderDate,
+            orderProductList: orderProductList,
+          })
+        }
+
+        if(debugMode === true){
+          log.debug('\n\n')
+          log.debug('=======================================\nDEBUG MODE ONLY, NOTHING WAS SENT!!!\n=======================================')
+          log.debug('\n\n')
+          return;
         }
         /* */
         // send order email
@@ -694,6 +810,7 @@ if(Meteor.isServer){
               distinct_id: user._id,
               sender: `${user.firstName} ${user.lastName}`,
               orderId: orderId,
+              orderRef: order.orderRef,
               orderDeliveryDate: orderDeliveryDate,
               orderProductCount: Object.keys(order.orderDetails.products).length,
               showProductPrices: showProductPrices,

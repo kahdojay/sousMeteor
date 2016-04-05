@@ -28,6 +28,7 @@
     "aguid": "^1.0.4",
     "base64-string-s3": "https://github.com/sousapp/base64-string-s3/archive/37d080591c732d564347e6bb72bf9d97baedddd3.tar.gz",
     "bunyan": "^1.5.1",
+    "ftp": "^0.3.10",
     "mixpanel": "^0.4.0",
     "phaxio": "0.0.6",
     "slug": "^0.9.1",
