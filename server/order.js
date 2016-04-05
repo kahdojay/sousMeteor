@@ -712,7 +712,7 @@ if(Meteor.isServer){
             }
           })
           if(err || emailRejected){
-            log.debug('EMAIL ERROR: ', err, emailRejected)
+            log.error('EMAIL ERROR: ', err, emailRejected)
             if(Meteor.call('sendSlackNotification', order.teamId)){
               const slackAttachments = [
                 {
