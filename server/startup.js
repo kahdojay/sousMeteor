@@ -35,6 +35,7 @@ if(Meteor.isServer){
   base = process.env.PWD
   pkgInfo = Npm.require(base + '/package.json');
 
+  stream = Npm.require('stream');
   fs = Npm.require('fs');
   slug = Npm.require('slug');
   aguid = Npm.require('aguid');
