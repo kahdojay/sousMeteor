@@ -568,6 +568,7 @@ if(Meteor.isServer){
         globalMergeVars.push({ name: 'CONTACT_MAILER', content: Meteor.settings.MANDRILL.CONTACT_MAILER });
         globalMergeVars.push({ name: 'ORDER_DELIVERY_INSTRUCTIONS', content: (order.deliveryInstruction ? order.deliveryInstruction : false) });
         globalMergeVars.push({ name: 'ORDER_PRODUCTS', content: orderProductList });
+        globalMergeVars.push({ name: 'ORDER_PRODUCTS_COUNT', content: orderProductList.length });
         globalMergeVars.push({ name: 'SHOW_PRODUCT_PRICES', content: showProductPrices });
 
         log.info("PROCESSING ORDER: ", orderId);
