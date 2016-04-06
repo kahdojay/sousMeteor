@@ -12,7 +12,7 @@ if(Meteor.isServer){
       ret.remove = Export.remove({})
       var purveyorOptions = {}
       // purveyorOptions = {limit:10};
-      var allPurveyors = Purveyors.find({},purveyorOptions).fetch();
+      var allPurveyors = Purveyors.find({teamCode: {$not: /DEMO/}},purveyorOptions).fetch();
       ret.purveyors.count = allPurveyors.length;
       ret.export = 0
 
@@ -58,9 +58,9 @@ if(Meteor.isServer){
       ret.remove = Export.remove({})
       var productOptions = {}
       // productOptions = {limit:10};
-      var allProducts = Products.find({},productOptions).fetch();
-      var allCategories = Categories.find().fetch();
-      var allPurveyors = Purveyors.find().fetch();
+      var allProducts = Products.find({teamCode: {$not: /DEMO/}},productOptions).fetch();
+      var allCategories = Categories.find({teamCode: {$not: /DEMO/}}).fetch();
+      var allPurveyors = Purveyors.find({teamCode: {$not: /DEMO/}}).fetch();
       ret.products.count = allProducts.length;
       ret.export = 0
 
