@@ -382,7 +382,7 @@ if(Meteor.isServer){
 
           var orderDetails = Object.assign({}, order)
           delete orderDetails.id
-
+          let firstName = Meteor.users.findOne({_id: userId}).firstName || 'Sous'
           Orders.update(
             { _id: orderId },
             {
@@ -405,6 +405,11 @@ if(Meteor.isServer){
                   order: false,
                   products:{},
                 },
+                comments: [{
+                  author: firstName,
+                  createdAt: new Date().toISOString(),
+                  text: `Order placed - ${cartItemsIds.length} items`
+                }],
                 error: null,
                 mandrillResponse: null,
                 updatedAt: (new Date()).toISOString(),
