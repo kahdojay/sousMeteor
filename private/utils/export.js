@@ -39,7 +39,7 @@ function exitProcess(){
 
 switch(exportType){
   case 'products':
-    exportColumns = 'process,_id,action,name,teamCode,category,purveyors,amount,unit,par,sku,description,price,packSize';
+    exportColumns = 'process,_id,action,name,teamCode,category,brand,purveyors,amount,unit,par,sku,description,price,packSize';
     exportSort = '{ teamCode : 1, name: 1 }';
     break;
 
