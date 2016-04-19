@@ -1,11 +1,3 @@
-Template Name: sous-mobile-send-demo-order
-
-Subject:
-
-[DEMO] {{PURVEYOR_NAME}} • Order Received from {{BUYER_NAME}} on {{ORDER_DATE}}
-
-Template:
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -55,8 +47,8 @@ Template:
                       <table class="twelve columns">
                         <tr>
                           <td class="center">
-                          	<div class="demo">
-                           		THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
+                            <div class="demo">
+                              THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
                                 <br>
                                 <br>
                                 Thanks for checking out Sous.  Reply to this e-mail if you’d like to set up your order guide and get started using Sous today.
@@ -65,20 +57,12 @@ Template:
                             </div>
                           </td>
                         </tr>
-                        {{#if DELIVERY_DATE}}
                         <tr>
                           <td class="center">
-                            <p class="center">Requested Delivery Date: {{DELIVERY_DATE}}</p>
-                            <hr>
-                          </td>
-                        </tr>
-                        {{/if}}
-                        <tr>
-                          <td class="center">
-                          	<p class="center">{{PURVEYOR_NAME}}, {{BUYER_NAME}} placed an order at {{ORDER_TIME}} on {{ORDER_DATE}}.</p>
-                          	<p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts</p>
-                          	<p class="center">to ensure all incoming orders are received.</p>
-                          	<br>
+                            <p class="center">{{PURVEYOR_NAME}}, {{BUYER_NAME}} placed an order at {{ORDER_TIME}} on {{ORDER_DATE}}.</p>
+                            <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts</p>
+                            <p class="center">to ensure all incoming orders are received.</p>
+                            <br>
                           </td>
                         </tr>
                         <tr>
@@ -115,7 +99,23 @@ Template:
                 <hr>
                 {{/if}}
                 <h5 class="center">Order Summary</h5>
+                {{#if ORDER_PRODUCTS_COUNT}}
+                  {{#if `ORDER_PRODUCTS_COUNT > 1`}}
+            <p class="center">({{ORDER_PRODUCTS_COUNT}} items)</p>
+                  {{else}}
+                    <p class="center">({{ORDER_PRODUCTS_COUNT}} item)</p>
+          {{/if}}
+        {{/if}}   
                 <br>
+                {{#if DELIVERY_DATE}}
+                <tr>
+                  <td class="center">
+                    <p class="center">Requested Delivery Date: {{DELIVERY_DATE}}</p>
+                    <hr>
+                  </td>
+                </tr>
+                <br>
+                {{/if}}
                 <table class="container">
                   <tr>
                     <td>
@@ -125,10 +125,7 @@ Template:
                                 <table class="twelve columns">
                                   <tr class="order-header last">
                                     <th class="center">Name</th>
-                                    <th class="center">Amt</th>
-                                    {{#if SHOW_PRODUCT_PRICES}}
-                                    <th class="center">Price</th>
-                                    {{/if}}
+                                    <th class="center">Qty</th>
                                     <th class="center">Notes</th>
                                   </tr>
                                   {{#each ORDER_PRODUCTS}}
@@ -140,13 +137,12 @@ Template:
                                     <td class="amount center">
                                       {{quantity}} {{unit}}
                                     </td>
-                                    {{#if showProductPrices}}
-                                    <td class="price center">
-                                      {{price}}
-                                    </td>
-                                    {{/if}}
                                     <td class="notes center">
-                                      {{#if notes}}{{notes}}{{/if}}
+                                    {{#if notes}}
+                                        <p class="center">{{notes}}</p>
+                                    {{else}}
+                                        <p class="center">-</p>
+                                    {{/if}}
                                     </td>
                                   </tr>
                                   {{/each}}
