@@ -48,7 +48,8 @@ if(Meteor.isServer){
         var orderNumber = orderPkg.orderRef;
         var customerNumber = clientSettings.customerNumber;
         var shipDate = orderPkg.orderDate.format('MMDDYYYY');
-        var customerPO = clientSettings.customerPO;
+        // var customerPO = clientSettings.customerPO;
+        var customerPO = 'SOUS' + orderPkg.orderRef;
         var memoCode = '';
         var shippingInstructions = '';
         var deliveryInstructions = '';

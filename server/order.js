@@ -382,7 +382,8 @@ if(Meteor.isServer){
 
           var orderDetails = Object.assign({}, order)
           delete orderDetails.id
-
+          let firstName = Meteor.users.findOne({_id: userId}).firstName || 'Sous'
+          let orderCommentText = cartItemsIds.length > 1 ? `Order placed - ${cartItemsIds.length} items.` : `Order placed - ${cartItemsIds.length} item.`
           Orders.update(
             { _id: orderId },
             {
@@ -405,6 +406,11 @@ if(Meteor.isServer){
                   order: false,
                   products:{},
                 },
+                comments: [{
+                  author: firstName,
+                  createdAt: new Date().toISOString(),
+                  text: orderCommentText
+                }],
                 error: null,
                 mandrillResponse: null,
                 updatedAt: (new Date()).toISOString(),
@@ -568,6 +574,7 @@ if(Meteor.isServer){
         globalMergeVars.push({ name: 'CONTACT_MAILER', content: Meteor.settings.MANDRILL.CONTACT_MAILER });
         globalMergeVars.push({ name: 'ORDER_DELIVERY_INSTRUCTIONS', content: (order.deliveryInstruction ? order.deliveryInstruction : false) });
         globalMergeVars.push({ name: 'ORDER_PRODUCTS', content: orderProductList });
+        globalMergeVars.push({ name: 'ORDER_PRODUCTS_COUNT', content: orderProductList.length });
         globalMergeVars.push({ name: 'SHOW_PRODUCT_PRICES', content: showProductPrices });
 
         log.info("PROCESSING ORDER: ", orderId);

@@ -7,14 +7,14 @@ if(Meteor.isServer){
           count: null
         },
         remove: null,
-        import: null,
+        export: null,
       }
       ret.remove = Export.remove({})
       var purveyorOptions = {}
       // purveyorOptions = {limit:10};
-      var allPurveyors = Purveyors.find({},purveyorOptions).fetch();
+      var allPurveyors = Purveyors.find({teamCode: {$not: /DEMO/}},purveyorOptions).fetch();
       ret.purveyors.count = allPurveyors.length;
-      ret.import = 0
+      ret.export = 0
 
       allPurveyors.forEach(function(purveyor) {
         var exportPurveyorAttributes = {
@@ -41,7 +41,7 @@ if(Meteor.isServer){
         };
         log.debug("PURVEYOR EXPORT: ", exportPurveyorAttributes)
         Export.insert(exportPurveyorAttributes);
-        ret.import += 1;
+        ret.export += 1;
       })
 
       return ret;
@@ -53,16 +53,16 @@ if(Meteor.isServer){
           count: null
         },
         remove: null,
-        import: null,
+        export: null,
       }
       ret.remove = Export.remove({})
       var productOptions = {}
       // productOptions = {limit:10};
-      var allProducts = Products.find({},productOptions).fetch();
-      var allCategories = Categories.find().fetch();
-      var allPurveyors = Purveyors.find().fetch();
+      var allProducts = Products.find({teamCode: {$not: /DEMO/}},productOptions).fetch();
+      var allCategories = Categories.find({teamCode: {$not: /DEMO/}}).fetch();
+      var allPurveyors = Purveyors.find({teamCode: {$not: /DEMO/}}).fetch();
       ret.products.count = allProducts.length;
-      ret.import = 0
+      ret.export = 0
 
       allProducts.forEach(function(product) {
         var categoryName = _.filter(allCategories, function(category){
@@ -91,7 +91,7 @@ if(Meteor.isServer){
         };
         log.debug("PRODUCT EXPORT: ", exportProductAttributes)
         Export.insert(exportProductAttributes);
-        ret.import += 1;
+        ret.export += 1;
       })
 
       return ret;
