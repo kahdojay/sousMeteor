@@ -5,13 +5,26 @@ if(Meteor.isServer){
       var allUsers = Meteor.users.find().fetch();
       log.debug('Processing all the users: ', allUsers.length);
       allUsers.forEach(function(user) {
-        mixpanel.people.set(user._id, {
+        var userSettings = Settings.findOne({userId: user._id});
+
+        var setValues = {
           '$first_name': user.firstName,
           '$last_name': user.lastName,
           '$email': user.email,
           '$created': user.createdAt,
           'phoneNumber': user.username,
-        }, {
+        }
+        if(userSettings){
+          setValues['settings__appBuildNumber'] = userSettings.appBuildNumber || 'unkown';
+          setValues['settings__appVersion'] = userSettings.appVersion || 'unkown';
+          setValues['settings__deviceId'] = userSettings.deviceId || 'unkown';
+          setValues['settings__deviceName'] = userSettings.deviceName || 'unkown';
+          setValues['settings__model'] = userSettings.model || 'unkown';
+          setValues['settings__systemName'] = userSettings.systemName || 'unkown';
+          setValues['settings__systemVersion'] = userSettings.systemVersion || 'unkown';
+        }
+        // console.log(setValues);
+        mixpanel.people.set(user._id, setValues, {
           $ignore_time: true
         });
       })
@@ -337,7 +350,7 @@ if(Meteor.isServer){
 
     sendSMSInvite: function(phoneNumber, teamId, invitorUserId) {
       var invitor = Meteor.users.findOne({ _id: invitorUserId });
-      var downloadURL = Meteor.settings.APP.ITUNES_URL;
+      var downloadURL = Meteor.settings.APP.DOWNLOAD_URL;
       var twilio = new Twilio(
         Meteor.settings.TWILIO.SID,
         Meteor.settings.TWILIO.TOKEN
