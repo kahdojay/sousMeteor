@@ -347,7 +347,7 @@ if(Meteor.isServer){
           return cartItem._id;
         })
         var missingCartItems = orderPkg[purveyorId].cartItemIds.filter(function(cartItemId) {
-          return (cartItemIds.indexOf(cartItemId) !== -1)
+          return (cartItemIds.indexOf(cartItemId) === -1)
         })
         if(missingCartItems.length > 0){
           ret.verified = false
