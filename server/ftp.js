@@ -88,6 +88,9 @@ if(Meteor.isServer){
         stringStream.push(null);
 
         try {
+          ftpClient.on('error', function(err){
+            log.error('FTP UPLOAD ERROR: ', err)
+          })
           ftpClient.on('ready', function() {
             ftpClient.put(stringStream, `${orderFileName}`, function(err) {
               if (err) {
