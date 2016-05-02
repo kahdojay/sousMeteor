@@ -427,7 +427,7 @@ if(Meteor.isServer){
               $set: {
                 userId: userId,
                 teamId: teamId,
-                orderRef: Math.random().toString(36).replace(/[^a-z0-9]+/g, '').substr(1, 6).toUpperCase(),
+                orderRef: Math.random().toString(36).replace(/[^a-z0-9]+/g, '').substr(1, 4).toUpperCase(),
                 teamCode: team.teamCode,
                 purveyorId: purveyorId,
                 purveyorCode: purveyor.purveyorCode,
@@ -900,7 +900,8 @@ if(Meteor.isServer){
             }
             // Text the purveyor rep
             if(purveyor.hasOwnProperty('sendSMS') && purveyor.sendSMS === true && purveyor.hasOwnProperty('phone') && !!purveyor.phone.trim() === true){
-              Meteor.call('sendPurveyorSMS', team, purveyor, orderProductCount, orderId)
+              var purveyorMsg = `Order emailed from ${team.name} - ${orderProductCount} item(s). To confirm, respond with this order reference: ${order.orderRef} or Reply All to the email.`
+              Meteor.call('sendPurveyorSMS', team, purveyor, order, purveyorMsg)
             }
             // Update order sent
             Orders.update(realOrderId, { $set: {

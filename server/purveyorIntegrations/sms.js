@@ -1,6 +1,6 @@
 if(Meteor.isServer){
   Meteor.methods({
-    sendPurveyorSMS: function(team, purveyor, orderProductCount, orderId) {
+    sendPurveyorSMS: function(team, purveyor, order, msg) {
       var twilio = new Twilio(
         Meteor.settings.TWILIO.SID,
         Meteor.settings.TWILIO.TOKEN
@@ -8,7 +8,7 @@ if(Meteor.isServer){
       twilio.sendSms({
         to: purveyor.phone,
         from: Meteor.settings.TWILIO.FROM,
-        body: `Order emailed from ${team.name} - ${orderProductCount} item(s). Please check your email for order contents. To confirm, Reply All to the email or respond 'ok' to this message.`
+        body: msg
       }, Meteor.bindEnvironment( function(err, res) {
         if (err) {
           log.debug('PURVEYOR TEXT RESPONSE: ', res.status)
@@ -40,7 +40,7 @@ if(Meteor.isServer){
                 },
                 {
                   title: 'orderId',
-                  value: orderId,
+                  value: order.orderId,
                   short: true
                 },
               ]
