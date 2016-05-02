@@ -515,14 +515,6 @@ if(Meteor.isServer){
       // lookup PURVEYOR info
       var purveyor = Purveyors.findOne({ _id: order.purveyorId });
       try {
-
-        // notify dj
-        // slack.alert({
-        //   channel: '@kahdojay',
-        //   text: `<@kahdojay> order ${orderId} submitted for ${team.teamCode} by ${user.firstName} ${user.lastName} in ${Meteor.settings.APP.ENV}`,
-        //   icon_emoji: ':moneybag:'
-        // });
-
         if(purveyor.hasOwnProperty('sendEmail') === false || purveyor.sendEmail === false){
           log.error('Purveyor sendEmail is disabled or missing, triggering error for user: ', order.userId);
           return Meteor.call('triggerError',
@@ -598,7 +590,7 @@ if(Meteor.isServer){
           idx++;
         })
 
-        // setup the global merge vars
+        // setup the global merge vars for Mandrill
         var globalMergeVars = [];
         globalMergeVars.push({ name: 'PURVEYOR_NAME', content: purveyor.name });
         globalMergeVars.push({ name: 'BUYER_NAME', content: team.name });
@@ -616,7 +608,7 @@ if(Meteor.isServer){
 
         log.info("PROCESSING ORDER: ", orderId);
         log.debug("GLOBAL MERGE VARS: ", JSON.stringify(globalMergeVars));
-
+        // Fax integration
         var purveyorSendFax = false
         if(purveyor.hasOwnProperty('sendFax') === true && purveyor.sendFax === true){
           purveyorSendFax = true
@@ -641,7 +633,7 @@ if(Meteor.isServer){
             faxText.push(`${product.name}${product.sku ? ' (' + product.sku + ') ': ''} - ${product.quantity} ${product.unit}`)
             faxText.push('')
           })
-          faxText.push(`PLEASE EMAIL ORDERS@SOUSAPP.COM TEXT DON AT 530.435.5246 TO CONFIRM RECEIPT`)
+          faxText.push(`PLEASE TEXT OR CALL ONE OF THE CONTACTS ABOVE CONFIRM RECEIPT`)
 
           var faxOptions = {
             number: purveyor.fax,
@@ -649,12 +641,22 @@ if(Meteor.isServer){
           }
           Meteor.call('faxOrder', faxOptions)
         }
-
+        // FTP Integration
         if(purveyor.hasOwnProperty('uploadToFTP') === true && purveyor.uploadToFTP === true){
           var teamPurveyorSettingsLookup = {teamId: team._id, purveyorId: purveyor._id};
           log.debug('TEAM PURVEYOR SETTINGS LOOKUP: ', teamPurveyorSettingsLookup);
           var teamPurveyorSettings = TeamPurveyorSettings.findOne(teamPurveyorSettingsLookup);
           Meteor.call('uploadOrderToFtp', {
+            teamPurveyorSettings: teamPurveyorSettings,
+            orderId: orderId,
+            orderRef: order.orderRef,
+            orderDate: orderDate,
+            orderProductList: orderProductList,
+          })
+        }
+        // Sheetsu Integration
+        if(purveyor.hasOwnProperty('sheetsu') === true && !!purveyor.sheetsu.trim() === true){
+          Meteor.call('uploadOrderToSheetsu', purveyor.sheetsu, {
             teamPurveyorSettings: teamPurveyorSettings,
             orderId: orderId,
             orderRef: order.orderRef,
