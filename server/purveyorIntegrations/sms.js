@@ -8,7 +8,7 @@ if(Meteor.isServer){
       twilio.sendSms({
         to: purveyor.phone,
         from: Meteor.settings.TWILIO.FROM,
-        body: `Order emailed from ${team.name} - ${orderProductCount} item(s). To confirm receipt, please Reply All to the email order.`
+        body: `Order emailed from ${team.name} - ${orderProductCount} item(s). Please check your email for order contents. To confirm, Reply All to the email or respond 'ok' to this message.`
       }, Meteor.bindEnvironment( function(err, res) {
         if (err) {
           log.debug('PURVEYOR TEXT RESPONSE: ', res.status)
