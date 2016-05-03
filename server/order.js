@@ -342,10 +342,10 @@ if(Meteor.isServer){
           status: STATUS.CART_ITEM.NEW,
           purveyorId: purveyorId,
         }, {fields: {_id: 1}}).fetch();
-        log.debug('VERIFY CART ITEMS: found: ', cartItems, ' - comparing to: ', orderPkg[purveyorId].cartItemIds)
         var cartItemIds = _.map(cartItems, function(cartItem) {
           return cartItem._id;
         })
+        log.debug('VERIFY CART ITEMS: found: ', cartItemIds, ' - comparing to: ', orderPkg[purveyorId].cartItemIds)
         var missingCartItems = orderPkg[purveyorId].cartItemIds.filter(function(cartItemId) {
           return (cartItemIds.indexOf(cartItemId) === -1)
         })
