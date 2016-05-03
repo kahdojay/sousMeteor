@@ -190,8 +190,8 @@ if(Meteor.isServer){
                     short: true
                   },
                   {
-                    title: 'User',
-                    value: `${user.firstName} ${user.lastName} (${user.username})`,
+                    title: 'Author',
+                    value: `${message.author}`,
                     short: true
                   },
                   {
@@ -236,8 +236,8 @@ if(Meteor.isServer){
                 short: true
               },
               {
-                title: 'User',
-                value: `${user.firstName} ${user.lastName} (${user.username})`,
+                title: 'Author',
+                value: `${message.author}`,
                 short: true
               },
               {
