@@ -900,7 +900,7 @@ if(Meteor.isServer){
             }
             // Text the purveyor rep
             if(purveyor.hasOwnProperty('sendSMS') && purveyor.sendSMS === true && purveyor.hasOwnProperty('phone') && !!purveyor.phone.trim() === true){
-              var purveyorMsg = `Order emailed from ${team.name} - ${orderProductCount} item(s). To confirm, respond with this order reference: ${order.orderRef} or Reply All to the email.`
+              var purveyorMsg = `Order emailed from ${team.name} - ${orderProductCount} item(s). To confirm, please Reply All to the email.`
               Meteor.call('sendPurveyorSMS', team, purveyor, order, purveyorMsg)
             }
             // Update order sent
