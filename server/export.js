@@ -38,6 +38,8 @@ if(Meteor.isServer){
           sendFax: (purveyor.sendFax === true ? 'TRUE' : 'FALSE'),
           fax: purveyor.fax,
           uploadToFTP: (purveyor.uploadToFTP === true ? 'TRUE' : 'FALSE'),
+          sheetsu: purveyor.sheetsu,
+          imageUrl: purveyor.imageUrl,
         };
         log.debug("PURVEYOR EXPORT: ", exportPurveyorAttributes)
         Export.insert(exportPurveyorAttributes);

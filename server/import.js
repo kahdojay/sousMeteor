@@ -342,7 +342,8 @@ if(Meteor.isServer){
           sendFax: (purveyor.sendFax === "TRUE" ? true : false),
           fax: purveyor.fax,
           uploadToFTP: (purveyor.uploadToFTP === "TRUE" ? true : false),
-          sheetsu: purveyor.sheetsu,
+          sheetsu: purveyor.sheetsu || '',
+          imageUrl: purveyor.imageUrl,
           deleted: (purveyor.action === "REMOVE" ? true : false),
           updatedAt: (new Date()).toISOString()
         },
