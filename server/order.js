@@ -61,7 +61,7 @@ if(Meteor.isServer){
             orderId: orderId,
             orderRef: order.orderRef,
             orderDeliveryDate: orderDeliveryDate,
-            orderProductCount: Object.keys(order.orderDetails.products).length,
+            orderProductCount: orderProductCount,
             showProductPrices: showProductPrices,
             orderSubTotal: order.subtotal || '',
             orderedAt: order.orderedAt,
@@ -342,10 +342,10 @@ if(Meteor.isServer){
           status: STATUS.CART_ITEM.NEW,
           purveyorId: purveyorId,
         }, {fields: {_id: 1}}).fetch();
-        log.debug('VERIFY CART ITEMS: found: ', cartItems, ' - comparing to: ', orderPkg[purveyorId].cartItemIds)
         var cartItemIds = _.map(cartItems, function(cartItem) {
           return cartItem._id;
         })
+        log.debug('VERIFY CART ITEMS: found: ', cartItemIds, ' - comparing to: ', orderPkg[purveyorId].cartItemIds)
         var missingCartItems = orderPkg[purveyorId].cartItemIds.filter(function(cartItemId) {
           return (cartItemIds.indexOf(cartItemId) === -1)
         })
@@ -427,7 +427,7 @@ if(Meteor.isServer){
               $set: {
                 userId: userId,
                 teamId: teamId,
-                orderRef: Math.random().toString(36).replace(/[^a-z0-9]+/g, '').substr(1, 6).toUpperCase(),
+                orderRef: Math.random().toString(36).replace(/[^a-z0-9]+/g, '').substr(1, 4).toUpperCase(),
                 teamCode: team.teamCode,
                 purveyorId: purveyorId,
                 purveyorCode: purveyor.purveyorCode,
@@ -657,7 +657,6 @@ if(Meteor.isServer){
         // Sheetsu Integration
         if(purveyor.hasOwnProperty('sheetsu') === true && !!purveyor.sheetsu.trim() === true){
           Meteor.call('uploadOrderToSheetsu', purveyor.sheetsu, {
-            teamPurveyorSettings: teamPurveyorSettings,
             orderId: orderId,
             orderRef: order.orderRef,
             orderDate: orderDate,
@@ -682,22 +681,7 @@ if(Meteor.isServer){
         // this.unblock(); // http://docs.meteor.com/#/full/method_unblock
         // send the template
 
-        let recipients = [
-          {
-            email: 'dj@sousapp.com',
-            type: 'bcc'
-          },
-          {
-            email: 'brian@sousapp.com',
-            type: 'bcc'
-          }
-        ]
-        // if(user.email){
-        //   recipients.push({
-        //     email: user.email.trim(),
-        //     type: 'cc'
-        //   })
-        // }
+        let recipients = []
         purveyor.orderEmails.split(',').forEach(function(orderEmail) {
           log.info('adding purveyor orderEmail to recipients TO array: ', orderEmail)
           orderEmail = orderEmail.trim()
@@ -723,7 +707,6 @@ if(Meteor.isServer){
             }
           })
         }
-
 
         var templateName = Meteor.settings.MANDRILL.TEMPLATES.SEND_ORDER
         if(team.demoTeam){
@@ -851,6 +834,8 @@ if(Meteor.isServer){
               mixpanelEventName = `Place order [${Meteor.settings.APP.ENV}] (DEMO)`
             }
 
+            var orderProductCount = Object.keys(order.orderDetails.products).length
+
             log.debug('SEND MIXPANEL EVENT: ', mixpanelEventName)
             mixpanel.track(mixpanelEventName, {
               distinct_id: user._id,
@@ -858,7 +843,7 @@ if(Meteor.isServer){
               orderId: orderId,
               orderRef: order.orderRef,
               orderDeliveryDate: orderDeliveryDate,
-              orderProductCount: Object.keys(order.orderDetails.products).length,
+              orderProductCount: orderProductCount,
               showProductPrices: showProductPrices,
               orderSubTotal: order.subtotal || '',
               orderedAt: order.orderedAt,
@@ -905,7 +890,6 @@ if(Meteor.isServer){
                   ]
                 }
               ]
-
               slack.alert({
                 username: 'Orderbot (mobile)',
                 channel: '#orders',
@@ -913,6 +897,11 @@ if(Meteor.isServer){
                 icon_emoji: ':moneybag:',
                 attachments: slackAttachments
               });
+            }
+            // Text the purveyor rep
+            if(purveyor.hasOwnProperty('sendSMS') && purveyor.sendSMS === true && purveyor.hasOwnProperty('phone') && !!purveyor.phone.trim() === true){
+              var purveyorMsg = `Order emailed from ${team.name} - ${orderProductCount} item(s). To confirm, please Reply All to the email.`
+              Meteor.call('sendPurveyorSMS', team, purveyor, order, purveyorMsg)
             }
             // Update order sent
             Orders.update(realOrderId, { $set: {
@@ -929,7 +918,7 @@ if(Meteor.isServer){
         ret.success = true;
       } catch (err) {
         ret.success = false;
-        var slackAttachments = [
+        var orderErrorSlackAttachments = [
           {
             title: 'Errant Order Details',
             color: 'danger',
@@ -976,10 +965,10 @@ if(Meteor.isServer){
           channel: '#dev-errors',
           text: alertMsg.join('\n'),
           icon_emoji: ':rotating_light:',
-          attachments: slackAttachments
+          attachments: orderErrorSlackAttachments
         });
 
-        log.error(alertMsg.join('\n'), slackAttachments)
+        log.error(alertMsg.join('\n'), orderErrorSlackAttachments)
       }
 
       return ret;
