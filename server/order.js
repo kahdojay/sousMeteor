@@ -329,7 +329,7 @@ if(Meteor.isServer){
     verifyCartItems: function(userId, teamId, orderPkg) {
       var ret = {
         verified: true,
-        missingCartItems: {},
+        unverifiedCartItems: {},
       }
       var team = Teams.findOne({_id: teamId}, {fields: {teamCode: 1}});
       // double check if cart has any items
@@ -341,17 +341,31 @@ if(Meteor.isServer){
           teamId: teamId,
           status: STATUS.CART_ITEM.NEW,
           purveyorId: purveyorId,
-        }, {fields: {_id: 1}}).fetch();
-        var cartItemIds = _.map(cartItems, function(cartItem) {
+        }, {fields: {_id: 1, quantity: 1, productName: 1}}).fetch();
+        var cartItemIds = [];
+        var serverCartItem = {};
+        cartItems.forEach(function(cartItem) {
+          cartItemIds.push(cartItem._id)
+          serverCartItem[cartItem._id] = {
+            quantity: cartItem.quantity,
+            productName: cartItem.productName,
+          }
           return cartItem._id;
         })
-        log.debug('VERIFY CART ITEMS: found: ', cartItemIds, ' - comparing to: ', orderPkg[purveyorId].cartItemIds)
-        var missingCartItems = orderPkg[purveyorId].cartItemIds.filter(function(cartItemId) {
-          return (cartItemIds.indexOf(cartItemId) === -1)
+        log.debug('VERIFY CART ITEMS: found: ', serverCartItem, ' - comparing to: ', orderPkg[purveyorId].cartItemIds)
+        var unverifiedCartItems = []
+        orderPkg[purveyorId].cartItemIds.forEach(function(cartItem) {
+          if(
+            cartItemIds.indexOf(cartItem.id) === -1  // not found
+            || serverCartItem[cartItem.id].quantity !== cartItem.quantity
+            || serverCartItem[cartItem.id].productName !== cartItem.productName
+          ){
+            unverifiedCartItems.push(cartItem)
+          }
         })
-        if(missingCartItems.length > 0){
+        if(unverifiedCartItems.length > 0){
           ret.verified = false
-          ret.missingCartItems[purveyorId] = missingCartItems
+          ret.unverifiedCartItems[purveyorId] = unverifiedCartItems
         }
       })
 
