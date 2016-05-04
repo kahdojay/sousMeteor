@@ -14,7 +14,7 @@ if(Meteor.isServer){
       order.orderProductList.forEach(function(product) {
       log.debug('QUEUEING PRODUCT FOR SHEETSU: ', product)
         productRows.push({
-          "Order #": `${order.orderRef}`,
+          "External ID": `${order.orderRef}`,
           "Ship Date": shipDate.format('ddd M/D'),
           "Customer ID": '46',
           "Customer": 'Bricolage',
