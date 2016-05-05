@@ -225,5 +225,17 @@ if(Meteor.isServer){
       return ret;
 
     },
+
+    deleteCategory: function(categoryId, deleteCategoryAttributes) {
+      log.debug("DELETE CATEGORY ", categoryId, deleteCategoryAttributes);
+      return Categories.update(categoryId, {
+        $set: {
+          deleted: deleteCategoryAttributes.deleted || true,
+          deletedBy: deleteCategoryAttributes.deletedBy || null,
+          deletedAt: deleteCategoryAttributes.deletedAt || (new Date()).toISOString(),
+          updatedAt: (new Date()).toISOString(),
+        }
+      });
+    },
   })
 }

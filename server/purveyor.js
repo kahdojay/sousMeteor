@@ -11,13 +11,17 @@ if(Meteor.isServer){
         log.debug("CREATED PURVEYOR", purveyor);
       } else {
         log.error("Purveyor already exists");
-        // TODO: publish an error
+        Meteor.call('triggerError',
+          'verification-error',
+          'Error: a purveyor with the same name already exists.',
+          userId, null, purveyorAttributes
+        )
       }
     },
 
     deletePurveyor: function(purveyorId, userId) {
-      log.debug("DELETE PURVEYOR ", purveyorId);
-      Purveyors.update(purveyorId, {
+      log.debug("DELETE PURVEYOR ", purveyorId, " by: ", userId);
+      return Purveyors.update(purveyorId, {
         $set: {
           deleted: true,
           updatedAt: (new Date()).toISOString(),
@@ -29,7 +33,7 @@ if(Meteor.isServer){
 
     renamePurveyor: function(purveyorCode, newPurveyorName) {
       let purveyor = Purveyors.findOne({purveyorCode: purveyorCode})
-      Purveyors.update(
+      return Purveyors.update(
         {_id: purveyor._id},
         { $set: {
           name: newPurveyorName,
