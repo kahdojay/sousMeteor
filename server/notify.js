@@ -161,22 +161,25 @@ if(Meteor.isServer){
       var user = Meteor.users.findOne({_id: userId});
       var messageTeam = Teams.findOne({ _id: teamId }, { fields: { teamCode: 1 } })
       var channel = `${Meteor.settings.APP.ENV[0]}-${messageTeam.teamCode}` || `T-${Meteor.settings.APP.ENV[0]}-${messageTeam._id}`
+      var queryData = {
+        "where": {
+          "channels": channel,
+        },
+        "data": {
+          "alert": message,
+          "badge": "Increment"
+        }
+      }
+      if(user !== undefined){
+        queryData['where']["$ne"] = {
+          "phoneNumber": user.username
+        }
+      }
       try {
         Meteor.http.post(PARSE.PUSH_URL, {
           method: 'PUSH',
           headers: PARSE.HEADERS,
-          "data": {
-            "where": {
-              "channels": channel,
-              "$ne": {
-                "phoneNumber": user.username
-              }
-            },
-            "data": {
-              "alert": message,
-              "badge": "Increment"
-            }
-          }
+          "data": queryData,
         }, Meteor.bindEnvironment(function(err, res){
           if(err){
             var slackAttachments = [
