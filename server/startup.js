@@ -96,6 +96,12 @@ if(Meteor.isServer){
     updatedAt: true,
   };
 
+  APPROVED_CATEGORY_ATTRS = {
+    name: true,
+    deleted: true,
+    updatedAt: true,
+  }
+
   APPROVED_CART_ITEM_ATTRS = {
     purveyorId: true,
     orderId: true,
