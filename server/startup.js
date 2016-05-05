@@ -110,6 +110,33 @@ if(Meteor.isServer){
     quantityReceived: true,
   }
 
+  APPROVED_PURVEYOR_ATTRS = {
+    teamId: false,
+    purveyorCode: false,
+    teamCode: false,
+    name: true,
+    company: true,
+    city: true,
+    state: true,
+    zipCode: true,
+    timeZone: true,
+    orderCutoffTime: true,
+    orderMinimum: true,
+    deliveryDays: true,
+    notes: true,
+    email: true,
+    orderEmails: true,
+    phone: true,
+    fax: true,
+    orderContact: true,
+    description: true,
+    sendEmail: false,
+    sendFax: false,
+    uploadToFTP: false,
+    deleted: true,
+    updatedAt: true,
+  }
+
   APPROVED_PARSE_UPDATE_ATTRS = {
     "appVersion": 1,
     "appBuildNumber": 1,

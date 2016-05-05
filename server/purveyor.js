@@ -19,14 +19,30 @@ if(Meteor.isServer){
       }
     },
 
-    deletePurveyor: function(purveyorId, userId) {
-      log.debug("DELETE PURVEYOR ", purveyorId, " by: ", userId);
+    updatePurveyor: function(purveyorId, purveyorAttributes) {
+      var realPurveyorId = {_id: purveyorId};
+      purveyorAttributes.updatedAt = (new Date()).toISOString();
+      var updatedPurveyor = Purveyors.findOne(realPurveyorId);
+      Object.keys(purveyorAttributes).forEach(function(key){
+        if(APPROVED_PURVEYOR_ATTRS.hasOwnProperty(key) && APPROVED_PURVEYOR_ATTRS[key] === true){
+          updatedPurveyor[key] = purveyorAttributes[key];
+        }
+      })
+      if(updatedPurveyor.hasOwnProperty('deleted') === true && updatedPurveyor.deleted === true){
+        updatedPurveyor.deletedAt = (new Date()).toISOString()
+      }
+      log.debug("UPDATE PURVEYOR ATTRS ", updatedPurveyor);
+      return Purveyors.update(realPurveyorId, {$set: updatedPurveyor});
+    },
+
+    deletePurveyor: function(purveyorId, purveyorAttributes) {
+      log.debug("DELETE PURVEYOR ", purveyorId, purveyorAttributes);
       return Purveyors.update(purveyorId, {
         $set: {
-          deleted: true,
+          deleted: purveyorAttributes.deleted || true,
+          deletedBy: purveyorAttributes.userId || null,
+          deletedAt: purveyorAttributes.deletedAt || (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString(),
-          deletedAt: (new Date()).toISOString(),
-          deletedBy: userId,
         }
       });
     },
