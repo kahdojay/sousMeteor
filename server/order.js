@@ -695,7 +695,10 @@ if(Meteor.isServer){
         // this.unblock(); // http://docs.meteor.com/#/full/method_unblock
         // send the template
 
-        let recipients = []
+        let recipients = [{
+          email: 'sous@sousapp.com',
+          type: 'bcc'
+        }]
         purveyor.orderEmails.split(',').forEach(function(orderEmail) {
           log.info('adding purveyor orderEmail to recipients TO array: ', orderEmail)
           orderEmail = orderEmail.trim()
