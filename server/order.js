@@ -611,6 +611,7 @@ if(Meteor.isServer){
         globalMergeVars.push({ name: 'BUYER_CONTACTS', content: buyerContacts });
         globalMergeVars.push({ name: 'BUYER_ADDRESS', content: team.address || '' });
         globalMergeVars.push({ name: 'BUYER_CITY_STATE_ZIP', content: teamCityStateZip.join('') });
+        globalMergeVars.push({ name: 'ORDER_REF', content: order.orderRef || '' });
         globalMergeVars.push({ name: 'ORDER_DATE', content: orderDate.format('dddd, MMMM D') });
         globalMergeVars.push({ name: 'ORDER_TIME', content: orderDate.format('h:mm A') });
         globalMergeVars.push({ name: 'DELIVERY_DATE', content: orderDeliveryDate });
@@ -631,7 +632,7 @@ if(Meteor.isServer){
           faxText.push(`Order Date: ${orderDate.format('dddd, MMMM D')}`)
           faxText.push(`Order Time: ${orderDate.format('h:mm A')}`)
           faxText.push('')
-          faxText.push(`PLEASE EMAIL ORDERS@SOUSAPP.COM OR TEXT DON AT 530.435.5246 TO CONFIRM RECEIPT`)
+          faxText.push(`PLEASE TEXT OR CALL ONE OF THE CONTACTS ABOVE CONFIRM RECEIPT`)
           faxText.push('')
           faxText.push('------Buyer Contacts------')
           buyerContacts.forEach(function(contact) {
