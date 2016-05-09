@@ -183,6 +183,9 @@ if(Meteor.isServer){
         productId: cartItemAttributes.productId,
         status: STATUS.CART_ITEM.NEW,
       };
+      if(cartItemAttributes.hasOwnProperty('_id') === true){
+        cartItemLookup = {_id: cartItemAttributes._id};
+      }
       var cartItem = CartItems.findOne(cartItemLookup);
       var cartItemUpsert = {};
       var updateOptions = {};
