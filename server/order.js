@@ -183,12 +183,14 @@ if(Meteor.isServer){
         productId: cartItemAttributes.productId,
         status: STATUS.CART_ITEM.NEW,
       };
-      if(cartItemAttributes.hasOwnProperty('_id') === true){
-        cartItemLookup = {_id: cartItemAttributes._id};
-      }
       var cartItem = CartItems.findOne(cartItemLookup);
       var cartItemUpsert = {};
       var updateOptions = {};
+
+      if(cartItem === undefined && cartItemAttributes.hasOwnProperty('_id') === true){
+        cartItemLookup = {_id: cartItemAttributes._id};
+        cartItem = CartItems.findOne(cartItemLookup);
+      }
 
       if(cartItem === undefined){
         var product = Products.findOne({_id: cartItemAttributes.productId});
