@@ -209,12 +209,12 @@ if(Meteor.isServer){
           cartItemUpsert._id = cartItemAttributes._id;
         }
 
-        var cartItemStatusLookup = Object.keys(STATUS.CART_ITEM)
-        if(cartItemAttributes.hasOwnProperty('status') === true && cartItemStatusLookup.indexOf(cartItemAttributes.status) !== -1){
-          cartItemUpsert.status = cartItemAttributes.status;
-        } else {
+        // var cartItemStatusLookup = Object.keys(STATUS.CART_ITEM)
+        // if(cartItemAttributes.hasOwnProperty('status') === true && cartItemStatusLookup.indexOf(cartItemAttributes.status) !== -1){
+        //   cartItemUpsert.status = cartItemAttributes.status;
+        // } else {
           cartItemUpsert.status = STATUS.CART_ITEM.NEW;
-        }
+        // }
 
         if(cartItemAttributes.hasOwnProperty('orderId') === true){
           cartItemUpsert.orderId = cartItemAttributes.orderId;
@@ -228,6 +228,7 @@ if(Meteor.isServer){
         cartItemLookup = {_id: cartItem._id}
         cartItemUpsert = {$set: {
           quantity: cartItemAttributes.quantity,
+          status: STATUS.CART_ITEM.NEW,
           note: cartItemAttributes.note,
           updatedAt: (new Date()).toISOString(),
         }}
