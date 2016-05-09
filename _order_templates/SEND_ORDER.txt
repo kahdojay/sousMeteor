@@ -47,6 +47,7 @@
                       <table class="twelve columns">
                         <tr>
                             <p class="center">Order placed at <b>{{ORDER_TIME}}</b> on <b>{{ORDER_DATE}}</b> (#{{ORDER_REF}}).</p>
+                            <p class="center">Want to receive a text message when your customer sends an order? <b><a href="https://sous.typeform.com/to/gpq2EC">Let Us Know!</a></b></p>
                         </tr>
                         <br>
                         <tr>
@@ -142,7 +143,6 @@
                 <!-- <div class="footer"> -->
                 <div>
                   <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts.</p>
-                  <p class="center">Want to receive a text message when your customer sends an order? <b><a href="https://sous.typeform.com/to/gpq2EC">Let Us Know!</a></b></p>
                 </div>
                 <br>
                 <br>
