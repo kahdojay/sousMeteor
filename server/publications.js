@@ -97,7 +97,7 @@ Meteor.publish('teams', function(userId) {
   updateUserSettings(userId)
   var query = {
     users: {$in: [userId]},
-    notepad: {$exists: false}, //
+    notepad: {$exists: false},
     // updatedAt: {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()},
   }
   // return allTeams;
