@@ -95,11 +95,13 @@ Meteor.publish('teams-users', function(userId, teamIds, teamsUsersIds){
 
 Meteor.publish('teams', function(userId) {
   updateUserSettings(userId)
-  var allTeams = Teams.find({
+  var query = {
     users: {$in: [userId]},
     notepad: {$exists: false},
-  })
-  return allTeams;
+    updatedAt: {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()},
+  }
+  // return allTeams;
+  return Teams.find(query)
   // var allTeamIds = allTeams.map(function(team){
   //   return team._id;
   // })
@@ -107,16 +109,21 @@ Meteor.publish('teams', function(userId) {
 });
 
 Meteor.publish('purveyors', function(userId, teamIds) {
-  var allPurveyors = Purveyors.find({teamId: {$in: teamIds}});
+  var query = {
+    teamId: {$in: teamIds},
+    updatedAt: {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()},
+  }
+  // var allPurveyors = Purveyors.find({teamId: {$in: teamIds}});
   // console.log('userId: ', userId, ' teamIds: ', teamIds, ' count:', allPurveyors.count())
-  return allPurveyors;
+  // return allPurveyors;
+  return Purveyors.find(query);
 });
 
 Meteor.publish('categories', function(userId, teamIds) {
   var query = {
     teamId: {$in: teamIds},
-    // updatedAt: {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()},
-    updatedAt: {$gte: '2016-03-29T00:00:00.000Z'},
+    updatedAt: {$gte: (new Date((new Date).getTime() - (1000*60*60))).toISOString()},
+    // updatedAt: {$gte: '2016-03-29T00:00:00.000Z'},
   }
   return Categories.find(query);
 });
