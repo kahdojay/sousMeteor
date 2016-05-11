@@ -1,23 +1,23 @@
 if(Meteor.isServer){
   Meteor.methods({
-    // Note: currently this is just for Bricolage/HVM - if this approach scales out, we'll want a collection for header settings instead of hard coding headers here, and enforce our own header template to the extent possible.
-    uploadOrderToSheetsu: function(endpoint, order) {
+    // Note: currently this is just for HVM, will want to start using TeamPurveyorSettings soon
+    uploadOrderToSheetsu: function(endpoint, options) {
       // HVM ships to Bricolage only on Tuesdays, Mon 6PM cutoff
-      log.debug('SENDING ORDER TO SHEETSU: ', endpoint, order.orderId)
-      var orderDate = moment(order.orderDate)
+      log.debug('SENDING ORDER TO SHEETSU: ', endpoint, options.orderId)
+      var orderDate = moment(options.orderDate)
       var orderCutoff = moment().startOf('week').add(1, 'days').add(18,'hours')
       var thisWeeksTues = moment().startOf('week').add(2, 'days')
       var nextWeeksTues = moment().startOf('week').add(9, 'days')
       var shipDate = orderDate.isBefore(orderCutoff) ? thisWeeksTues : nextWeeksTues
 
       var productRows = []
-      order.orderProductList.forEach(function(product) {
+      options.orderProductList.forEach(function(product) {
       log.debug('QUEUEING PRODUCT FOR SHEETSU: ', product)
         productRows.push({
-          "External ID": `${order.orderRef}`,
+          "External ID": options.orderRef || 'n/a',
           "Ship Date": shipDate.format('ddd M/D'),
-          "Customer ID": '46',
-          "Customer": 'Bricolage',
+          "Customer ID": options.purveyor.customerNumber || 'n/a',
+          "Customer": options.team.name || 'n/a',
           "Ordered Qty": `${product.quantity} ${product.unit}`,
           "Item ID": product.sku,
           "Item": product.name,

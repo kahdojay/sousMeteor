@@ -678,6 +678,8 @@ if(Meteor.isServer){
         // Sheetsu Integration
         if(purveyor.hasOwnProperty('sheetsu') === true && !!purveyor.sheetsu.trim() === true){
           Meteor.call('uploadOrderToSheetsu', purveyor.sheetsu, {
+            team: team,
+            purveyor: purveyor,
             orderId: orderId,
             orderRef: order.orderRef,
             orderDate: orderDate,
