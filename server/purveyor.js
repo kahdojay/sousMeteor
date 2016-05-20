@@ -1,6 +1,17 @@
 if(Meteor.isServer){
   Meteor.methods({
 
+    getPurveyors: function(teamId) {
+      var queryOptions = {
+        sort: { name: 1 },
+      };
+      var query = {
+        teamId: teamId
+      };
+      log.trace("Retrieving purveyors, with query: ", query, " queryOptions: ", queryOptions);
+      return Purveyors.find(query,queryOptions).fetch();
+    },
+
     createPurveyor: function(purveyorAttributes, userId) {
       log.debug("PURVEYOR ATTRS", purveyorAttributes);
       var purveyor = Purveyors.findOne({teamId: purveyorAttributes.teamId, name:purveyorAttributes.name});
