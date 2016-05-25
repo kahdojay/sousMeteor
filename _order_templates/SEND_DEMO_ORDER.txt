@@ -59,7 +59,7 @@
                         </tr>
                         <tr>
                             <p class="center">Order placed at <b>{{ORDER_TIME}}</b> on <b>{{ORDER_DATE}}</b> (#{{ORDER_REF}}).</p>
-                            <p class="center">Want to receive a text message when your customer sends an order? <b><a href="https://sous.typeform.com/to/gpq2EC">Let Us Know!</a></b></p>
+                            <p class="center">Interested in featuring your products to Sous users? <b><a href="https://sous.typeform.com/to/gpq2EC">Get in Touch!</a></b></p>
                         </tr>
                         <br>
                         <tr>
@@ -93,6 +93,12 @@
                 <span class="delivery-instruction center">{{ORDER_DELIVERY_INSTRUCTIONS}}</span>
                 <hr>
                 {{/if}}
+                {{#if DELIVERY_DATE}}
+                <h5 class="center">Requested Delivery Date</p>
+                <br>
+                <b class="center">{{DELIVERY_DATE}}</b>
+                <hr>
+                {{/if}}
                 <h5 class="center">Order Summary</h5>
         {{#if ORDER_PRODUCTS_COUNT}}
                   {{#if `ORDER_PRODUCTS_COUNT > 1`}}
@@ -102,15 +108,6 @@
           {{/if}}
         {{/if}}                
                 <br>
-                {{#if DELIVERY_DATE}}
-                <tr>
-                  <td class="center">
-                    <p class="center">Requested Delivery Date: {{DELIVERY_DATE}}</p>
-                    <hr>
-                  </td>
-                </tr>
-                <br>
-                {{/if}}
                 <table class="container">
                   <tr>
                     <td>
