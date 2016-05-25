@@ -81,6 +81,12 @@
                 <span class="delivery-instruction center">{{ORDER_DELIVERY_INSTRUCTIONS}}</span>
                 <hr>
                 {{/if}}
+                {{#if DELIVERY_DATE}}
+                <h5 class="center">Requested Delivery Date</p>
+                <br>
+                <p class="center">{{DELIVERY_DATE}}</p>
+                <hr>
+                {{/if}}
                 <h5 class="center">Order Summary</h5>
         {{#if ORDER_PRODUCTS_COUNT}}
                   {{#if `ORDER_PRODUCTS_COUNT > 1`}}
@@ -90,15 +96,6 @@
           {{/if}}
         {{/if}}                
                 <br>
-                {{#if DELIVERY_DATE}}
-                <tr>
-                  <td class="center">
-                    <p class="center">Requested Delivery Date: {{DELIVERY_DATE}}</p>
-                    <hr>
-                  </td>
-                </tr>
-                <br>
-                {{/if}}
                 <table class="container">
                   <tr>
                     <td>
