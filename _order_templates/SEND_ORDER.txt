@@ -139,7 +139,8 @@
 
                 <!-- <div class="footer"> -->
                 <div>
-                  <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts.</p>
+                    <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts.</p>
+          <p class="center">Interested in automating order entry? <b><a href="https://sous.typeform.com/to/gpq2EC">Get in touch!</a></b></p>
                 </div>
                 <br>
                 <br>
