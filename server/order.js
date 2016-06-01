@@ -328,7 +328,7 @@ if(Meteor.isServer){
             productName: product.name,
             updatedAt: (new Date()).toISOString(),
           }
-        })
+        });
       })
     },
 
@@ -364,9 +364,16 @@ if(Meteor.isServer){
           if(
             cartItemIds.indexOf(cartItem.id) === -1  // not found
             || serverCartItem[cartItem.id].quantity !== cartItem.quantity
-            || serverCartItem[cartItem.id].productName !== cartItem.productName
           ){
             unverifiedCartItems.push(cartItem)
+          } else if(serverCartItem[cartItem.id].productName !== cartItem.productName){
+            Meteor.call('updateProduct', productId, {name: serverCartItem[cartItem.id].productName});
+            CartItems.update({_id: cartItem.id}, {
+              $set: {
+                productName: product.name,
+                updatedAt: (new Date()).toISOString(),
+              }
+            });
           }
         })
         if(unverifiedCartItems.length > 0){
