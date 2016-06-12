@@ -47,7 +47,7 @@
                       <table class="twelve columns">
                         <tr>
                             <p class="center">Order placed at <b>{{ORDER_TIME}}</b> on <b>{{ORDER_DATE}}</b> (#{{ORDER_REF}}).</p>
-                            <p class="center">Interested in automating order entry? <b><a href="https://sous.typeform.com/to/gpq2EC">Get in touch!</a></b></p>
+                            <p class="center">Refer a restaurant, make $50<b> <a href="https://sous.typeform.com/to/gpq2EC">(see details)</a></b></p>
                         </tr>
                         <br>
                         <tr>
