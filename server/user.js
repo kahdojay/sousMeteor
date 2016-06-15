@@ -1,5 +1,25 @@
 if(Meteor.isServer){
+  var mailChimpSettings = Meteor.settings.MAILCHIMP
+  var chimp = new MailChimp(mailChimpSettings.APIKEY, { version: '2.0' })
+  var listId = mailChimpSettings.LISTID
+
   Meteor.methods({
+    addToNewUserEmailDrip: function(userInfo) {
+      log.debug('adding to MailChimp: ', userInfo)
+      try {
+        var subscribe = chimp.call('lists', 'subscribe', {
+          id: listId,
+          email: {
+            email: userInfo.email,
+          }
+        })
+        log.debug('MailChimp success: ', subscribe)
+        return subscribe
+      } catch(e) {
+        log.debug('MailChimp error: ', e)
+        return e
+      }
+    },
 
     trackUsers: function() {
       var allUsers = Meteor.users.find().fetch();
@@ -295,6 +315,16 @@ if(Meteor.isServer){
       }
 
       return ret;
+    },
+
+    joinUsersByPhone: function(numberToAdd, numberToJoin) {
+      toJoinId = Meteor.users.findOne({username:numberToJoin})._id
+      log.debug('toJoinId: ', toJoinId)
+      var teamsToJoin = Teams.find({users: {$in: [toJoinId]}}).fetch()
+      log.debug('teamsToJoin: ', teamsToJoin)
+      var teamCodesToJoin = _.pluck(teamsToJoin, 'teamCode')
+      log.debug('teamCodesToJoin: ', teamCodesToJoin)
+      Meteor.call('addUserToTeamCodes', numberToAdd, teamCodesToJoin)
     },
 
     addUserToTeamCodes: function(phoneNumber, teamCodes) {
