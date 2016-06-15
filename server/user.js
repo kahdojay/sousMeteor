@@ -1,24 +1,59 @@
 if(Meteor.isServer){
-  var mailChimpSettings = Meteor.settings.MAILCHIMP
-  var chimp = new MailChimp(mailChimpSettings.APIKEY, { version: '2.0' })
-  var listId = mailChimpSettings.LISTID
 
   Meteor.methods({
     addToNewUserEmailDrip: function(userInfo) {
-      log.debug('adding to MailChimp: ', userInfo)
-      try {
-        var subscribe = chimp.call('lists', 'subscribe', {
-          id: listId,
-          email: {
-            email: userInfo.email,
+      log.debug('ADDING USER TO EMAIL DRIP: ', userInfo)
+      Meteor.http.post(Mailchimp.LIST_ENDPOINT, {
+        headers: Mailchimp.HEADERS,
+        "data": {
+          "user": "Sous:" + Meteor.settings.MAILCHIMP.APIKEY,
+          "email_address": userInfo.email,
+          "status": "subscribed",
+          "merge_fields": {
+            "FNAME": userInfo.firstName || "",
+            "LNAME": userInfo.lastName || ""
           }
-        })
-        log.debug('MailChimp success: ', subscribe)
-        return subscribe
-      } catch(e) {
-        log.debug('MailChimp error: ', e)
-        return e
-      }
+        }                                             
+      }, Meteor.bindEnvironment(function (err, res) {
+        if (err) {                                               
+          log.error('addToNewUserEmailDrip error: ', err);
+        } else {
+          slack.alert({
+            username: 'mailChimpBot',
+            channel: '#foh-users',
+            icon_emoji: ':new:',
+            text: `Added to mailchimp: ${userInfo.email}`,
+            attachments: null
+          });
+
+          Meteor.http.post(Mailchimp.AUTOMATION_ENDPOINT, {
+            headers: Mailchimp.HEADERS,
+            "data": {
+              "user": "Sous:" + Meteor.settings.MAILCHIMP.APIKEY,
+              "email_address": userInfo.email,
+              "status": "subscribed",
+              "merge_fields": {
+                "FNAME": userInfo.firstName || "",
+                "LNAME": userInfo.lastName || ""
+              }
+            }                                             
+          }, Meteor.bindEnvironment(function (err, res) {
+            if (err) {                                               
+              log.error('addToNewUserEmailDrip error: ', err);
+            } else {
+              slack.alert({
+                username: 'mailChimpBot',
+                channel: '#foh-users',
+                icon_emoji: ':new:',
+                text: `Added to automation: ${userInfo.email}`,
+                attachments: null
+              });
+            }
+            log.trace('addToNewUserEmailDrip response: ', res);
+          })); 
+        }
+        log.trace('addToNewUserEmailDrip response: ', res);
+      }));
     },
 
     trackUsers: function() {
@@ -241,6 +276,14 @@ if(Meteor.isServer){
 
     getUsersTeams: function(userId) {
       return Teams.find({users: {$in: [userId]}}).fetch();
+    },
+
+    removeUser: function(phoneNumber) {
+      var userPkg = Meteor.call('getUserByPhoneNumber', phoneNumber);
+      var teams = Meteor.call('getUsersTeams', phoneNumber)
+      teamCodes = _.pluck(teams, 'teamCode');
+      Meteor.call('removeUserFromTeamsByTeamCodes', phoneNumber, teamCodes)
+      Meteor.users.remove({ _id: userPkg.userId })
     },
 
     removeUserFromTeamsByTeamCodes: function(phoneNumber, teamCodes) {
