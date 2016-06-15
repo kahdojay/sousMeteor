@@ -26,6 +26,7 @@ if(Meteor.isServer){
           teamAttributes.state = 'ST'
           teamAttributes.zipCode = '00000'
         }
+        teamAttributes.allowedUserCount = 10
 
         // TODO: remove this after all data transition to CartItems
         teamAttributes.cart = EMPTY_CART;
@@ -35,7 +36,6 @@ if(Meteor.isServer){
             type: messageType,
             author: 'Sous',
             teamId: teamId,
-            allowedUserCount: 10,
             createdAt: (new Date()).toISOString(),
             imageUrl: 'https://sous-assets-production.s3.amazonaws.com/uploads/89b217dc-4ec5-43e8-9569-8fc85e6fdd52/New+Sous+Logo+Circle+Small.png',
             message: 'Welcome to Sous!'
