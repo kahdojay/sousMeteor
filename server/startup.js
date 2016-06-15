@@ -166,6 +166,17 @@ if(Meteor.isServer){
     }
   }
 
+  Mailchimp = {
+    "APIKEY": Meteor.settings.MAILCHIMP.APIKEY,
+    "LIST_ENDPOINT": "https://us10.api.mailchimp.com/3.0/lists/75141bae0f/members/",
+    "AUTOMATION_ENDPOINT": "https://us10.api.mailchimp.com/3.0/automations/0373e92f6a/emails/58dce01add/queue/",
+    "HEADERS": {
+      "Accept": "application/json",
+      "Authorization": "apikey " + Meteor.settings.MAILCHIMP.APIKEY,
+      "Content-Type": "application/json"
+    }
+  }
+
   excludeSlackNotificationTeams = {}
 
   putterOptions = {

@@ -24,7 +24,8 @@ if(Meteor.isServer){
       }
 
       if (Meteor.call('sendSlackNotification', messageAttributes.teamId)) {
-        let teamName = Teams.findOne({_id: messageAttributes.teamId}).name
+        var teamName = Teams.findOne({_id: messageAttributes.teamId}).name
+        var user = Meteor.users.findOne({_id: messageAttributes.userId})
         const slackAttachments = [
           {
             title: 'Chat',
@@ -37,6 +38,11 @@ if(Meteor.isServer){
               {
                 title: 'Author',
                 value: messageAttributes.author || 'Error: Author not found',
+                short: true
+              },
+              {
+                title: 'Phone',
+                value: user ? user.username : 'Error: Phone not found',
                 short: true
               },
               {
