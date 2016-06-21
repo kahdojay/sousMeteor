@@ -641,7 +641,7 @@ if(Meteor.isServer){
         if(purveyor.hasOwnProperty('sendFax') === true && purveyor.sendFax === true){
           purveyorSendFax = true
           var faxText = []
-          faxText.push(`Order Submission From: ${team.name}`)
+          faxText.push(`Order Submission to ${purveyor.name} From: ${team.name}`)
           faxText.push(`Order Date: ${orderDate.format('dddd, MMMM D')}`)
           faxText.push(`Order Time: ${orderDate.format('h:mm A')}`)
           faxText.push('')
