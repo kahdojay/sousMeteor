@@ -1,20 +1,31 @@
 import React, { Component } from 'react'
 import { createContainer } from 'meteor/react-meteor-data'
 
+import AddUserToTeamsForm from './AddUserToTeamsForm'
+
 class App extends Component {
-	render() {
-		return (
-			<div className="container">
-				<header>
-				  <h1>Sous</h1>
-				</header>
-			</div>
-		)
-	}
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      importType: 'addToTeams'
+    }
+  }
+
+  render() {
+    return (
+      <div className="container">
+        <header>
+          <h1>Sous</h1>
+        </header>
+        <AddUserToTeamsForm/>
+      </div>
+    )
+  }
 }
 
 export default createContainer(() => {
-	return {
-		currentUser: Meteor.user(),
-	}
+  return {
+    currentUser: Meteor.user(),
+  }
 }, App)
