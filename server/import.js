@@ -164,6 +164,14 @@ if(Meteor.isServer){
       });
 
       ret.after = Teams.find().count();
+
+      slack.alert({
+        username: 'importBot',
+        channel: '#foh-users',
+        icon_emoji: ':robot_face:',
+        text: 'importTeams called (all teams updated)',
+      });
+
       return ret;
     },
 
@@ -294,6 +302,14 @@ if(Meteor.isServer){
       });
 
       ret.after = Purveyors.find().count();
+
+      slack.alert({
+        username: 'importBot',
+        channel: '#foh-users',
+        icon_emoji: ':robot_face:',
+        text: `importPurveyors called on ${teamCode}`,
+      });
+
       return ret;
     },
 
@@ -538,6 +554,14 @@ if(Meteor.isServer){
 
       ret.after = Products.find().count();
       ret.removedCategories = Categories.remove({products: {$size: 0}});
+
+      slack.alert({
+        username: 'importBot',
+        channel: '#foh-users',
+        icon_emoji: ':robot_face:',
+        text: `importProducts called on ${importTeamCode}`,
+      });
+
       return ret;
     },
 
