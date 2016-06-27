@@ -1,5 +1,8 @@
 if(Meteor.isServer){
   Meteor.methods({
+    testImport: function() {
+      log.debug('testImport called')
+    },
 
     importMessages: function(importTeamCode, teamCodeOverride, url) {
       if(undefined === importTeamCode){
