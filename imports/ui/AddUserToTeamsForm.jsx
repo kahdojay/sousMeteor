@@ -29,7 +29,6 @@ export default class AddUserToTeamsForm extends Component {
             <label className="input">
               Phone number:
               <input
-                onChange={this.handleInputChange.bind(this)}
                 ref="phoneNumber"
               />
             </label>
@@ -38,7 +37,6 @@ export default class AddUserToTeamsForm extends Component {
             <label className="team-code">
               teamCodes to join (separated by comma):
               <input
-                onChange={this.handleInputChange.bind(this)}
                 ref="teamCodes"
               />
             </label>
