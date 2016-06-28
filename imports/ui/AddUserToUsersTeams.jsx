@@ -2,25 +2,24 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Meteor } from 'meteor/meteor';
 
-export default class AddUserToTeamsForm extends Component {
+export default class AddUserToUsersTeams extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const phoneNumber = ReactDOM.findDOMNode(this.refs.phoneNumber)
-    const teamCodesString = ReactDOM.findDOMNode(this.refs.teamCodes)
+    const phoneNumber1 = ReactDOM.findDOMNode(this.refs.phoneNumber1)
+    const phoneNumber2 = ReactDOM.findDOMNode(this.refs.phoneNumber2)
 
-    if (phoneNumber && teamCodesString) {
-      const teamCodes = teamCodesString.value.trim().toUpperCase().split(/[\s,]+/)
-      Meteor.call('addUserToTeamCodes', phoneNumber.value.trim(), teamCodes, (err, res) => {
+    if (phoneNumber1 && phoneNumber2) {
+      Meteor.call('joinUsersByPhone', phoneNumber1.value.trim(), phoneNumber2.value.trim(), (err, res) => {
         if (!err) {
-          phoneNumber.value = ''
-          teamCodesString.value = ''
+          phoneNumber1.value = ''
+          phoneNumber2.value = ''
         } else {
-          // method error
+          // Meteor error
         }
       })
     } else {
-      // meteor error
+      // form error
     }
   }
 
@@ -34,15 +33,15 @@ export default class AddUserToTeamsForm extends Component {
             <label className="input">
               Phone number:
               <input
-                ref="phoneNumber"
+                ref="phoneNumber1"
               />
             </label>
           </div>
           <div>
             <label className="team-code">
-              teamCodes to join (separated by comma):
+              Phone number to join:
               <input
-                ref="teamCodes"
+                ref="phoneNumber2"
               />
             </label>
           </div>

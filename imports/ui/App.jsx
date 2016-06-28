@@ -1,17 +1,34 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import { createContainer } from 'meteor/react-meteor-data'
 
-import AddUserToTeamsForm from './AddUserToTeamsForm'
+import AddUserToTeams from './AddUserToTeams'
+import AddUserToUsersTeams from './AddUserToUsersTeams'
 import AuthForm from './AuthForm'
+import FormSelector from './FormSelector'
 
 class App extends Component {
   constructor(props) {
     super(props)
 
+    this.stateForms = {
+      'addToTeams': <AddUserToTeams/>,
+      'addToUsersTeams': <AddUserToUsersTeams/>,
+    }
+
     this.state = {
       importType: 'addToTeams',
-      authenticated: false
+      authenticated: false,
+      showForm: 'addToTeams',
     }
+  }
+
+  getForm(formKey) {
+    return this.stateForms[formKey] ? this.stateForms[formKey] : AddUserToTeams
+  }
+
+  switchForm(e) {
+    this.setState({ showForm: e.target.value })
   }
 
   submitPass(pass) {
@@ -23,16 +40,20 @@ class App extends Component {
   }
 
   render() {
-    var ShowForm = this.state.authenticated ? AddUserToTeamsForm : AuthForm
+    var ShowForm =  this.state.authenticated ? 
+                    this.getForm(this.state.showForm) 
+                    : <AuthForm submitPass={this.submitPass.bind(this)} />
 
     return (
       <div className="container">
         <header>
           <h1>Sous</h1>
+          { this.state.authenticated ? 
+            <FormSelector switchForm={this.switchForm.bind(this)} /> 
+            : <div></div>
+          }
         </header>
-        <ShowForm
-          submitPass={this.submitPass.bind(this)}
-        />
+        {ShowForm}
       </div>
     )
   }
