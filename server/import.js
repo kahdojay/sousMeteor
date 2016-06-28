@@ -274,7 +274,8 @@ if(Meteor.isServer){
 
       // insert purveyors with purveyorCode
       var response = Meteor.http.get(url, {timeout: 10000})
-      log.debug('importPurveyors response:', response.data.result)
+      log.debug("importPurveyors METHOD ARGUMENTS: ", teamCode, teamCodeOverride, url);
+      // log.debug('importPurveyors response:', response.data.result)
       response.data.result.forEach(function(purveyor) {
         if(purveyor.hasOwnProperty('teamCode') === false){
           ret.purveyors[purveyor.teamCode] = 'Missing teamCode';
