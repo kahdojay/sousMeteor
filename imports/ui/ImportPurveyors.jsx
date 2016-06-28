@@ -5,10 +5,11 @@ import { Meteor } from 'meteor/meteor';
 export default class ImportPurveyors extends Component {
   handleSubmit(e) {
     e.preventDefault();
-    console.log('importingpurveyors')
-    let teamCode = ReactDOM.findDOMNode(this.refs.teamCode)
 
-    Meteor.call('importPurveyors', teamCode.value.trim().toUpperCase(), (err, res) => {
+    let teamCode = ReactDOM.findDOMNode(this.refs.teamCode)
+    const teamCodeParam = teamCode.value.trim() ? teamCode.value.trim().toUpperCase() : 'all'
+
+    Meteor.call('importPurveyors', teamCodeParam, (err, res) => {
       if (!err) {
         teamCode.value = ''
       } else {

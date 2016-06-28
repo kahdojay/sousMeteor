@@ -11,6 +11,7 @@ export default class FormSelector extends Component {
           <option value="addToTeams">Add To Teams</option> 
           <option value="addToUsersTeams">Add To Another User's Teams</option>
           <option value="importPurveyors">Import Purveyors</option>
+          <option value="importProducts">Import Products</option>
         </select>
       </div>
     )
