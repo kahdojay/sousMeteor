@@ -13,8 +13,9 @@ export default class AddUserToTeamsForm extends Component {
       const teamCodes = teamCodesString.split(/[\s,]+/)
       console.log('phoneNumber: ', phoneNumber)
       console.log('teamCodes: ', teamCodes)
-      Meteor.call('testImport')
+      Meteor.call('addUserToTeamCodes', phoneNumber, teamCodes)
     } else {
+      alert('moar inputs')
       throw new Meteor.Error('need-more-inputs');
     }
   }
