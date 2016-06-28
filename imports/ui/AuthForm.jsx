@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { Meteor } from 'meteor/meteor';
+import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
+import { Meteor } from 'meteor/meteor'
 
 export default class AuthForm extends Component {
   handleSubmit(e) {
-    e.preventDefault();
-    const pass = ReactDOM.findDOMNode(this.refs.password).value.trim();
+    e.preventDefault()
+    const pass = ReactDOM.findDOMNode(this.refs.password).value.trim()
     this.props.submitPass(pass)
   }
 
