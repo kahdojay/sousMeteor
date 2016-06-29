@@ -173,6 +173,7 @@ if(Meteor.isServer){
         channel: '#foh-users',
         icon_emoji: ':robot_face:',
         text: 'importTeams called (all teams updated)',
+        attachments: []
       });
 
       return ret;
@@ -312,6 +313,7 @@ if(Meteor.isServer){
         channel: '#foh-users',
         icon_emoji: ':robot_face:',
         text: `importPurveyors called on ${teamCode}`,
+        attachments: []
       });
 
       return ret;
@@ -564,6 +566,7 @@ if(Meteor.isServer){
         channel: '#foh-users',
         icon_emoji: ':robot_face:',
         text: `importProducts called on ${importTeamCode}`,
+        attachments: []
       });
 
       return ret;
