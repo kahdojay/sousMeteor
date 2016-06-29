@@ -4,44 +4,6 @@
   "engines": {
     "node": "0.10.40"
   },
-  "config": {
-    "supportSettings": {
-      "phoneNumber": "6465986424",
-      "emailAddress": "sous@sousapp.com"
-    },
-    "onboardingSettings" : {
-      "slides": [{
-        "key": "onboarding2",
-        "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding2-large.png?cb=16020722",
-        "backgroundColor": "#208DE1"
-      }, {
-        "key": "onboarding3",
-        "text": "",
-        "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding3-large.png?cb=16020722",
-        "backgroundColor": "#208DE1"
-      }],
-      "slidesConfig": {
-        "showSkip": false,
-        "loop": false,
-        "autoplay": false,
-        "lastSlideButton": {
-          "label": "Let's Get Started!",
-          "backgroundColor": "",
-          "textColor": "",
-          "loadDelay": 1000
-        }
-      },
-      "bkp":{
-        "slides": [{
-          "key": "onboarding1",
-          "text": "",
-          "uri": "https://sous-assets-production.s3.amazonaws.com/onboarding/{resizeMode}onboarding1-large.png?cb=16020722",
-          "backgroundColor": "#208DE1"
-        }]
-      }
-    }
-  },
   "dependencies": {
     "aguid": "^1.0.4",
     "base64-string-s3": "https://github.com/sousapp/base64-string-s3/archive/37d080591c732d564347e6bb72bf9d97baedddd3.tar.gz",

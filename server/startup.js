@@ -44,21 +44,20 @@ if(Meteor.isServer){
   Mixpanel = Npm.require('mixpanel');
   // Phaxio = Npm.require('phaxio');
 
-
-  settingsConfig = {};
-  try {
-    var includeFile = base + '/include.json';
-    var includeStats = fs.statSync(includeFile);
-    if(includeStats.isFile()){
-      var includeInfo = Npm.require(includeFile);
-      settingsConfig = includeInfo.config;
-      pkgInfo.build = includeInfo.build;
-    }
-  } catch(e){
-    if(pkgInfo.hasOwnProperty('config') === true){
-      settingsConfig = pkgInfo.config;
-    }
-  }
+  settingsConfig = Meteor.settings.APP.CONFIG || {};
+  // try {
+  //   var includeFile = base + '/include.json';
+  //   var includeStats = fs.statSync(includeFile);
+  //   if(includeStats.isFile()){
+  //     var includeInfo = Npm.require(includeFile);
+  //     settingsConfig = includeInfo.config;
+  //     pkgInfo.build = includeInfo.build;
+  //   }
+  // } catch(e){
+  //   if(pkgInfo.hasOwnProperty('config') === true){
+  //     settingsConfig = pkgInfo.config;
+  //   }
+  // }
   settingsConfig.itunesUrl = Meteor.settings.APP.ITUNES_URL
 
   log = logger.bunyan.createLogger({
@@ -68,7 +67,6 @@ if(Meteor.isServer){
               process.stdout,
     level: 'debug'
   })
-
 
   Object.assign = Object.assign || objectAssign;
 
