@@ -645,7 +645,7 @@ if(Meteor.isServer){
           faxText.push(`Order Date: ${orderDate.format('dddd, MMMM D')}`)
           faxText.push(`Order Time: ${orderDate.format('h:mm A')}`)
           faxText.push('')
-          faxText.push(`PLEASE TEXT OR CALL ONE OF THE CONTACTS ABOVE CONFIRM RECEIPT`)
+          faxText.push(`PLEASE TEXT OR CALL ONE OF THE CONTACTS BELOW CONFIRM RECEIPT`)
           faxText.push('')
           faxText.push('------Buyer Contacts------')
           buyerContacts.forEach(function(contact) {
