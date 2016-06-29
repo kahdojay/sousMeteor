@@ -617,27 +617,6 @@ if(Meteor.isServer){
           idx++;
         })
 
-        // TODO: Remove this slack alert once Mandrill back up
-        var emergencyOrderSlackAttachments = [{
-          title: 'Order!',
-          color: 'danger',
-          fields: [
-          ]
-        }]
-        orderProductList.forEach(function(orderProduct) {
-          emergencyOrderSlackAttachments[0].fields.push({
-            title: `${orderProduct.name}`,
-            value: `${orderProduct.quantity} ${orderProduct.unit}, ${orderProduct.sku || ''} ${orderProduct.notes || ''}`
-          })
-        })
-        slack.alert({
-          username: 'Orderbot (mobile)',
-          channel: '#orders',
-          text: `Queueing up ${purveyor.name} order from ${team.name}, call it in (${purveyor.phone}) if Mandrill still broke:`,
-          icon_emoji: ':phone:',
-          attachments: emergencyOrderSlackAttachments
-        });
-
         // setup the global merge vars for Mandrill
         var globalMergeVars = [];
         globalMergeVars.push({ name: 'PURVEYOR_NAME', content: purveyor.name });
