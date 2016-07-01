@@ -344,6 +344,7 @@ if(Meteor.isServer){
           purveyorCode: purveyor.purveyorCode,
           teamId: teamId,
           teamCode: purveyor.teamCode,
+          customerNumber: purveyor.customerNumber,
           name: purveyor.name,
           company: purveyor.company,
           city: purveyor.city,
