@@ -5,7 +5,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "meteor run --settings settings-staging.json",
+    "start": "meteor run --settings settings-production.json",
     "settings-production": "cat settings-production.json && modulus env get METEOR_SETTINGS -p 'SousProduction150'",
     "start-development": "meteor run --settings settings-development.json --raw-logs | ./node_modules/.bin/bunyan --color",
     "start-remote-development": "MONGO_URL=\"$(node -p 'settings=require(\"./settings-development.json\");settings.MONGO_URL.MONGOLAB')\" meteor run --settings settings-development.json --raw-logs | ./node_modules/.bin/bunyan --color",
