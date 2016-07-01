@@ -11,13 +11,13 @@ if(Meteor.isServer){
       var shipDate = orderDate.isBefore(orderCutoff) ? thisWeeksTues : nextWeeksTues
 
       var productRows = []
-      let productIdx = 0
+      let productIdx = options.orderProductList.length - 1
       options.orderProductList.forEach(function(product) {
       log.debug('QUEUEING PRODUCT FOR SHEETSU: ', product)
         productRows.push({
           "lineid": productIdx,
           "externalid": options.orderRef || 'n/a',
-          "shipdate": shipDate.format('ddd M/D'),
+          "shipdate": shipDate.format('MM/DD/YYYY'),
           "customerid": options.purveyor.customerNumber || 'n/a',
           "customer": options.team.name || 'n/a',
           "orderedqty": `${product.quantity} ${product.unit}`,
@@ -26,7 +26,7 @@ if(Meteor.isServer){
           "itmnotes": product.description,
           "orderdate": orderDate.format('MM/DD/YYYY'),
         })
-        productIdx ++
+        productIdx --
       })
       Meteor.http.post(endpoint, {
         data: {
