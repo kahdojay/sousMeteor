@@ -91,9 +91,9 @@ if(Meteor.isServer){
           price: product.price,
           packSize: product.packSize || '',
         };
-        log.debug("PRODUCT EXPORT: ", exportProductAttributes)
         Export.insert(exportProductAttributes);
         ret.export += 1;
+        log.debug(`PRODUCT EXPORT: ${ret.export} out of ${ret.products.count}`, exportProductAttributes)
       })
 
       return ret;
