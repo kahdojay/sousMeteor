@@ -1,6 +1,12 @@
 if(Meteor.isServer){
   Meteor.methods({
 
+    updateMessage: function(messageAttributes) {
+      if (messageAttributes.hasOwnProperty('_id')) {
+        Messages.update({_id: messageAttributes._id}, {$set: messageAttributes})
+      }
+    },
+
     // createMessage method
     createMessage: function(messageAttributes, triggerPushNotification) {
       if(undefined === triggerPushNotification){
