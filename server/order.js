@@ -854,6 +854,11 @@ if(Meteor.isServer){
                 type: 'order',
                 author: 'Sous',
                 teamId: order.teamId,
+                order: {
+                  orderId: orderId,
+                  commentCount: order.comments.length,
+                },
+                // TODO: deprecate and remove this
                 orderId: orderId,
                 createdAt: (new Date()).toISOString(),
                 imageUrl: 'https://sous-assets-production.s3.amazonaws.com/uploads/89b217dc-4ec5-43e8-9569-8fc85e6fdd52/New+Sous+Logo+Circle+Small.png',
