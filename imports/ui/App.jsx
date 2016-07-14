@@ -8,6 +8,7 @@ import AuthForm from './AuthForm'
 import FormSelector from './FormSelector'
 import ImportPurveyors from './ImportPurveyors'
 import ImportProducts from './ImportProducts'
+import ImportTeams from './ImportTeams'
 
 class App extends Component {
   constructor(props) {
@@ -18,6 +19,7 @@ class App extends Component {
       'addToUsersTeams': <AddUserToUsersTeams/>,
       'importPurveyors': <ImportPurveyors/>,
       'importProducts': <ImportProducts/>,
+      'importTeams': <ImportTeams/>,
     }
 
     this.state = {
