@@ -46,8 +46,14 @@
                     <td class="wrapper last">
                       <table class="twelve columns">
                         <tr>
-                            <p class="center">Order placed at <b>{{ORDER_TIME}}</b> on <b>{{ORDER_DATE}}</b> (#{{ORDER_REF}}).</p>
-                            <p class="center">Refer a restaurant, make $50<b> <a href="https://sous.typeform.com/to/gpq2EC">(see details)</a></b></p>
+                            <p class="center">Order placed at <b>{{ORDER_TIME}}</b> on <b>{{ORDER_DATE}}</b> (#{{ORDER_REF}})</p>
+                            {{#if ORDER_PRODUCTS_COUNT}}
+                              {{#if `ORDER_PRODUCTS_COUNT > 1`}}
+                                <p class="center">{{ORDER_PRODUCTS_COUNT}} items ordered</p>
+                              {{else}}
+                                <p class="center">{{ORDER_PRODUCTS_COUNT}} item ordered</p>
+                              {{/if}}
+                            {{/if}}
                         </tr>
                         <br>
                         <tr>
