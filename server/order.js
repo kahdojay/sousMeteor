@@ -582,7 +582,7 @@ if(Meteor.isServer){
         var orderDate = moment(order.orderedAt).tz(timeZone);
         var orderDeliveryDate = '';
         if(order.orderDeliveryDate){
-          orderDeliveryDate = moment(order.orderDeliveryDate).tz(timeZone).format('dddd, MMMM D');
+          orderDeliveryDate = moment(order.orderDeliveryDate).format('dddd, MMMM D');
         }
 
         // setup the order product list
