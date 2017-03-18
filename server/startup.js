@@ -164,6 +164,20 @@ if(Meteor.isServer){
     }
   }
 
+  ONESIGNAL = {
+    APP_ID: Meteor.settings.ONESIGNAL.APP_ID,
+    REST_API_KEY: Meteor.settings.ONESIGNAL.REST_API_KEY,
+
+    ADD_DEVICE_URL: 'https://onesignal.com/api/v1/players',
+    EDIT_DEVICE_URL: 'https://onesignal.com/api/v1/players/', // Concat onesignal id
+    CREATE_NOTIFICATION_URL: 'https://onesignal.com/api/v1/notifications',
+
+    HEADERS: {
+      "Content-Type": "application/json",
+      "Authorization": "Basic " + Meteor.settings.ONESIGNAL.REST_API_KEY
+    }
+  }
+
   Mailchimp = {
     "APIKEY": Meteor.settings.MAILCHIMP.APIKEY,
     "LIST_ENDPOINT": "https://us10.api.mailchimp.com/3.0/lists/75141bae0f/members/",
