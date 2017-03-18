@@ -1,4 +1,5 @@
-var oneSignal = require('onesignal')(ONESIGNAL.REST_API_KEY, ONESIGNAL.APP_ID, true); // true = use the sandbox certificate for iOS (default: false)
+var oneSignal = require('onesignal')(ONESIGNAL.REST_API_KEY, ONESIGNAL.APP_ID, true); // true = use the sandbox certificate for iOS (default: false), not in use yet
+var DEBUG_ONESIGNAL_PUSH = true; // tmp. variable, to skip 2nd if stmt.
 
 if(Meteor.isServer){
   Meteor.methods({
@@ -57,30 +58,15 @@ if(Meteor.isServer){
             "channels": userTeamCodes,
             "phoneNumber": user.username,
             "userId": userId,
-            "badge": 0
+            "badge": 0,
+            "oneSignalId": user.oneSignalId
           }
 
           var update = Meteor.call('updateInstallation', userId, data);
 
           // if nothing to update, then register a new instance
-          if(update.success !== true){
-            // register installation to channels via the user's teamCodes
-            Meteor.http.post(PARSE.INSTALLATION_URL, {
-              headers: PARSE.HEADERS,
-              "data": data
-            }, Meteor.bindEnvironment(function(err, res){
-              if(err){
-                log.error('registerInstallation error: ', err);
-              }
-              log.trace('registerInstallation response: ', res);
-              if(!err && res.data.hasOwnProperty('error') === false){
-                data.parseId = res.data.objectId;
-                data.updatedAt = (new Date()).toISOString();
-                Settings.update({userId: userId}, {$set:data})
-              }
-            }));
 
-            // OneSignal:
+          if (DEBUG_ONESIGNAL_PUSH && update.success !== true) { // OneSignal
             var deviceType = osType == 'ios' ? 0 : 1;
 
             Meteor.http.post(ONESIGNAL.ADD_DEVICE_URL, {
@@ -100,8 +86,9 @@ if(Meteor.isServer){
                 return;
               }
 
+              var oneSignalBody;
               try {
-                var oneSignalBody = JSON.parse(body);
+                oneSignalBody = JSON.parse(body);
               } catch (e) {
                 log.error('ONESIGNAL - registerInstallation error: Wrong JSON Format.');
                 return;
@@ -113,9 +100,23 @@ if(Meteor.isServer){
               data.updatedAt = (new Date()).toISOString();
               Settings.update({userId: userId}, {$set:data})
             }));
-
+          } else if(update.success !== true){ // Parse.com
+            // register installation to channels via the user's teamCodes
+            Meteor.http.post(PARSE.INSTALLATION_URL, {
+              headers: PARSE.HEADERS,
+              "data": data
+            }, Meteor.bindEnvironment(function(err, res){
+              if(err){
+                log.error('registerInstallation error: ', err);
+              }
+              log.trace('registerInstallation response: ', res);
+              if(!err && res.data.hasOwnProperty('error') === false){
+                data.parseId = res.data.objectId;
+                data.updatedAt = (new Date()).toISOString();
+                Settings.update({userId: userId}, {$set:data})
+              }
+            }));
           }
-
         } else {
           log.error('Registration failed due to invalid token');
         }
@@ -141,7 +142,38 @@ if(Meteor.isServer){
           message: 'Could not find settings for user'
         }]
       } else {
-        if(userSettings.hasOwnProperty('parseId') === true && userSettings.parseId){
+        if (userSettings.hasOwnProperty('oneSignalId') === true && userSettings.oneSignalId &&
+            userSettings.hasOwnProperty('deviceId') === true && userSettings.deviceId) { // OneSignal
+          var editDeviceUrl = ONESIGNAL.EDIT_DEVICE_URL + userSettings.oneSignalId;
+          log.trace('ONESIGNAL - updateInstallation: editDeviceUrl: ', editDeviceUrl)
+          Meteor.http.put(editDeviceUrl, {
+            headers: ONESIGNAL.HEADERS,
+            body: JSON.stringify({
+              app_id: ONESIGNAL.APP_ID,
+              identifier: dataAttributes.deviceId
+              // TODO: add other device attributes if necessary
+            })
+          }, Meteor.bindEnvironment(function(error, response, body) {
+            if (error) {
+              log.error('ONESIGNAL - updateInstallation error: ', error);
+              return;
+            }
+
+            var oneSignalBody;
+            try {
+              oneSignalBody = JSON.parse(body);
+            } catch (e) {
+              log.error('ONESIGNAL - updateInstallation error: Wrong JSON Format.');
+              return;
+            }
+
+            log.trace('ONESIGNAL - updateInstallation response: ', oneSignalBody);
+
+            dataAttributes.updatedAt = (new Date()).toISOString();
+            Settings.update({userId: userId}, {$set:dataAttributes})
+          }));
+          ret.success = true;
+        } else if(!DEBUG_ONESIGNAL_PUSH && userSettings.hasOwnProperty('parseId') === true && userSettings.parseId){ // Parse.com
           var processUpdate = false;
           var updateDataAttributes = {};
           Object.keys(dataAttributes).forEach(function(key){
@@ -167,15 +199,23 @@ if(Meteor.isServer){
                 dataAttributes.updatedAt = (new Date()).toISOString();
                 Settings.update({userId: userId}, {$set:dataAttributes})
               }
-            }))
+            }));
           }
           ret.success = true;
         } else {
           ret.success = false;
-          ret.error = [{
-            message: 'Could not find parse setting for user',
-            parseId: userSettings.parseId || null
-          }]
+
+          if (DEBUG_ONESIGNAL_PUSH) {
+            ret.error = [{
+              message: 'Could not find onesignal setting for user',
+              oneSignalId: userSettings.oneSignalId || null
+            }]
+          } else {
+            ret.error = [{
+              message: 'Could not find parse setting for user',
+              parseId: userSettings.parseId || null
+            }]
+          }
         }
       }
       if(ret.success === true){
