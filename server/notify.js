@@ -1,3 +1,5 @@
+var oneSignal = require('onesignal')(ONESIGNAL.REST_API_KEY, ONESIGNAL.APP_ID, true);
+
 if(Meteor.isServer){
   Meteor.methods({
 
@@ -39,12 +41,13 @@ if(Meteor.isServer){
           log.trace('registering installation for team channels (ids): ', userTeamCodes)
 
           var installationId = aguid(`${deviceAttributes.model}-${slug(deviceAttributes.deviceName, { replacement: '' })}-${userId}`,)
+          var osTypeIOS = "ios";
 
           var data = {
             "installationId": installationId,
             "appVersion": deviceAttributes.appVersion,
             "appBuildNumber": deviceAttributes.appBuildNumber,
-            "deviceType": "ios",
+            "deviceType": osTypeIOS,
             "deviceToken": deviceAttributes.token,
             "deviceModel": deviceAttributes.model,
             "deviceId": deviceAttributes.deviceId,
@@ -75,7 +78,8 @@ if(Meteor.isServer){
                 data.updatedAt = (new Date()).toISOString();
                 Settings.update({userId: userId}, {$set:data})
               }
-            }))
+            }));
+
           }
 
         } else {
