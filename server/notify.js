@@ -1,4 +1,4 @@
-var oneSignal = require('onesignal')(ONESIGNAL.REST_API_KEY, ONESIGNAL.APP_ID, true);
+var oneSignal = require('onesignal')(ONESIGNAL.REST_API_KEY, ONESIGNAL.APP_ID, true); // true = use the sandbox certificate for iOS (default: false)
 
 if(Meteor.isServer){
   Meteor.methods({
@@ -78,6 +78,40 @@ if(Meteor.isServer){
                 data.updatedAt = (new Date()).toISOString();
                 Settings.update({userId: userId}, {$set:data})
               }
+            }));
+
+            // OneSignal:
+            var deviceType = osType == 'ios' ? 0 : 1;
+
+            Meteor.http.post(ONESIGNAL.ADD_DEVICE_URL, {
+              headers: ONESIGNAL.HEADERS,
+              body: JSON.stringify({
+                app_id: ONESIGNAL.APP_ID,
+                device_type: deviceType,
+                device_model: deviceAttributes.model,
+                device_os: deviceAttributes.systemVersion,
+                identifier: deviceAttributes.deviceId,
+                language: 'en',
+                test_type: 1 // 1 = Development, 2 = Ad-Hoc, Omit this field for App Store builds.
+              })
+            }, Meteor.bindEnvironment(function(error, response, body) {
+              if (error) {
+                log.error('ONESIGNAL - registerInstallation error: ', error);
+                return;
+              }
+
+              try {
+                var oneSignalBody = JSON.parse(body);
+              } catch (e) {
+                log.error('ONESIGNAL - registerInstallation error: Wrong JSON Format.');
+                return;
+              }
+
+              var oneSignalId = oneSignalBody.id;
+              log.trace('ONESIGNAL - registerInstallation: returned oneSignalId ', oneSignalId);
+              //data.oneSignalId = oneSignalId;
+              data.updatedAt = (new Date()).toISOString();
+              Settings.update({userId: userId}, {$set:data})
             }));
 
           }
