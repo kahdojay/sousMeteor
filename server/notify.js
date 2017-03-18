@@ -100,7 +100,7 @@ if(Meteor.isServer){
               data.updatedAt = (new Date()).toISOString();
               Settings.update({userId: userId}, {$set:data})
             }));
-          } else if(update.success !== true){ // Parse.com
+          } else if(!DEBUG_ONESIGNAL_PUSH && update.success !== true){ // Parse.com
             // register installation to channels via the user's teamCodes
             Meteor.http.post(PARSE.INSTALLATION_URL, {
               headers: PARSE.HEADERS,
@@ -238,28 +238,21 @@ if(Meteor.isServer){
       log.trace('triggerPushNotification: ', message, ' to team: ', teamId, ' by user: ', userId)
       var user = Meteor.users.findOne({_id: userId});
       var messageTeam = Teams.findOne({ _id: teamId }, { fields: { teamCode: 1 } })
-      var channel = `${Meteor.settings.APP.ENV[0]}-${messageTeam.teamCode}` || `T-${Meteor.settings.APP.ENV[0]}-${messageTeam._id}`
-      var queryData = {
-        "where": {
-          "channels": channel,
-        },
-        "data": {
-          "alert": message,
-          "badge": "Increment"
-        }
-      }
-      if(user !== undefined){
-        queryData['where']["$ne"] = {
-          "phoneNumber": user.username
-        }
-      }
-      try {
-        Meteor.http.post(PARSE.PUSH_URL, {
-          method: 'PUSH',
-          headers: PARSE.HEADERS,
-          "data": queryData,
-        }, Meteor.bindEnvironment(function(err, res){
-          if(err){
+
+      if (DEBUG_ONESIGNAL_PUSH) {
+        // TODO: get all users from team and get each users oneSignalId
+        // var oneSignalIds = [...];
+        Meteor.http.post(ONESIGNAL.CREATE_NOTIFICATION_URL, {
+          headers: ONESIGNAL.HEADERS,
+          body: JSON.stringify({
+            app_id: ONESIGNAL.APP_ID,
+            include_player_ids: [], // TODO: see todo above
+            contents: {
+              en: message
+            }
+          })
+        }, Meteor.bindEnvironment(function(error, response, body) {
+          if (error) {
             var slackAttachments = [
               {
                 title: 'Push Notification Error',
@@ -293,7 +286,7 @@ if(Meteor.isServer){
             alertMsg.push('<!channel> Meteor Push Notification Error!');
             alertMsg.push('');
             alertMsg.push('*Error*');
-            alertMsg.push(`${err}`);
+            alertMsg.push(`${error}`);
             alertMsg.push('');
 
             slack.alert({
@@ -303,57 +296,130 @@ if(Meteor.isServer){
               icon_emoji: ':rotating_light:',
               attachments: slackAttachments
             });
-          }
-        }))
-      } catch (err){
-        var slackAttachments = [
-          {
-            title: 'Push Notification Exception',
-            color: 'danger',
-            fields: [
-              {
-                title: 'Team Name',
-                value: messageTeam.name,
-                short: true
-              },
-              {
-                title: 'Author',
-                value: `${message.author}`,
-                short: true
-              },
-              {
-                title: 'Team Code',
-                value: messageTeam.teamCode,
-                short: true
-              },
-              {
-                title: 'Message',
-                value: message,
-                short: true
-              },
-            ]
-          }
-        ]
 
-        var alertMsg = []
-        alertMsg.push('<!channel> Meteor triggerPushNotification Exception!');
-        alertMsg.push('');
-        alertMsg.push('*Error*');
-        alertMsg.push(`${err}`);
-        alertMsg.push('');
-        alertMsg.push('*Stack Trace*');
-        alertMsg.push((err.stack) ? '```'+err.stack+'```' : '`...`');
-        alertMsg.push('');
+            return;
+          }
+        }));
 
-        slack.alert({
-          username: 'Exceptionbot (mobile)',
-          channel: '#dev-errors',
-          text: alertMsg.join('\n'),
-          icon_emoji: ':rotating_light:',
-          attachments: slackAttachments
-        });
+      } else {
+        
+        var channel = `${Meteor.settings.APP.ENV[0]}-${messageTeam.teamCode}` || `T-${Meteor.settings.APP.ENV[0]}-${messageTeam._id}`
+        var queryData = {
+          "where": {
+            "channels": channel,
+          },
+          "data": {
+            "alert": message,
+            "badge": "Increment"
+          }
+        }
+        if(user !== undefined){
+          queryData['where']["$ne"] = {
+            "phoneNumber": user.username
+          }
+        }
+        try {
+          Meteor.http.post(PARSE.PUSH_URL, {
+            method: 'PUSH',
+            headers: PARSE.HEADERS,
+            "data": queryData,
+          }, Meteor.bindEnvironment(function(err, res){
+            if(err){
+              var slackAttachments = [
+                {
+                  title: 'Push Notification Error',
+                  color: 'danger',
+                  fields: [
+                    {
+                      title: 'Team Name',
+                      value: messageTeam.name,
+                      short: true
+                    },
+                    {
+                      title: 'Author',
+                      value: `${message.author}`,
+                      short: true
+                    },
+                    {
+                      title: 'Team Code',
+                      value: messageTeam.teamCode,
+                      short: true
+                    },
+                    {
+                      title: 'Message',
+                      value: message,
+                      short: true
+                    },
+                  ]
+                }
+              ]
+
+              var alertMsg = []
+              alertMsg.push('<!channel> Meteor Push Notification Error!');
+              alertMsg.push('');
+              alertMsg.push('*Error*');
+              alertMsg.push(`${err}`);
+              alertMsg.push('');
+
+              slack.alert({
+                username: 'Exceptionbot (mobile)',
+                channel: '#dev-errors',
+                text: alertMsg.join('\n'),
+                icon_emoji: ':rotating_light:',
+                attachments: slackAttachments
+              });
+            }
+          }))
+        } catch (err){
+          var slackAttachments = [
+            {
+              title: 'Push Notification Exception',
+              color: 'danger',
+              fields: [
+                {
+                  title: 'Team Name',
+                  value: messageTeam.name,
+                  short: true
+                },
+                {
+                  title: 'Author',
+                  value: `${message.author}`,
+                  short: true
+                },
+                {
+                  title: 'Team Code',
+                  value: messageTeam.teamCode,
+                  short: true
+                },
+                {
+                  title: 'Message',
+                  value: message,
+                  short: true
+                },
+              ]
+            }
+          ]
+
+          var alertMsg = []
+          alertMsg.push('<!channel> Meteor triggerPushNotification Exception!');
+          alertMsg.push('');
+          alertMsg.push('*Error*');
+          alertMsg.push(`${err}`);
+          alertMsg.push('');
+          alertMsg.push('*Stack Trace*');
+          alertMsg.push((err.stack) ? '```'+err.stack+'```' : '`...`');
+          alertMsg.push('');
+
+          slack.alert({
+            username: 'Exceptionbot (mobile)',
+            channel: '#dev-errors',
+            text: alertMsg.join('\n'),
+            icon_emoji: ':rotating_light:',
+            attachments: slackAttachments
+          });
+        }
       }
       Meteor.call('updateInstallation', userId, {"badge": 0});
-    },
+    }
   })
 }
