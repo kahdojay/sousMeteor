@@ -1,4 +1,6 @@
-var oneSignal = require('onesignal')(ONESIGNAL.REST_API_KEY, ONESIGNAL.APP_ID, true); // true = use the sandbox certificate for iOS (default: false), not in use yet
+var onesignal = require('node-opensignal-api');
+var onesignal_client = onesignal.createClient();
+
 var DEBUG_ONESIGNAL_PUSH = true; // tmp. variable, to skip 2nd if stmt.
 
 if(Meteor.isServer){
@@ -43,6 +45,7 @@ if(Meteor.isServer){
 
           var installationId = aguid(`${deviceAttributes.model}-${slug(deviceAttributes.deviceName, { replacement: '' })}-${userId}`,)
           var osTypeIOS = "ios";
+          var osType = osTypeIOS;
 
           var data = {
             "installationId": installationId,
@@ -66,23 +69,48 @@ if(Meteor.isServer){
 
           // if nothing to update, then register a new instance
 
-          if (DEBUG_ONESIGNAL_PUSH && update.success !== true) { // OneSignal
+          if (true && update.success !== true) { // OneSignal node package
+
+            var params = {
+            	app_id: ONESIGNAL.APP_ID,
+            	device_type: 'ios'
+            };
+
+            onesignal_client.players.create(params, Meteor.bindEnvironment(function (err, response) {
+            	if (err) {
+                	log.error('ONESIGNAL 1 - registerInstallation error: ', err);
+              	} else {
+                	log.debug('registering installation 1 response', response);
+
+                  var oneSignalId = response.id;
+                  log.debug('ONESIGNAL 1 - registerInstallation: returned oneSignalId ', oneSignalId);
+
+                  data.oneSignalId = oneSignalId;
+                  data.updatedAt = (new Date()).toISOString();
+
+                  Settings.update({userId: userId}, {$set:data}); 
+              	}
+            }));
+
+          } else if (DEBUG_ONESIGNAL_PUSH && update.success !== true) { // OneSignal
             var deviceType = osType == 'ios' ? 0 : 1;
+
+            log.debug('registering installation data 2 : HEADERS and ID', ONESIGNAL.HEADERS, ONESIGNAL.APP_ID);
 
             Meteor.http.post(ONESIGNAL.ADD_DEVICE_URL, {
               headers: ONESIGNAL.HEADERS,
-              body: JSON.stringify({
-                app_id: ONESIGNAL.APP_ID,
-                device_type: deviceType,
-                device_model: deviceAttributes.model,
-                device_os: deviceAttributes.systemVersion,
-                identifier: deviceAttributes.deviceId,
-                language: 'en',
-                test_type: 1 // 1 = Development, 2 = Ad-Hoc, Omit this field for App Store builds.
-              })
+              body: {
+                "app_id": ONESIGNAL.APP_ID,
+                "device_type": deviceType,
+                "device_model": deviceAttributes.model,
+                "device_os": deviceAttributes.systemVersion,
+                "identifier": deviceAttributes.deviceId,
+                "language": 'en',
+                "test_type": 1 // 1 = Development, 2 = Ad-Hoc, Omit this field for App Store builds.
+              }
             }, Meteor.bindEnvironment(function(error, response, body) {
               if (error) {
-                log.error('ONESIGNAL - registerInstallation error: ', error);
+                log.error('ONESIGNAL - registerInstallation error 2: ', error);
                 return;
               }
 
@@ -90,15 +118,15 @@ if(Meteor.isServer){
               try {
                 oneSignalBody = JSON.parse(body);
               } catch (e) {
-                log.error('ONESIGNAL - registerInstallation error: Wrong JSON Format.');
+                log.error('ONESIGNAL - registerInstallation error 2 : Wrong JSON Format.');
                 return;
               }
 
               var oneSignalId = oneSignalBody.id;
-              log.trace('ONESIGNAL - registerInstallation: returned oneSignalId ', oneSignalId);
-              //data.oneSignalId = oneSignalId;
+              log.trace('ONESIGNAL - registerInstallation: returned oneSignalId 2 ', oneSignalId);
+              data.oneSignalId = oneSignalId;
               data.updatedAt = (new Date()).toISOString();
-              Settings.update({userId: userId}, {$set:data})
+              Settings.update({userId: userId}, {$set:data});
             }));
           } else if(!DEBUG_ONESIGNAL_PUSH && update.success !== true){ // Parse.com
             // register installation to channels via the user's teamCodes
@@ -302,7 +330,7 @@ if(Meteor.isServer){
         }));
 
       } else {
-        
+
         var channel = `${Meteor.settings.APP.ENV[0]}-${messageTeam.teamCode}` || `T-${Meteor.settings.APP.ENV[0]}-${messageTeam._id}`
         var queryData = {
           "where": {

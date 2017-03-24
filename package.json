@@ -35,7 +35,7 @@
     "bunyan": "^1.5.1",
     "ftp": "^0.3.10",
     "mixpanel": "^0.4.0",
-    "onesignal": "^0.1.2",
+    "node-opensignal-api": "0.0.3",
     "phaxio": "0.0.6",
     "react": "^15.1.0",
     "react-addons-pure-render-mixin": "^15.1.0",
