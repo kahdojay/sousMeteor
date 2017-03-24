@@ -191,7 +191,7 @@ if(Meteor.isServer){
     CREATE_NOTIFICATION_URL: 'https://onesignal.com/api/v1/notifications',
 
     HEADERS: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json; charset=utf-8",
       "Authorization": "Basic " + Meteor.settings.ONESIGNAL.REST_API_KEY
     }
   }
