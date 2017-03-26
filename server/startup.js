@@ -150,6 +150,7 @@ if(Meteor.isServer){
     "phoneNumber": 1,
     "userId": 1,
     "badge": 1,
+    "oneSignalId": 1
   };
 
   APPROVED_ONESIGNAL_UPDATE_ATTRS = {

@@ -88,7 +88,7 @@ if(Meteor.isServer){
                   data.oneSignalId = oneSignalId;
                   data.updatedAt = (new Date()).toISOString();
 
-                  Settings.update({userId: userId}, {$set:data}); 
+                  Settings.update({userId: userId}, {$set:data});
               	}
             }));
 
@@ -173,7 +173,7 @@ if(Meteor.isServer){
         if (userSettings.hasOwnProperty('oneSignalId') === true && userSettings.oneSignalId &&
             userSettings.hasOwnProperty('deviceId') === true && userSettings.deviceId) { // OneSignal
           var editDeviceUrl = ONESIGNAL.EDIT_DEVICE_URL + userSettings.oneSignalId;
-          log.trace('ONESIGNAL - updateInstallation: editDeviceUrl: ', editDeviceUrl)
+          log.debug('ONESIGNAL - updateInstallation: editDeviceUrl and oneSignalId: ', editDeviceUrl, userSettings.oneSignalId);
           Meteor.http.put(editDeviceUrl, {
             headers: ONESIGNAL.HEADERS,
             body: JSON.stringify({
@@ -187,15 +187,8 @@ if(Meteor.isServer){
               return;
             }
 
-            var oneSignalBody;
-            try {
-              oneSignalBody = JSON.parse(body);
-            } catch (e) {
-              log.error('ONESIGNAL - updateInstallation error: Wrong JSON Format.');
-              return;
-            }
-
-            log.trace('ONESIGNAL - updateInstallation response: ', oneSignalBody);
+            var oneSignalBody = response;
+            log.debug('ONESIGNAL - updateInstallation response: ', oneSignalBody);
 
             dataAttributes.updatedAt = (new Date()).toISOString();
             Settings.update({userId: userId}, {$set:dataAttributes})
