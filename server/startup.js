@@ -153,24 +153,6 @@ if(Meteor.isServer){
     "oneSignalId": 1
   };
 
-  APPROVED_ONESIGNAL_UPDATE_ATTRS = {
-    "appVersion": 1,
-    "appBuildNumber": 1,
-    "deviceType": 1,
-    "deviceToken": 1,
-    "deviceModel": 1,
-    "deviceId": 1,
-    "deviceName": 1,
-    "deviceSystemName": 1,
-    "deviceSystemVersion": 1,
-    "installationId": 0, // NOTE: this field is readonly, so it can only be set once
-    "channels": 1,
-    "phoneNumber": 1,
-    "userId": 1,
-    "oneSignalId": 1,
-    "badge": 1,
-  };
-
   PARSE = {
     INSTALLATION_URL: 'https://api.parse.com/1/installations',
     PUSH_URL: 'https://api.parse.com/1/push',

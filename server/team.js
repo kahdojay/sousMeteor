@@ -177,6 +177,29 @@ if(Meteor.isServer){
       }
     },
 
+    getTeamUsersOneSignalIds: function(userId, teamId){
+      log.debug("GET TEAM USERS - userId: ", userId, " teamId: ", teamId);
+      var requestor = Meteor.users.findOne({_id: userId},{fields: {superUser:1}});
+      if(requestor){
+        var teamsUsers = Teams.findOne({_id: teamId},{fields:{users:1}})
+        var findFilter = {
+          _id: {$in: teamsUsers.users},
+        }
+
+        if(requestor.superUser !== true){
+          findFilter.superUser = false
+        }
+
+        return Meteor.users.find(findFilter, {
+          fields: {
+            oneSignalId: 1
+          }
+        }).fetch();
+      } else {
+        return []
+      }
+    },
+
     getTeamOrderGuide: function(teamId) {
       log.debug("GET TEAM ORDER GUIDE - teamId: ", teamId);
       var ret = {
