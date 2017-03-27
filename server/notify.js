@@ -167,7 +167,7 @@ if(Meteor.isServer){
       var oneSignalIds = [];
 
       users.forEach(function(userDictionary) {
-        if (userDictionary.userId != userId && userDictionary.hasOwnProperty('oneSignalId') === true && userDictionary.oneSignalId) {
+        if (userDictionary.hasOwnProperty('oneSignalId') === true && userDictionary.oneSignalId) {
           oneSignalIds.push(userDictionary.oneSignalId);
         }
       });
