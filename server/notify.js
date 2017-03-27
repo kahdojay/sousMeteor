@@ -1,6 +1,6 @@
 /* @flow */
 var oneSignal = require('node-opensignal-api');
-var oneSignalClient = oneSignal.createClient(); 
+var oneSignalClient = oneSignal.createClient();
 
 if(Meteor.isServer){
   Meteor.methods({
@@ -74,8 +74,8 @@ if(Meteor.isServer){
               device_model: deviceAttributes.model,
               device_os: deviceAttributes.systemVersion,
               identifier: deviceAttributes.token,
-              language: 'en',
-              test_type: 1 // 1 = Development, 2 = Ad-Hoc, //TODO: Omit this field for App Store builds.
+              language: 'en'
+              //test_type: 1 // 1 = Development, 2 = Ad-Hoc, //TODO: Omit this field for App Store builds.
             };
 
             oneSignalClient.players.create(oneSignalClientParams, Meteor.bindEnvironment(function (err, response) {
@@ -167,7 +167,7 @@ if(Meteor.isServer){
       var oneSignalIds = [];
 
       users.forEach(function(userDictionary) {
-        if (userDictionary.hasOwnProperty('oneSignalId') === true && userDictionary.oneSignalId) {
+        if (userDictionary.userId != userId && userDictionary.hasOwnProperty('oneSignalId') === true && userDictionary.oneSignalId) {
           oneSignalIds.push(userDictionary.oneSignalId);
         }
       });
