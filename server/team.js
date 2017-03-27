@@ -169,6 +169,7 @@ if(Meteor.isServer){
             email: 1,
             updatedAt: 1,
             imagedChangedAt: 1,
+            oneSignalId: 1
           }
         }).fetch();
       } else {
