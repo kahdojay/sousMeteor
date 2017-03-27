@@ -82,18 +82,19 @@ if(Meteor.isServer){
 
             oneSignalClient.players.create(oneSignalClientParams, Meteor.bindEnvironment(function (err, response) {
             	if (err) {
-                	log.error('ONESIGNAL 1 - registerInstallation error: ', err);
-              	} else {
-                	log.debug('registering installation 1 response', response);
+              	log.error('ONESIGNAL 1 - registerInstallation error: ', err);
+                return;
+            	}
 
-                  var oneSignalId = response.id;
-                  log.debug('ONESIGNAL 1 - registerInstallation: returned oneSignalId ', oneSignalId);
+              log.debug('registering installation 1 response', response);
 
-                  data.oneSignalId = oneSignalId;
-                  data.updatedAt = (new Date()).toISOString();
+              var oneSignalId = response.id;
+              log.debug('ONESIGNAL 1 - registerInstallation: returned oneSignalId ', oneSignalId);
 
-                  Settings.update({userId: userId}, {$set:data});
-              	}
+              data.oneSignalId = oneSignalId;
+              data.updatedAt = (new Date()).toISOString();
+
+              Settings.update({userId: userId}, {$set:data});
             }));
           }
         } else {
@@ -121,8 +122,8 @@ if(Meteor.isServer){
           message: 'Could not find settings for user'
         }]
       } else {
-        if (userSettings.hasOwnProperty('oneSignalId') === true && userSettings.oneSignalId &&
-            userSettings.hasOwnProperty('deviceId') === true && userSettings.deviceId) { // OneSignal
+        if (!userSettings.hasOwnProperty('oneSignalId') === true || !userSettings.oneSignalId ||
+            !userSettings.hasOwnProperty('deviceId') === true || !userSettings.deviceId) { // update OneSignal for existing users if oneSignalId does not exist
           var editDeviceUrl = ONESIGNAL.EDIT_DEVICE_URL + userSettings.oneSignalId;
           log.debug('ONESIGNAL - updateInstallation: editDeviceUrl and oneSignalId: ', editDeviceUrl, userSettings.oneSignalId);
           Meteor.http.put(editDeviceUrl, {
@@ -145,51 +146,25 @@ if(Meteor.isServer){
             Settings.update({userId: userId}, {$set:dataAttributes})
           }));
           ret.success = true;
-        } else if(!DEBUG_ONESIGNAL_PUSH && userSettings.hasOwnProperty('parseId') === true && userSettings.parseId){ // Parse.com
+        } else { // update user settings with lastUpdatedAt
           var processUpdate = false;
           var updateDataAttributes = {};
-          Object.keys(dataAttributes).forEach(function(key){
-            if(APPROVED_PARSE_UPDATE_ATTRS[key] === 1){
+
+          Object.keys(dataAttributes).forEach(function(key) {
+            if (APPROVED_PARSE_UPDATE_ATTRS[key] === 1) {
               updateDataAttributes[key] = dataAttributes[key]
               processUpdate = true;
             }
-          })
-          if(processUpdate){
-            var updateUrl = `${PARSE.INSTALLATION_URL}/${userSettings.parseId}`
-            log.trace('updateInstallation url: ', updateUrl)
-            log.trace('updateInstallation updateDataAttributes: ', updateDataAttributes)
-            Meteor.http.put(updateUrl, {
-              headers: PARSE.HEADERS,
-              // body: JSON.stringify(data)
-              "data": updateDataAttributes
-            }, Meteor.bindEnvironment(function(err, res){
-              if(err){
-                log.error('updateInstallation error: ', err);
-              }
-              log.trace('updateInstallation response: ', res);
-              if(!err && res.data.hasOwnProperty('error') === false){
-                dataAttributes.updatedAt = (new Date()).toISOString();
-                Settings.update({userId: userId}, {$set:dataAttributes})
-              }
-            }));
+          });
+
+          if (processUpdate) {
+            dataAttributes.updatedAt = (new Date()).toISOString();
+            Settings.update({userId: userId}, {$set:dataAttributes});
           }
           ret.success = true;
-        } else {
-          ret.success = false;
-
-          if (DEBUG_ONESIGNAL_PUSH) {
-            ret.error = [{
-              message: 'Could not find onesignal setting for user',
-              oneSignalId: userSettings.oneSignalId || null
-            }]
-          } else {
-            ret.error = [{
-              message: 'Could not find parse setting for user',
-              parseId: userSettings.parseId || null
-            }]
-          }
         }
       }
+      
       if(ret.success === true){
         log.trace('updateInstallation return success: ', ret);
       } else {
