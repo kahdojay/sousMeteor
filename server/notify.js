@@ -124,28 +124,10 @@ if(Meteor.isServer){
       } else {
         if (!userSettings.hasOwnProperty('oneSignalId') === true || !userSettings.oneSignalId ||
             !userSettings.hasOwnProperty('deviceId') === true || !userSettings.deviceId) { // update OneSignal for existing users if oneSignalId does not exist
-          var editDeviceUrl = ONESIGNAL.EDIT_DEVICE_URL + userSettings.oneSignalId;
-          log.debug('ONESIGNAL - updateInstallation: editDeviceUrl and oneSignalId: ', editDeviceUrl, userSettings.oneSignalId);
-          Meteor.http.put(editDeviceUrl, {
-            headers: ONESIGNAL.HEADERS,
-            body: JSON.stringify({
-              app_id: ONESIGNAL.APP_ID,
-              identifier: dataAttributes.deviceId
-              // TODO: add other device attributes if necessary
-            })
-          }, Meteor.bindEnvironment(function(error, response, body) {
-            if (error) {
-              log.error('ONESIGNAL - updateInstallation error: ', error);
-              return;
-            }
-
-            var oneSignalBody = response;
-            log.debug('ONESIGNAL - updateInstallation response: ', oneSignalBody);
-
-            dataAttributes.updatedAt = (new Date()).toISOString();
-            Settings.update({userId: userId}, {$set:dataAttributes})
-          }));
-          ret.success = true;
+          ret.success = false;
+          ret.error = [{
+            message: 'Could not find settings for oneSignalId or deviceId'
+          }];
         } else { // update user settings with lastUpdatedAt
           var processUpdate = false;
           var updateDataAttributes = {};
@@ -164,7 +146,7 @@ if(Meteor.isServer){
           ret.success = true;
         }
       }
-      
+
       if(ret.success === true){
         log.trace('updateInstallation return success: ', ret);
       } else {
