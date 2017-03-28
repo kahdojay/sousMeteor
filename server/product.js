@@ -98,11 +98,10 @@ if(Meteor.isServer){
     },
 
     createCategory: function(categoryAttributes, categoryLookup, cb) {
-      log.debug("CATEGORY ATTRS", categoryAttributes);
+      log.debug("CREATE CATEGORY ATTRS", categoryAttributes);
       var ret = {
         category: null,
         update: null,
-        exists: null,
       };
       var categoryLookup = categoryLookup || { name: categoryAttributes.name, teamId: categoryAttributes.teamId};
       var cb = cb || function(){}
@@ -131,6 +130,22 @@ if(Meteor.isServer){
       ret.category = Categories.findOne(categoryLookup);
 
       return ret;
+    },
+
+    updateCategory: function(categoryId, categoryAttributes) {
+      var realCategoryId = {_id: categoryId};
+      categoryAttributes.updatedAt = (new Date()).toISOString();
+      var updatedCategory = Categories.findOne(realCategoryId);
+      Object.keys(categoryAttributes).forEach(function(key){
+        if(APPROVED_CATEGORY_ATTRS.hasOwnProperty(key) && APPROVED_CATEGORY_ATTRS[key] === true){
+          updatedCategory[key] = categoryAttributes[key];
+        }
+      })
+      if(updatedCategory.hasOwnProperty('deleted') === true && updatedCategory.deleted === true){
+        updatedCategory.deletedAt = (new Date()).toISOString()
+      }
+      log.debug("UPDATE CATEGORY ATTRS ", updatedCategory);
+      return Categories.update(realCategoryId, {$set: updatedCategory});
     },
 
     addProductToCategory: function(categoryLookup, productId){
@@ -209,6 +224,18 @@ if(Meteor.isServer){
 
       return ret;
 
+    },
+
+    deleteCategory: function(categoryId, deleteCategoryAttributes) {
+      log.debug("DELETE CATEGORY ", categoryId, deleteCategoryAttributes);
+      return Categories.update(categoryId, {
+        $set: {
+          deleted: deleteCategoryAttributes.deleted || true,
+          deletedBy: deleteCategoryAttributes.deletedBy || null,
+          deletedAt: deleteCategoryAttributes.deletedAt || (new Date()).toISOString(),
+          updatedAt: (new Date()).toISOString(),
+        }
+      });
     },
   })
 }

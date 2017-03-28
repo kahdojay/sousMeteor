@@ -187,6 +187,11 @@ if(Meteor.isServer){
       var cartItemUpsert = {};
       var updateOptions = {};
 
+      if(cartItem === undefined && cartItemAttributes.hasOwnProperty('_id') === true){
+        cartItemLookup = {_id: cartItemAttributes._id};
+        cartItem = CartItems.findOne(cartItemLookup);
+      }
+
       if(cartItem === undefined){
         var product = Products.findOne({_id: cartItemAttributes.productId});
         // insert attributes
@@ -204,12 +209,12 @@ if(Meteor.isServer){
           cartItemUpsert._id = cartItemAttributes._id;
         }
 
-        var cartItemStatusLookup = Object.keys(STATUS.CART_ITEM)
-        if(cartItemAttributes.hasOwnProperty('status') === true && cartItemStatusLookup.indexOf(cartItemAttributes.status) !== -1){
-          cartItemUpsert.status = cartItemAttributes.status;
-        } else {
+        // var cartItemStatusLookup = Object.keys(STATUS.CART_ITEM)
+        // if(cartItemAttributes.hasOwnProperty('status') === true && cartItemStatusLookup.indexOf(cartItemAttributes.status) !== -1){
+        //   cartItemUpsert.status = cartItemAttributes.status;
+        // } else {
           cartItemUpsert.status = STATUS.CART_ITEM.NEW;
-        }
+        // }
 
         if(cartItemAttributes.hasOwnProperty('orderId') === true){
           cartItemUpsert.orderId = cartItemAttributes.orderId;
@@ -223,6 +228,7 @@ if(Meteor.isServer){
         cartItemLookup = {_id: cartItem._id}
         cartItemUpsert = {$set: {
           quantity: cartItemAttributes.quantity,
+          status: STATUS.CART_ITEM.NEW,
           note: cartItemAttributes.note,
           updatedAt: (new Date()).toISOString(),
         }}
@@ -322,7 +328,7 @@ if(Meteor.isServer){
             productName: product.name,
             updatedAt: (new Date()).toISOString(),
           }
-        })
+        });
       })
     },
 
@@ -358,9 +364,16 @@ if(Meteor.isServer){
           if(
             cartItemIds.indexOf(cartItem.id) === -1  // not found
             || serverCartItem[cartItem.id].quantity !== cartItem.quantity
-            || serverCartItem[cartItem.id].productName !== cartItem.productName
           ){
             unverifiedCartItems.push(cartItem)
+          } else if(serverCartItem[cartItem.id].productName !== cartItem.productName){
+            Meteor.call('updateProduct', productId, {name: serverCartItem[cartItem.id].productName});
+            CartItems.update({_id: cartItem.id}, {
+              $set: {
+                productName: product.name,
+                updatedAt: (new Date()).toISOString(),
+              }
+            });
           }
         })
         if(unverifiedCartItems.length > 0){
@@ -569,7 +582,7 @@ if(Meteor.isServer){
         var orderDate = moment(order.orderedAt).tz(timeZone);
         var orderDeliveryDate = '';
         if(order.orderDeliveryDate){
-          orderDeliveryDate = moment(order.orderDeliveryDate).tz(timeZone).format('dddd, MMMM D');
+          orderDeliveryDate = moment(order.orderDeliveryDate).format('dddd, MMMM D');
         }
 
         // setup the order product list
@@ -611,6 +624,7 @@ if(Meteor.isServer){
         globalMergeVars.push({ name: 'BUYER_CONTACTS', content: buyerContacts });
         globalMergeVars.push({ name: 'BUYER_ADDRESS', content: team.address || '' });
         globalMergeVars.push({ name: 'BUYER_CITY_STATE_ZIP', content: teamCityStateZip.join('') });
+        globalMergeVars.push({ name: 'ORDER_REF', content: order.orderRef || '' });
         globalMergeVars.push({ name: 'ORDER_DATE', content: orderDate.format('dddd, MMMM D') });
         globalMergeVars.push({ name: 'ORDER_TIME', content: orderDate.format('h:mm A') });
         globalMergeVars.push({ name: 'DELIVERY_DATE', content: orderDeliveryDate });
@@ -627,11 +641,11 @@ if(Meteor.isServer){
         if(purveyor.hasOwnProperty('sendFax') === true && purveyor.sendFax === true){
           purveyorSendFax = true
           var faxText = []
-          faxText.push(`Order Submission From: ${team.name}`)
+          faxText.push(`Order Submission to ${purveyor.name} From: ${team.name}`)
           faxText.push(`Order Date: ${orderDate.format('dddd, MMMM D')}`)
           faxText.push(`Order Time: ${orderDate.format('h:mm A')}`)
           faxText.push('')
-          faxText.push(`PLEASE EMAIL ORDERS@SOUSAPP.COM OR TEXT DON AT 530.435.5246 TO CONFIRM RECEIPT`)
+          faxText.push(`PLEASE TEXT OR CALL ONE OF THE CONTACTS BELOW CONFIRM RECEIPT`)
           faxText.push('')
           faxText.push('------Buyer Contacts------')
           buyerContacts.forEach(function(contact) {
@@ -671,6 +685,8 @@ if(Meteor.isServer){
         // Sheetsu Integration
         if(purveyor.hasOwnProperty('sheetsu') === true && !!purveyor.sheetsu.trim() === true){
           Meteor.call('uploadOrderToSheetsu', purveyor.sheetsu, {
+            team: team,
+            purveyor: purveyor,
             orderId: orderId,
             orderRef: order.orderRef,
             orderDate: orderDate,
@@ -695,7 +711,16 @@ if(Meteor.isServer){
         // this.unblock(); // http://docs.meteor.com/#/full/method_unblock
         // send the template
 
-        let recipients = []
+        let recipients = [
+          {
+            email: 'dj@sousapp.com',
+            type: 'bcc'
+          },
+          {
+            email: 'brian@sousapp.com',
+            type: 'bcc'
+          }
+        ]
         purveyor.orderEmails.split(',').forEach(function(orderEmail) {
           log.info('adding purveyor orderEmail to recipients TO array: ', orderEmail)
           orderEmail = orderEmail.trim()
@@ -757,7 +782,7 @@ if(Meteor.isServer){
           if(err || emailRejected){
             log.error('EMAIL ERROR: ', err, emailRejected)
             if(Meteor.call('sendSlackNotification', order.teamId)){
-              const slackAttachments = [
+              var slackAttachments = [
                 {
                   title: 'Errant Order Details',
                   color: 'danger',
@@ -873,7 +898,7 @@ if(Meteor.isServer){
 
             // notify Sous team in Slack
             if (Meteor.call('sendSlackNotification', messageAttributes.teamId)) {
-              const slackAttachments = [
+              var slackAttachments = [
                 {
                   title: 'Order Details',
                   color: 'good',

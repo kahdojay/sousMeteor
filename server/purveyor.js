@@ -11,25 +11,45 @@ if(Meteor.isServer){
         log.debug("CREATED PURVEYOR", purveyor);
       } else {
         log.error("Purveyor already exists");
-        // TODO: publish an error
+        Meteor.call('triggerError',
+          'verification-error',
+          'Error: a purveyor with the same name already exists.',
+          userId, null, purveyorAttributes
+        )
       }
     },
 
-    deletePurveyor: function(purveyorId, userId) {
-      log.debug("DELETE PURVEYOR ", purveyorId);
-      Purveyors.update(purveyorId, {
+    updatePurveyor: function(purveyorId, purveyorAttributes) {
+      var realPurveyorId = {_id: purveyorId};
+      purveyorAttributes.updatedAt = (new Date()).toISOString();
+      var updatedPurveyor = Purveyors.findOne(realPurveyorId);
+      Object.keys(purveyorAttributes).forEach(function(key){
+        if(APPROVED_PURVEYOR_ATTRS.hasOwnProperty(key) && APPROVED_PURVEYOR_ATTRS[key] === true){
+          updatedPurveyor[key] = purveyorAttributes[key];
+        }
+      })
+      if(updatedPurveyor.hasOwnProperty('deleted') === true && updatedPurveyor.deleted === true){
+        updatedPurveyor.deletedAt = (new Date()).toISOString()
+      }
+      log.debug("UPDATE PURVEYOR ATTRS ", updatedPurveyor);
+      return Purveyors.update(realPurveyorId, {$set: updatedPurveyor});
+    },
+
+    deletePurveyor: function(purveyorId, purveyorAttributes) {
+      log.debug("DELETE PURVEYOR ", purveyorId, purveyorAttributes);
+      return Purveyors.update(purveyorId, {
         $set: {
-          deleted: true,
+          deleted: purveyorAttributes.deleted || true,
+          deletedBy: purveyorAttributes.userId || null,
+          deletedAt: purveyorAttributes.deletedAt || (new Date()).toISOString(),
           updatedAt: (new Date()).toISOString(),
-          deletedAt: (new Date()).toISOString(),
-          deletedBy: userId,
         }
       });
     },
 
     renamePurveyor: function(purveyorCode, newPurveyorName) {
       let purveyor = Purveyors.findOne({purveyorCode: purveyorCode})
-      Purveyors.update(
+      return Purveyors.update(
         {_id: purveyor._id},
         { $set: {
           name: newPurveyorName,

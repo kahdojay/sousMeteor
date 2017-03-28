@@ -11,9 +11,9 @@
 
 ## Notes:
 
-### For deployment, you will need modulus
-
-    npm install -g https://github.com/sousapp/modulus-cli
+### For deployment, you will need the latest modulus-cli and Meteor >= 1.3.2.4
+    (see https://help.modulus.io/customer/portal/articles/1647770-getting-started-with-meteor-on-modulus)
+    $ npm install -g modulus@next
 
 ### Execute DDP commandline
 

@@ -58,29 +58,29 @@
                           </td>
                         </tr>
                         <tr>
-                          <td class="center">
-                            <p class="center">{{PURVEYOR_NAME}}, {{BUYER_NAME}} placed an order at {{ORDER_TIME}} on {{ORDER_DATE}}.</p>
-                            <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts</p>
-                            <p class="center">to ensure all incoming orders are received.</p>
-                            <br>
-                          </td>
+                            <p class="center">Order placed at <b>{{ORDER_TIME}}</b> on <b>{{ORDER_DATE}}</b> (#{{ORDER_REF}})</p>
+                            {{#if ORDER_PRODUCTS_COUNT}}
+                              {{#if `ORDER_PRODUCTS_COUNT > 1`}}
+                                <p class="center">{{ORDER_PRODUCTS_COUNT}} items ordered</p>
+                              {{else}}
+                                <p class="center">{{ORDER_PRODUCTS_COUNT}} item ordered</p>
+                              {{/if}}
+                            {{/if}}                
                         </tr>
+                        <br>
                         <tr>
                           <td class="center">
-                            <a class="center" href="http://www.sousapp.com" target="_blank">
-                            <img class="logo-large center" src="https://sous-assets-production.s3.amazonaws.com/uploads/f289605f-debe-48f9-a8f5-678538a1d37c/new_sous_logo_circle_small.png" alt="Sous: A Platform for Chefs">
-                            Sous: A Platform for Chefs</a>
+                            <a class="center" href="http://www.sousapp.com" target="_blank"><img class="logo-large center" src="https://sous-assets-production.s3.amazonaws.com/uploads/f289605f-debe-48f9-a8f5-678538a1d37c/new_sous_logo_circle_small.png" alt="Sous"></a>
                           </td>
                         </tr>
                         <tr>
                           <td class="center">
                             <h1 class="purveyor-name center">{{BUYER_NAME}}</h1>
-                            <span class="purveyor-detail-header">Contacts</span>
+                            <span class="purveyor-detail-header">Contact</span>
                               {{#each BUYER_CONTACTS}}
-                              <p class="center">{{contactInfo}}</p>
+                                  <p class="center">{{contactInfo}}</p>
                               {{/each}}
-                            <br>
-                            <span class="purveyor-detail-header">Address</span>
+                            <!-- <span class="purveyor-detail-header">Address</span> -->
                             <p class="center">{{BUYER_ADDRESS}}</p>
                             <p class="center">{{BUYER_CITY_STATE_ZIP}}</p>
                           </td>
@@ -91,6 +91,7 @@
                     </td>
                   </tr>
                 </table>
+        <p class="center purveyor-detail-header">Please Reply All to confirm order receipt.</p>
                 <hr>
                 {{#if ORDER_DELIVERY_INSTRUCTIONS}}
                 <h5 class="center">Delivery Instruction</h5>
@@ -98,24 +99,21 @@
                 <span class="delivery-instruction center">{{ORDER_DELIVERY_INSTRUCTIONS}}</span>
                 <hr>
                 {{/if}}
-                <h5 class="center">Order Summary</h5>
-                {{#if ORDER_PRODUCTS_COUNT}}
-                  {{#if `ORDER_PRODUCTS_COUNT > 1`}}
-            <p class="center">({{ORDER_PRODUCTS_COUNT}} items)</p>
-                  {{else}}
-                    <p class="center">({{ORDER_PRODUCTS_COUNT}} item)</p>
-          {{/if}}
-        {{/if}}   
-                <br>
                 {{#if DELIVERY_DATE}}
-                <tr>
-                  <td class="center">
-                    <p class="center">Requested Delivery Date: {{DELIVERY_DATE}}</p>
-                    <hr>
-                  </td>
-                </tr>
+                <h5 class="center">Requested Delivery Date</p>
                 <br>
+                <b class="center">{{DELIVERY_DATE}}</b>
+                <hr>
                 {{/if}}
+                <h5 class="center">Order Summary</h5>
+        {{#if ORDER_PRODUCTS_COUNT}}
+          {{#if `ORDER_PRODUCTS_COUNT > 1`}}
+            <p class="center">({{ORDER_PRODUCTS_COUNT}} items)</p>
+          {{else}}
+            <p class="center">({{ORDER_PRODUCTS_COUNT}} item)</p>
+          {{/if}}
+        {{/if}}                
+                <br>
                 <table class="container">
                   <tr>
                     <td>
@@ -153,36 +151,14 @@
                     </td>
                   </tr>
                 </table>
+                <br>
+                <p class="center purveyor-detail-header">Please Reply All to confirm order receipt.</p>
                 <hr>
 
-                <table class="container">
-                  <tr>
-                    <td>
-                      <table class="row">
-                        <tr>
-                          <td class="wrapper last">
-                            <table class="twelve columns">
-                                <tr>
-                                  <td class="center">
-                                    <div class="demo">
-                                      THIS IS NOT A REAL ORDER, IT IS ONLY A DEMO
-                                    </div>
-                                  </td>
-                                </tr>
-                            </table>
-
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-
-                <div class="footer">
-                  <p>Order submitted by <a href="http://www.sousapp.com" target="_blank">Sous: A Platform for Chefs</a></p>
-                  <p>Have questions or feedback?</p>
-                  <p>Reach out to us at <a href="mailto:orders@sousapp.com">orders@sousapp.com</a></p>
-                  <p>Can't wait?  Call us anytime at 432.349.9168.</p>
+                <!-- <div class="footer"> -->
+                <div>
+                  <p class="center">Please add <b>{{CONTACT_MAILER}}</b> to your contacts.</p>
+                  <p class="center">Want to receive a text message when your customer sends an order? <b><a href="https://sous.typeform.com/to/gpq2EC">Let Us Know!</a></b></p>
                 </div>
                 <br>
                 <br>
@@ -1062,5 +1038,6 @@
         }
       }
   </style>
+
 </body>
 </html>

@@ -32,12 +32,41 @@ if(Meteor.isServer){
       if(data){
         dataString = "\n" + '```' + JSON.stringify(data, null, 2) + '```'
       }
+
+      const slackAttachments = [
+        {
+          title: 'Client Error Details',
+          fields: [
+            {
+              title: 'Error Key',
+              value: machineKey,
+              short: true
+            },
+            {
+              title: 'First Name',
+              value: user.firstName,
+              short: true
+            },
+            {
+              title: 'Username',
+              value: user.username,
+              short: true
+            },
+            {
+              title: 'Email',
+              value: user.email,
+              short: true
+            },
+          ]
+        }
+      ]
+
       slack.alert({
         username: 'errorBot',
         channel: '#dev-errors',
         icon_emoji: ':warning:',
-        text: `Client Error triggered by (firstName: ${user.firstName}) (username: ${user.username}) (email: ${user.email}): ${msg} ${dataString}`,
-        attachments: null
+        text: `Client Error: ${msg} ${dataString}`,
+        attachments: slackAttachments
       });
 
       return {

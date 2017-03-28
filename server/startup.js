@@ -44,21 +44,20 @@ if(Meteor.isServer){
   Mixpanel = Npm.require('mixpanel');
   // Phaxio = Npm.require('phaxio');
 
-
-  settingsConfig = {};
-  try {
-    var includeFile = base + '/include.json';
-    var includeStats = fs.statSync(includeFile);
-    if(includeStats.isFile()){
-      var includeInfo = Npm.require(includeFile);
-      settingsConfig = includeInfo.config;
-      pkgInfo.build = includeInfo.build;
-    }
-  } catch(e){
-    if(pkgInfo.hasOwnProperty('config') === true){
-      settingsConfig = pkgInfo.config;
-    }
-  }
+  settingsConfig = Meteor.settings.APP.CONFIG || {};
+  // try {
+  //   var includeFile = base + '/include.json';
+  //   var includeStats = fs.statSync(includeFile);
+  //   if(includeStats.isFile()){
+  //     var includeInfo = Npm.require(includeFile);
+  //     settingsConfig = includeInfo.config;
+  //     pkgInfo.build = includeInfo.build;
+  //   }
+  // } catch(e){
+  //   if(pkgInfo.hasOwnProperty('config') === true){
+  //     settingsConfig = pkgInfo.config;
+  //   }
+  // }
   settingsConfig.itunesUrl = Meteor.settings.APP.ITUNES_URL
 
   log = logger.bunyan.createLogger({
@@ -68,7 +67,6 @@ if(Meteor.isServer){
               process.stdout,
     level: 'debug'
   })
-
 
   Object.assign = Object.assign || objectAssign;
 
@@ -96,12 +94,45 @@ if(Meteor.isServer){
     updatedAt: true,
   };
 
+  APPROVED_CATEGORY_ATTRS = {
+    name: true,
+    deleted: true,
+    updatedAt: true,
+  }
+
   APPROVED_CART_ITEM_ATTRS = {
     purveyorId: true,
     orderId: true,
     quantity: true,
     note: true,
     quantityReceived: true,
+  }
+
+  APPROVED_PURVEYOR_ATTRS = {
+    teamId: false,
+    purveyorCode: false,
+    teamCode: false,
+    name: true,
+    company: true,
+    city: true,
+    state: true,
+    zipCode: true,
+    timeZone: true,
+    orderCutoffTime: true,
+    orderMinimum: true,
+    deliveryDays: true,
+    notes: true,
+    email: true,
+    orderEmails: true,
+    phone: true,
+    fax: true,
+    orderContact: true,
+    description: true,
+    sendEmail: false,
+    sendFax: false,
+    uploadToFTP: false,
+    deleted: true,
+    updatedAt: true,
   }
 
   APPROVED_PARSE_UPDATE_ATTRS = {
@@ -119,6 +150,7 @@ if(Meteor.isServer){
     "phoneNumber": 1,
     "userId": 1,
     "badge": 1,
+    "oneSignalId": 1
   };
 
   PARSE = {
@@ -130,6 +162,31 @@ if(Meteor.isServer){
       "X-Parse-Application-Id": Meteor.settings.PARSE.APPLICATION_ID,
       "X-Parse-REST-API-Key": Meteor.settings.PARSE.REST_API_KEY,
       "Content-Type": "application/json",
+    }
+  }
+
+  ONESIGNAL = {
+    APP_ID: Meteor.settings.ONESIGNAL.APP_ID,
+    REST_API_KEY: Meteor.settings.ONESIGNAL.REST_API_KEY,
+
+    ADD_DEVICE_URL: 'https://onesignal.com/api/v1/players',
+    EDIT_DEVICE_URL: 'https://onesignal.com/api/v1/players/', // Concat onesignal id
+    CREATE_NOTIFICATION_URL: 'https://onesignal.com/api/v1/notifications',
+
+    HEADERS: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Authorization": "Basic " + Meteor.settings.ONESIGNAL.REST_API_KEY
+    }
+  }
+
+  Mailchimp = {
+    "APIKEY": Meteor.settings.MAILCHIMP.APIKEY,
+    "LIST_ENDPOINT": "https://us10.api.mailchimp.com/3.0/lists/75141bae0f/members/",
+    "AUTOMATION_ENDPOINT": "https://us10.api.mailchimp.com/3.0/automations/0373e92f6a/emails/58dce01add/queue/",
+    "HEADERS": {
+      "Accept": "application/json",
+      "Authorization": "apikey " + Meteor.settings.MAILCHIMP.APIKEY,
+      "Content-Type": "application/json"
     }
   }
 

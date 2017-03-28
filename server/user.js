@@ -1,5 +1,60 @@
 if(Meteor.isServer){
+
   Meteor.methods({
+    addToNewUserEmailDrip: function(userInfo) {
+      log.debug('ADDING USER TO EMAIL DRIP: ', userInfo)
+      Meteor.http.post(Mailchimp.LIST_ENDPOINT, {
+        headers: Mailchimp.HEADERS,
+        "data": {
+          "user": "Sous:" + Meteor.settings.MAILCHIMP.APIKEY,
+          "email_address": userInfo.email,
+          "status": "subscribed",
+          "merge_fields": {
+            "FNAME": userInfo.firstName || "",
+            "LNAME": userInfo.lastName || ""
+          }
+        }
+      }, Meteor.bindEnvironment(function (err, res) {
+        if (err) {
+          log.error('addToNewUserEmailDrip error: ', err);
+        } else {
+          slack.alert({
+            username: 'mailChimpBot',
+            channel: '#foh-users',
+            icon_emoji: ':monkey_face:',
+            text: `Added to mailchimp: ${userInfo.email}`,
+            attachments: null
+          });
+
+          Meteor.http.post(Mailchimp.AUTOMATION_ENDPOINT, {
+            headers: Mailchimp.HEADERS,
+            "data": {
+              "user": "Sous:" + Meteor.settings.MAILCHIMP.APIKEY,
+              "email_address": userInfo.email,
+              "status": "subscribed",
+              "merge_fields": {
+                "FNAME": userInfo.firstName || "",
+                "LNAME": userInfo.lastName || ""
+              }
+            }
+          }, Meteor.bindEnvironment(function (err, res) {
+            if (err) {
+              log.error('addToNewUserEmailDrip error: ', err);
+            } else {
+              slack.alert({
+                username: 'mailChimpBot',
+                channel: '#foh-users',
+                icon_emoji: ':monkey_face:',
+                text: `Added to automation: ${userInfo.email}`,
+                attachments: null
+              });
+            }
+            log.trace('addToNewUserEmailDrip response: ', res);
+          }));
+        }
+        log.trace('addToNewUserEmailDrip response: ', res);
+      }));
+    },
 
     trackUsers: function() {
       var allUsers = Meteor.users.find().fetch();
@@ -148,6 +203,7 @@ if(Meteor.isServer){
 
         Meteor.users.update({_id: ret.userId}, {$set: {
           teamId: teamId,
+          oneSignalId: null,
           email: "",
           firstName: "",
           lastName: "",
@@ -204,6 +260,7 @@ if(Meteor.isServer){
         //clear out user's data
         Meteor.users.update({_id:userId}, {$set: {
           teamId: null,
+          oneSignalId: null,
           firstName: '',
           lastName: '',
           email: '',
@@ -221,6 +278,14 @@ if(Meteor.isServer){
 
     getUsersTeams: function(userId) {
       return Teams.find({users: {$in: [userId]}}).fetch();
+    },
+
+    removeUser: function(phoneNumber) {
+      var userPkg = Meteor.call('getUserByPhoneNumber', phoneNumber);
+      var teams = Meteor.call('getUsersTeams', phoneNumber)
+      teamCodes = _.pluck(teams, 'teamCode');
+      Meteor.call('removeUserFromTeamsByTeamCodes', phoneNumber, teamCodes)
+      Meteor.users.remove({ _id: userPkg.userId })
     },
 
     removeUserFromTeamsByTeamCodes: function(phoneNumber, teamCodes) {
@@ -295,6 +360,16 @@ if(Meteor.isServer){
       }
 
       return ret;
+    },
+
+    joinUsersByPhone: function(numberToAdd, numberToJoin) {
+      toJoinId = Meteor.users.findOne({username:numberToJoin})._id
+      log.debug('toJoinId: ', toJoinId)
+      var teamsToJoin = Teams.find({users: {$in: [toJoinId]}}).fetch()
+      log.debug('teamsToJoin: ', teamsToJoin)
+      var teamCodesToJoin = _.pluck(teamsToJoin, 'teamCode')
+      log.debug('teamCodesToJoin: ', teamCodesToJoin)
+      Meteor.call('addUserToTeamCodes', numberToAdd, teamCodesToJoin)
     },
 
     addUserToTeamCodes: function(phoneNumber, teamCodes) {

@@ -1,5 +1,8 @@
 if(Meteor.isServer){
   Meteor.methods({
+    testImport: function() {
+      log.debug('testImport called')
+    },
 
     importMessages: function(importTeamCode, teamCodeOverride, url) {
       if(undefined === importTeamCode){
@@ -164,6 +167,15 @@ if(Meteor.isServer){
       });
 
       ret.after = Teams.find().count();
+
+      slack.alert({
+        username: 'importBot',
+        channel: '#foh-users',
+        icon_emoji: ':robot_face:',
+        text: 'importTeams called (all teams updated)',
+        attachments: []
+      });
+
       return ret;
     },
 
@@ -263,7 +275,8 @@ if(Meteor.isServer){
 
       // insert purveyors with purveyorCode
       var response = Meteor.http.get(url, {timeout: 10000})
-      log.debug('importPurveyors response:', response.data.result)
+      log.debug("importPurveyors METHOD ARGUMENTS: ", teamCode, teamCodeOverride, url);
+      // log.debug('importPurveyors response:', response.data.result)
       response.data.result.forEach(function(purveyor) {
         if(purveyor.hasOwnProperty('teamCode') === false){
           ret.purveyors[purveyor.teamCode] = 'Missing teamCode';
@@ -294,6 +307,15 @@ if(Meteor.isServer){
       });
 
       ret.after = Purveyors.find().count();
+
+      slack.alert({
+        username: 'importBot',
+        channel: '#foh-users',
+        icon_emoji: ':robot_face:',
+        text: `importPurveyors called on ${teamCode}`,
+        attachments: []
+      });
+
       return ret;
     },
 
@@ -322,6 +344,7 @@ if(Meteor.isServer){
           purveyorCode: purveyor.purveyorCode,
           teamId: teamId,
           teamCode: purveyor.teamCode,
+          customerNumber: purveyor.customerNumber,
           name: purveyor.name,
           company: purveyor.company,
           city: purveyor.city,
@@ -538,6 +561,15 @@ if(Meteor.isServer){
 
       ret.after = Products.find().count();
       ret.removedCategories = Categories.remove({products: {$size: 0}});
+
+      slack.alert({
+        username: 'importBot',
+        channel: '#foh-users',
+        icon_emoji: ':robot_face:',
+        text: `importProducts called on ${importTeamCode}`,
+        attachments: []
+      });
+
       return ret;
     },
 
