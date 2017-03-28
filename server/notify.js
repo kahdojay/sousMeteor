@@ -1,3 +1,7 @@
+/* @flow */
+var oneSignal = require('node-opensignal-api');
+var oneSignalClient = oneSignal.createClient();
+
 if(Meteor.isServer){
   Meteor.methods({
 
@@ -23,8 +27,8 @@ if(Meteor.isServer){
         tokenValid = true
       }
       tokenValid = true
-      if(deviceAttributes.hasOwnProperty('token') === true){
-        if(tokenValid === true){
+      if (deviceAttributes.hasOwnProperty('token') === true) {
+        if (tokenValid === true) {
           var user = Meteor.users.findOne({_id: userId});
           // get the user's teamCodes
           var userTeamCodes = Teams.find(
@@ -39,12 +43,14 @@ if(Meteor.isServer){
           log.trace('registering installation for team channels (ids): ', userTeamCodes)
 
           var installationId = aguid(`${deviceAttributes.model}-${slug(deviceAttributes.deviceName, { replacement: '' })}-${userId}`,)
+          var osTypeIOS = "ios";
+          var osType = osTypeIOS;
 
           var data = {
             "installationId": installationId,
             "appVersion": deviceAttributes.appVersion,
             "appBuildNumber": deviceAttributes.appBuildNumber,
-            "deviceType": "ios",
+            "deviceType": osTypeIOS,
             "deviceToken": deviceAttributes.token,
             "deviceModel": deviceAttributes.model,
             "deviceId": deviceAttributes.deviceId,
@@ -60,24 +66,37 @@ if(Meteor.isServer){
           var update = Meteor.call('updateInstallation', userId, data);
 
           // if nothing to update, then register a new instance
-          if(update.success !== true){
-            // register installation to channels via the user's teamCodes
-            Meteor.http.post(PARSE.INSTALLATION_URL, {
-              headers: PARSE.HEADERS,
-              "data": data
-            }, Meteor.bindEnvironment(function(err, res){
-              if(err){
-                log.error('registerInstallation error: ', err);
-              }
-              log.trace('registerInstallation response: ', res);
-              if(!err && res.data.hasOwnProperty('error') === false){
-                data.parseId = res.data.objectId;
-                data.updatedAt = (new Date()).toISOString();
-                Settings.update({userId: userId}, {$set:data})
-              }
-            }))
-          }
 
+          if (update.success !== true) { // OneSignal registration
+            var oneSignalClientParams = {
+            	app_id: ONESIGNAL.APP_ID,
+            	device_type: 'ios',
+              device_model: deviceAttributes.model,
+              device_os: deviceAttributes.systemVersion,
+              identifier: deviceAttributes.token,
+              language: 'en'
+              //test_type: 1 // 1 = Development, 2 = Ad-Hoc, //TODO: Omit this field for App Store builds.
+            };
+
+            oneSignalClient.players.create(oneSignalClientParams, Meteor.bindEnvironment(function (err, response) {
+            	if (err) {
+              	log.error('ONESIGNAL 1 - registerInstallation error: ', err);
+                return;
+            	}
+
+              log.debug('registering installation 1 response', response);
+
+              var oneSignalId = response.id;
+              log.debug('ONESIGNAL 1 - registerInstallation: returned oneSignalId ', oneSignalId);
+
+              data.oneSignalId = oneSignalId;
+              data.updatedAt = (new Date()).toISOString();
+
+              Settings.update({userId: userId}, {$set:data});
+              Meteor.users.update({_id: userId}, {$set: {oneSignalId: oneSignalId}});
+
+            }));
+          }
         } else {
           log.error('Registration failed due to invalid token');
         }
@@ -103,43 +122,31 @@ if(Meteor.isServer){
           message: 'Could not find settings for user'
         }]
       } else {
-        if(userSettings.hasOwnProperty('parseId') === true && userSettings.parseId){
+        if (!userSettings.hasOwnProperty('oneSignalId') === true || !userSettings.oneSignalId ||
+            !userSettings.hasOwnProperty('deviceId') === true || !userSettings.deviceId) { // update OneSignal for existing users if oneSignalId does not exist
+          ret.success = false;
+          ret.error = [{
+            message: 'Could not find settings for oneSignalId or deviceId'
+          }];
+        } else { // update user settings with lastUpdatedAt
           var processUpdate = false;
           var updateDataAttributes = {};
-          Object.keys(dataAttributes).forEach(function(key){
-            if(APPROVED_PARSE_UPDATE_ATTRS[key] === 1){
+
+          Object.keys(dataAttributes).forEach(function(key) {
+            if (APPROVED_PARSE_UPDATE_ATTRS[key] === 1) {
               updateDataAttributes[key] = dataAttributes[key]
               processUpdate = true;
             }
-          })
-          if(processUpdate){
-            var updateUrl = `${PARSE.INSTALLATION_URL}/${userSettings.parseId}`
-            log.trace('updateInstallation url: ', updateUrl)
-            log.trace('updateInstallation updateDataAttributes: ', updateDataAttributes)
-            Meteor.http.put(updateUrl, {
-              headers: PARSE.HEADERS,
-              // body: JSON.stringify(data)
-              "data": updateDataAttributes
-            }, Meteor.bindEnvironment(function(err, res){
-              if(err){
-                log.error('updateInstallation error: ', err);
-              }
-              log.trace('updateInstallation response: ', res);
-              if(!err && res.data.hasOwnProperty('error') === false){
-                dataAttributes.updatedAt = (new Date()).toISOString();
-                Settings.update({userId: userId}, {$set:dataAttributes})
-              }
-            }))
+          });
+
+          if (processUpdate) {
+            dataAttributes.updatedAt = (new Date()).toISOString();
+            Settings.update({userId: userId}, {$set:dataAttributes});
           }
           ret.success = true;
-        } else {
-          ret.success = false;
-          ret.error = [{
-            message: 'Could not find parse setting for user',
-            parseId: userSettings.parseId || null
-          }]
         }
       }
+
       if(ret.success === true){
         log.trace('updateInstallation return success: ', ret);
       } else {
@@ -151,37 +158,36 @@ if(Meteor.isServer){
     triggerPushNotification: function(message, teamId, userId) {
       if (!message || !teamId) {
         return {
-          success: false,
-          // errorId: errorId,
-          // machineKey: machineKey,
-          // userId: userId,
+          success: false
         }
       }
-      log.trace('triggerPushNotification: ', message, ' to team: ', teamId, ' by user: ', userId)
-      var user = Meteor.users.findOne({_id: userId});
-      var messageTeam = Teams.findOne({ _id: teamId }, { fields: { teamCode: 1 } })
-      var channel = `${Meteor.settings.APP.ENV[0]}-${messageTeam.teamCode}` || `T-${Meteor.settings.APP.ENV[0]}-${messageTeam._id}`
-      var queryData = {
-        "where": {
-          "channels": channel,
-        },
-        "data": {
-          "alert": message,
-          "badge": "Increment"
+
+      // get each users oneSignalId from team
+      var users = Meteor.call("getTeamUsersOneSignalIds", userId, teamId);
+      var oneSignalIds = [];
+
+      users.forEach(function(userDictionary) {
+        if (userDictionary.hasOwnProperty('oneSignalId') === true && userDictionary.oneSignalId) {
+          oneSignalIds.push(userDictionary.oneSignalId);
         }
-      }
-      if(user !== undefined){
-        queryData['where']["$ne"] = {
-          "phoneNumber": user.username
-        }
-      }
-      try {
-        Meteor.http.post(PARSE.PUSH_URL, {
-          method: 'PUSH',
-          headers: PARSE.HEADERS,
-          "data": queryData,
-        }, Meteor.bindEnvironment(function(err, res){
-          if(err){
+      });
+
+      var oneSignalClientParams = {
+        app_id: ONESIGNAL.APP_ID,
+        contents: {"en": message},
+        include_player_ids: oneSignalIds
+      };
+
+      log.debug('triggerPushNotification: ', message, ' to team: ', teamId, ' by user: ', userId, ', include_player_ids: ', oneSignalIds, ', oneSignalClientParams: ', oneSignalClientParams, ', users: ', users);
+
+      if (oneSignalIds.length > 0) {
+        oneSignalClient.notifications.create(ONESIGNAL.REST_API_KEY, oneSignalClientParams, function (error, response) {
+        	if (error) {
+            log.error('triggerPushNotification: ', message, ' to team: ', teamId, ' by user: ', userId, ', include_player_ids: ', oneSignalIds, ', error: ', error);
+
+            var user = Meteor.users.findOne({_id: userId});
+            var messageTeam = Teams.findOne({ _id: teamId }, { fields: { teamCode: 1 } })
+
             var slackAttachments = [
               {
                 title: 'Push Notification Error',
@@ -215,7 +221,7 @@ if(Meteor.isServer){
             alertMsg.push('<!channel> Meteor Push Notification Error!');
             alertMsg.push('');
             alertMsg.push('*Error*');
-            alertMsg.push(`${err}`);
+            alertMsg.push(`${error}`);
             alertMsg.push('');
 
             slack.alert({
@@ -225,57 +231,75 @@ if(Meteor.isServer){
               icon_emoji: ':rotating_light:',
               attachments: slackAttachments
             });
-          }
-        }))
-      } catch (err){
-        var slackAttachments = [
-          {
-            title: 'Push Notification Exception',
-            color: 'danger',
-            fields: [
-              {
-                title: 'Team Name',
-                value: messageTeam.name,
-                short: true
-              },
-              {
-                title: 'Author',
-                value: `${message.author}`,
-                short: true
-              },
-              {
-                title: 'Team Code',
-                value: messageTeam.teamCode,
-                short: true
-              },
-              {
-                title: 'Message',
-                value: message,
-                short: true
-              },
-            ]
-          }
-        ]
 
-        var alertMsg = []
-        alertMsg.push('<!channel> Meteor triggerPushNotification Exception!');
-        alertMsg.push('');
-        alertMsg.push('*Error*');
-        alertMsg.push(`${err}`);
-        alertMsg.push('');
-        alertMsg.push('*Stack Trace*');
-        alertMsg.push((err.stack) ? '```'+err.stack+'```' : '`...`');
-        alertMsg.push('');
-
-        slack.alert({
-          username: 'Exceptionbot (mobile)',
-          channel: '#dev-errors',
-          text: alertMsg.join('\n'),
-          icon_emoji: ':rotating_light:',
-          attachments: slackAttachments
+            return;
+        	}
         });
       }
+
+      // Meteor.http.post(ONESIGNAL.CREATE_NOTIFICATION_URL, {
+      //   headers: ONESIGNAL.HEADERS,
+      //   body: JSON.stringify({
+      //     app_id: ONESIGNAL.APP_ID,
+      //     include_player_ids: oneSignalIds,
+      //     contents: {
+      //       en: message
+      //     }
+      //   })
+      // }, Meteor.bindEnvironment(function(error, response, body) {
+      //   if (error) {
+      //     var user = Meteor.users.findOne({_id: userId});
+      //     var messageTeam = Teams.findOne({ _id: teamId }, { fields: { teamCode: 1 } })
+      //
+      //     var slackAttachments = [
+      //       {
+      //         title: 'Push Notification Error',
+      //         color: 'danger',
+      //         fields: [
+      //           {
+      //             title: 'Team Name',
+      //             value: messageTeam.name,
+      //             short: true
+      //           },
+      //           {
+      //             title: 'Author',
+      //             value: `${message.author}`,
+      //             short: true
+      //           },
+      //           {
+      //             title: 'Team Code',
+      //             value: messageTeam.teamCode,
+      //             short: true
+      //           },
+      //           {
+      //             title: 'Message',
+      //             value: message,
+      //             short: true
+      //           },
+      //         ]
+      //       }
+      //     ]
+      //
+      //     var alertMsg = []
+      //     alertMsg.push('<!channel> Meteor Push Notification Error!');
+      //     alertMsg.push('');
+      //     alertMsg.push('*Error*');
+      //     alertMsg.push(`${error}`);
+      //     alertMsg.push('');
+      //
+      //     slack.alert({
+      //       username: 'Exceptionbot (mobile)',
+      //       channel: '#dev-errors',
+      //       text: alertMsg.join('\n'),
+      //       icon_emoji: ':rotating_light:',
+      //       attachments: slackAttachments
+      //     });
+      //
+      //     return;
+      //   }
+      // }));
+
       Meteor.call('updateInstallation', userId, {"badge": 0});
-    },
+    }
   })
 }

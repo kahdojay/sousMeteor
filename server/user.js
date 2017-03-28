@@ -13,9 +13,9 @@ if(Meteor.isServer){
             "FNAME": userInfo.firstName || "",
             "LNAME": userInfo.lastName || ""
           }
-        }                                             
+        }
       }, Meteor.bindEnvironment(function (err, res) {
-        if (err) {                                               
+        if (err) {
           log.error('addToNewUserEmailDrip error: ', err);
         } else {
           slack.alert({
@@ -36,9 +36,9 @@ if(Meteor.isServer){
                 "FNAME": userInfo.firstName || "",
                 "LNAME": userInfo.lastName || ""
               }
-            }                                             
+            }
           }, Meteor.bindEnvironment(function (err, res) {
-            if (err) {                                               
+            if (err) {
               log.error('addToNewUserEmailDrip error: ', err);
             } else {
               slack.alert({
@@ -50,7 +50,7 @@ if(Meteor.isServer){
               });
             }
             log.trace('addToNewUserEmailDrip response: ', res);
-          })); 
+          }));
         }
         log.trace('addToNewUserEmailDrip response: ', res);
       }));
@@ -203,6 +203,7 @@ if(Meteor.isServer){
 
         Meteor.users.update({_id: ret.userId}, {$set: {
           teamId: teamId,
+          oneSignalId: null,
           email: "",
           firstName: "",
           lastName: "",
@@ -259,6 +260,7 @@ if(Meteor.isServer){
         //clear out user's data
         Meteor.users.update({_id:userId}, {$set: {
           teamId: null,
+          oneSignalId: null,
           firstName: '',
           lastName: '',
           email: '',

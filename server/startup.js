@@ -150,6 +150,7 @@ if(Meteor.isServer){
     "phoneNumber": 1,
     "userId": 1,
     "badge": 1,
+    "oneSignalId": 1
   };
 
   PARSE = {
@@ -161,6 +162,20 @@ if(Meteor.isServer){
       "X-Parse-Application-Id": Meteor.settings.PARSE.APPLICATION_ID,
       "X-Parse-REST-API-Key": Meteor.settings.PARSE.REST_API_KEY,
       "Content-Type": "application/json",
+    }
+  }
+
+  ONESIGNAL = {
+    APP_ID: Meteor.settings.ONESIGNAL.APP_ID,
+    REST_API_KEY: Meteor.settings.ONESIGNAL.REST_API_KEY,
+
+    ADD_DEVICE_URL: 'https://onesignal.com/api/v1/players',
+    EDIT_DEVICE_URL: 'https://onesignal.com/api/v1/players/', // Concat onesignal id
+    CREATE_NOTIFICATION_URL: 'https://onesignal.com/api/v1/notifications',
+
+    HEADERS: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Authorization": "Basic " + Meteor.settings.ONESIGNAL.REST_API_KEY
     }
   }
 
