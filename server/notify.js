@@ -178,7 +178,7 @@ if(Meteor.isServer){
         include_player_ids: oneSignalIds
       };
 
-      log.trace('triggerPushNotification: ', message, ' to team: ', teamId, ' by user: ', userId, ', include_player_ids: ', oneSignalIds, ', oneSignalClientParams: ', oneSignalClientParams, ', users: ', users);
+      log.debug('triggerPushNotification: ', message, ' to team: ', teamId, ' by user: ', userId, ', include_player_ids: ', oneSignalIds, ', oneSignalClientParams: ', oneSignalClientParams, ', users: ', users);
 
       if (oneSignalIds.length > 0) {
         oneSignalClient.notifications.create(ONESIGNAL.REST_API_KEY, oneSignalClientParams, function (error, response) {
