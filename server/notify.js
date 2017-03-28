@@ -75,26 +75,23 @@ if(Meteor.isServer){
               device_os: deviceAttributes.systemVersion,
               identifier: deviceAttributes.token,
               language: 'en'
-              //test_type: 1 // 1 = Development, 2 = Ad-Hoc, //TODO: Omit this field for App Store builds.
             };
 
             oneSignalClient.players.create(oneSignalClientParams, Meteor.bindEnvironment(function (err, response) {
             	if (err) {
-              	log.error('ONESIGNAL 1 - registerInstallation error: ', err);
+              	log.error('ONESIGNAL - registerInstallation error: ', err);
                 return;
             	}
 
               log.debug('registering installation 1 response', response);
-
               var oneSignalId = response.id;
-              log.debug('ONESIGNAL 1 - registerInstallation: returned oneSignalId ', oneSignalId);
+              log.debug('ONESIGNAL - registerInstallation: returned oneSignalId ', oneSignalId);
 
               data.oneSignalId = oneSignalId;
               data.updatedAt = (new Date()).toISOString();
 
               Settings.update({userId: userId}, {$set:data});
               Meteor.users.update({_id: userId}, {$set: {oneSignalId: oneSignalId}});
-
             }));
           }
         } else {
@@ -115,44 +112,83 @@ if(Meteor.isServer){
         userId: userId,
         dataAttributes: dataAttributes
       }
+
       var userSettings = Settings.findOne({userId: userId})
       if(userSettings === undefined){
         ret.success = false;
         ret.error = [{
           message: 'Could not find settings for user'
-        }]
-      } else {
-        if (!userSettings.hasOwnProperty('oneSignalId') === true || !userSettings.oneSignalId ||
-            !userSettings.hasOwnProperty('deviceId') === true || !userSettings.deviceId) { // update OneSignal for existing users if oneSignalId does not exist
-          ret.success = false;
-          ret.error = [{
-            message: 'Could not find settings for oneSignalId or deviceId'
-          }];
-        } else { // update user settings with lastUpdatedAt
-          var processUpdate = false;
-          var updateDataAttributes = {};
+        }];
 
-          Object.keys(dataAttributes).forEach(function(key) {
-            if (APPROVED_PARSE_UPDATE_ATTRS[key] === 1) {
-              updateDataAttributes[key] = dataAttributes[key]
-              processUpdate = true;
-            }
-          });
-
-          if (processUpdate) {
-            dataAttributes.updatedAt = (new Date()).toISOString();
-            Settings.update({userId: userId}, {$set:dataAttributes});
-          }
-          ret.success = true;
-        }
-      }
-
-      if(ret.success === true){
-        log.trace('updateInstallation return success: ', ret);
-      } else {
         log.error('updateInstallation return failure: ', ret);
+        return ret;
       }
-      return ret;
+
+      if ((!userSettings.hasOwnProperty('oneSignalId') === true || !userSettings.oneSignalId) &&
+          userSettings.hasOwnProperty('deviceToken') === true && userSettings.deviceToken) { // update OneSignal for existing users if oneSignalId does not exist
+
+        var oneSignalClientParams = {
+          app_id: ONESIGNAL.APP_ID,
+          device_type: 'ios',
+          identifier: userSettings.deviceToken,
+          language: 'en'
+        };
+
+        if (userSettings.hasOwnProperty('deviceModel') === true && userSettings.deviceModel) {
+          oneSignalClientParams.deviceModel = userSettings.deviceModel;
+        }
+
+        if (userSettings.hasOwnProperty('deviceSystemVersion') === true && userSettings.deviceSystemVersion) {
+          oneSignalClientParams.deviceSystemVersion = userSettings.deviceSystemVersion;
+        }
+
+        oneSignalClient.players.create(oneSignalClientParams, Meteor.bindEnvironment(function (err, response) {
+          if (err) {
+            log.error('ONESIGNAL 1 - registerInstallation error: ', err);
+
+            ret.success = false;
+            ret.error = [{
+              message: 'Could not find settings for oneSignalId or deviceId'
+            }];
+
+            log.error('updateInstallation return failure: ', ret);
+            return ret;
+          }
+
+          var oneSignalId = response.id;
+          log.debug('ONESIGNAL 1 - registerInstallation: returned oneSignalId ', oneSignalId);
+
+          userSettings.oneSignalId = oneSignalId;
+          userSettings.updatedAt = (new Date()).toISOString();
+
+          Settings.update({userId: userId}, {$set:userSettings});
+          Meteor.users.update({_id: userId}, {$set: {oneSignalId: oneSignalId}});
+
+          ret.success = true;
+          log.trace('updateInstallation return success: ', ret);
+          return ret;
+        }));
+
+      } else { // update user settings with lastUpdatedAt
+        var processUpdate = false;
+        var updateDataAttributes = {};
+
+        Object.keys(dataAttributes).forEach(function(key) {
+          if (APPROVED_PARSE_UPDATE_ATTRS[key] === 1) {
+            updateDataAttributes[key] = dataAttributes[key]
+            processUpdate = true;
+          }
+        });
+
+        if (processUpdate) {
+          dataAttributes.updatedAt = (new Date()).toISOString();
+          Settings.update({userId: userId}, {$set:dataAttributes});
+        }
+        ret.success = true;
+
+        log.trace('updateInstallation return success: ', ret);
+        return ret;
+      }
     },
 
     triggerPushNotification: function(message, teamId, userId) {
