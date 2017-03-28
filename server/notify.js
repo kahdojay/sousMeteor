@@ -237,68 +237,6 @@ if(Meteor.isServer){
         });
       }
 
-      // Meteor.http.post(ONESIGNAL.CREATE_NOTIFICATION_URL, {
-      //   headers: ONESIGNAL.HEADERS,
-      //   body: JSON.stringify({
-      //     app_id: ONESIGNAL.APP_ID,
-      //     include_player_ids: oneSignalIds,
-      //     contents: {
-      //       en: message
-      //     }
-      //   })
-      // }, Meteor.bindEnvironment(function(error, response, body) {
-      //   if (error) {
-      //     var user = Meteor.users.findOne({_id: userId});
-      //     var messageTeam = Teams.findOne({ _id: teamId }, { fields: { teamCode: 1 } })
-      //
-      //     var slackAttachments = [
-      //       {
-      //         title: 'Push Notification Error',
-      //         color: 'danger',
-      //         fields: [
-      //           {
-      //             title: 'Team Name',
-      //             value: messageTeam.name,
-      //             short: true
-      //           },
-      //           {
-      //             title: 'Author',
-      //             value: `${message.author}`,
-      //             short: true
-      //           },
-      //           {
-      //             title: 'Team Code',
-      //             value: messageTeam.teamCode,
-      //             short: true
-      //           },
-      //           {
-      //             title: 'Message',
-      //             value: message,
-      //             short: true
-      //           },
-      //         ]
-      //       }
-      //     ]
-      //
-      //     var alertMsg = []
-      //     alertMsg.push('<!channel> Meteor Push Notification Error!');
-      //     alertMsg.push('');
-      //     alertMsg.push('*Error*');
-      //     alertMsg.push(`${error}`);
-      //     alertMsg.push('');
-      //
-      //     slack.alert({
-      //       username: 'Exceptionbot (mobile)',
-      //       channel: '#dev-errors',
-      //       text: alertMsg.join('\n'),
-      //       icon_emoji: ':rotating_light:',
-      //       attachments: slackAttachments
-      //     });
-      //
-      //     return;
-      //   }
-      // }));
-
       Meteor.call('updateInstallation', userId, {"badge": 0});
     }
   })
