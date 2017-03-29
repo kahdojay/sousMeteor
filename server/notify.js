@@ -107,7 +107,7 @@ if(Meteor.isServer){
       log.debug('updateInstallation userId: ', userId)
       log.debug('updateInstallation dataAttributes: ', dataAttributes)
       var ret = {
-        success: null,
+        success: false,
         error: null,
         userId: userId,
         dataAttributes: dataAttributes
@@ -199,7 +199,7 @@ if(Meteor.isServer){
       }
 
       // get each users oneSignalId from team
-      var users = Meteor.call("getTeamUsersOneSignalIds", userId, teamId);
+      var users = Meteor.call("getTeamUsersOneSignalIds", teamId);
       var oneSignalIds = [];
 
       users.forEach(function(userDictionary) {
@@ -217,6 +217,7 @@ if(Meteor.isServer){
       log.debug('triggerPushNotification: ', message, ' to team: ', teamId, ' by user: ', userId, ', include_player_ids: ', oneSignalIds, ', oneSignalClientParams: ', oneSignalClientParams, ', users: ', users);
 
       if (oneSignalIds.length > 0) {
+        log.debug('triggerPushNotification has oneSignalIds');
         oneSignalClient.notifications.create(ONESIGNAL.REST_API_KEY, oneSignalClientParams, function (error, response) {
         	if (error) {
             log.error('triggerPushNotification: ', message, ' to team: ', teamId, ' by user: ', userId, ', include_player_ids: ', oneSignalIds, ', error: ', error);
@@ -270,10 +271,21 @@ if(Meteor.isServer){
 
             return;
         	}
+
+          log.debug('triggerPushNotification has oneSignalIds and successfully sent a response', response);
         });
       }
 
       Meteor.call('updateInstallation', userId, {"badge": 0});
+    },
+
+    getTeamUsersOneSignalIds: function(teamId){
+      var teamsUsers = Teams.findOne({_id: teamId},{fields:{users:1}})
+      return Meteor.users.find({_id: {$in: teamsUsers.users}}, {
+        fields: {
+          oneSignalId: 1
+        }
+      }).fetch();
     }
   })
 }
