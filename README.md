@@ -7,6 +7,51 @@
 
     npm run start-development
 
+# Docker
+
+## Build a deployment package
+```
+npm install -g demeteorizer
+chmod +x ./deploy.sh
+./deploy.sh
+```
+
+## Docker run locally (dev environment)
+```
+docker build -t "sousmeteor:dockerfile" .demeteorized
+
+# verify that the new image exists
+docker image ls
+
+# run the new image with staging settings (change as needed)
+docker run \
+  -e MONGO_URL="$(node -p 'settings=require("./settings-staging.json");settings.MONGO_URL.MONGOLAB')" \
+  -e METEOR_SETTINGS="$(node -p 'settings=require("./settings-staging.json");JSON.stringify(settings)')" \
+  -e SERVER_BASE=/usr/src/app/bundle/programs/server \
+  -e ROOT_URL=http://127.0.0.0:3000 \
+  -e NODE_ENV=staging \
+  -e PORT=3000 \
+  -p 3000:3000 \
+  sousmeteor:dockerfile
+
+# then open the url
+open http://localhost:3000
+```
+
+## Upload to Zeit/Now
+
+```
+now \
+  -e MONGO_URL="$(node -p 'settings=require("./settings-staging.json");settings.MONGO_URL.MONGOLAB')" \
+  -e METEOR_SETTINGS="$(node -p 'settings=require("./settings-staging.json");JSON.stringify(settings)')" \
+  -e SERVER_BASE=/usr/src/app/bundle/programs/server \
+  -e ROOT_URL=http://127.0.0.0:3000 \
+  -e NODE_ENV=staging \
+  -e PORT=3000 \
+  -p 3000:3000 \
+  deploy .demeteorized
+```
+
 # Misc
 
 ## Notes:

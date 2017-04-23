@@ -32,7 +32,7 @@ TeamPurveyorSettings.allow(allowPermissions);
 if(Meteor.isServer){
 
   _ = lodash
-  base = process.env.PWD
+  base = process.env.SERVER_BASE || process.env.PWD;
   pkgInfo = Npm.require(base + '/package.json');
 
   stream = Npm.require('stream');
