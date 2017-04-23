@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "build": "1",
   "engines": {
-    "node": "0.10.43"
+    "node": "4.1.1"
   },
   "dependencies": {
     "aguid": "^1.0.4",

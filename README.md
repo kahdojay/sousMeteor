@@ -12,8 +12,8 @@
 ## Build a deployment package
 ```
 npm install -g demeteorizer
-chmod +x ./deploy.sh
-./deploy.sh
+chmod +x ./private/docker/deploy.sh
+./private/docker/deploy.sh
 ```
 
 ## Docker run locally (dev environment)
@@ -50,6 +50,13 @@ now \
   -e PORT=3000 \
   -p 3000:3000 \
   deploy .demeteorized
+```
+
+### Alias to ENV
+
+```
+# the url is displayed during the now command above, and in some cases copied to the clipboard
+now alias set <url-slug>.now.sh <env>.sousapp.com
 ```
 
 # Misc
