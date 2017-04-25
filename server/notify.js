@@ -42,7 +42,8 @@ if(Meteor.isServer){
 
           log.trace('registering installation for team channels (ids): ', userTeamCodes)
 
-          var installationId = aguid(`${deviceAttributes.model}-${slug(deviceAttributes.deviceName, { replacement: '' })}-${userId}`,)
+          var installationId = uuidV4();
+          // `${deviceAttributes.model}-${slug(deviceAttributes.deviceName, { replacement: '' })}-${userId}`
           var osTypeIOS = "ios";
           var osType = osTypeIOS;
 

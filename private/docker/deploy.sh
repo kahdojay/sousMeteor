@@ -8,4 +8,6 @@ rm -rf bundle
 split -b 999k myProject.tar.gz "myProject.tar.gz.meteor-part-"
 rm myProject.tar.gz
 cp ../private/docker/* ./
-rm ./settings-staging.json
+if ls ./settings-*.json 1> /dev/null 2>&1; then
+  rm ./settings-*.json
+fi

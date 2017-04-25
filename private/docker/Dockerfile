@@ -1,11 +1,13 @@
-#### Use nodejs v4.1.1
+#### Use nodejs v6.3.1
 #
-FROM nodesource/jessie:4.1.1
+FROM nodesource/xenial:6.3.1
 
 #### Update apt-get and install supervisor
 #
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update
-RUN apt-get install -y supervisor
+RUN apt-get install -y supervisor yarn
 
 ############################################################
 ##### ADD ANY OTHER DEPENDENCIES (eg. MongoDB, etc)
@@ -29,19 +31,17 @@ RUN tar -xzf bundle.tar.gz
 #### Set the working directory to /usr/src/app/bundle/programs/server
 #
 WORKDIR /usr/src/app/bundle/programs/server
-RUN npm install -g npm@next
 
 #### Run npm install and npm rebuild
 #
-RUN npm install
-RUN npm rebuild
+RUN yarn install --force
 
 #### Fix the npm-bcrypt issue..
 # set the working directory to: /usr/src/app/bundle/programs/server/npm/node_modules/meteor/npm-bcrypt
 #
 WORKDIR /usr/src/app/bundle/programs/server/npm/node_modules/meteor/npm-bcrypt
 RUN rm -rf node_modules/bcrypt
-RUN npm install bcrypt
+RUN yarn add bcrypt
 
 #### Set the working directory to /usr/src/app/bundle
 #

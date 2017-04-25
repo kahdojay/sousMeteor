@@ -18,7 +18,7 @@ chmod +x ./private/docker/deploy.sh
 
 ## Docker run locally (dev environment)
 ```
-docker build -t "sousmeteor:dockerfile" .demeteorized
+docker build -t "sousapp:sousmeteor" .demeteorized
 
 # verify that the new image exists
 docker image ls
@@ -32,7 +32,7 @@ docker run \
   -e NODE_ENV=staging \
   -e PORT=3000 \
   -p 3000:3000 \
-  sousmeteor:dockerfile
+  sousapp:sousmeteor
 
 # then open the url
 open http://localhost:3000
@@ -41,6 +41,8 @@ open http://localhost:3000
 ## Upload to Zeit/Now
 
 ```
+npm i -g now
+
 now \
   -e MONGO_URL="$(node -p 'settings=require("./settings-staging.json");settings.MONGO_URL.MONGOLAB')" \
   -e METEOR_SETTINGS="$(node -p 'settings=require("./settings-staging.json");JSON.stringify(settings)')" \

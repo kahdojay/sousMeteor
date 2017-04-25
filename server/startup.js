@@ -38,11 +38,10 @@ if(Meteor.isServer){
   stream = Npm.require('stream');
   fs = Npm.require('fs');
   slug = Npm.require('slug');
-  aguid = Npm.require('aguid');
+  uuidV4 = Npm.require('uuid/v4');
   s = Npm.require('underscore.string');
   Putter =  Npm.require('base64-string-s3');
   Mixpanel = Npm.require('mixpanel');
-  // Phaxio = Npm.require('phaxio');
 
   settingsConfig = Meteor.settings.APP.CONFIG || {};
   // try {
