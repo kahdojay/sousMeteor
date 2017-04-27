@@ -67,7 +67,7 @@ if(Meteor.isServer){
           '$last_name': user.lastName,
           '$email': user.email,
           '$created': user.createdAt,
-          'phoneNumber': user.username,
+          '$phone': user.username,
         }
         if(userSettings){
           setValues['settings__appBuildNumber'] = userSettings.appBuildNumber || 'unkown';
