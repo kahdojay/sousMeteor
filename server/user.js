@@ -20,7 +20,7 @@ if(Meteor.isServer){
         } else {
           slack.alert({
             username: 'mailChimpBot',
-            channel: '#foh-users',
+            channel: '#app-users',
             icon_emoji: ':monkey_face:',
             text: `Added to mailchimp: ${userInfo.email}`,
             attachments: null
@@ -43,7 +43,7 @@ if(Meteor.isServer){
             } else {
               slack.alert({
                 username: 'mailChimpBot',
-                channel: '#foh-users',
+                channel: '#app-users',
                 icon_emoji: ':monkey_face:',
                 text: `Added to automation: ${userInfo.email}`,
                 attachments: null
